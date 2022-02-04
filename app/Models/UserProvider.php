@@ -23,4 +23,9 @@ class UserProvider extends Pivot
     protected $casts = [
         'sent_at' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

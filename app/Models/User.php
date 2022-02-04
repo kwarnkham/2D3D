@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\TelegramService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -33,8 +36,39 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function accountProvider()
+    public function accountProviders()
     {
-        return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class);
+        return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
+    }
+
+    public static function register(Request $request)
+    {
+        $userProvider = UserProvider::where('provider_id', $request->message['from']['id'])->first();
+        if ($userProvider) return $userProvider->user;
+        DB::beginTransaction();
+        $user = User::create([
+            'name' => 't' . $request->message['from']['username'],
+            'password' => bcrypt('000000')
+        ]);
+        $accountProvider = AccountProvider::where('name', 'telegram')->first();
+        if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
+        UserProvider::create([
+            'user_id' => $user->id,
+            'account_provider_id' => $accountProvider->id,
+            'provider_id' => $request->message['from']['id'],
+            'username' => $request->message['from']['username'],
+            'sent_at' => $request->message['date']
+        ]);
+        DB::commit();
+        return $user;
+    }
+
+    public function notify(string $message)
+    {
+        foreach ($this->accountProviders as $channel) {
+            if ($channel->name == 'telegram') {
+                TelegramService::sendMessage($message, $channel->pivot->provider_id);
+            }
+        }
     }
 }

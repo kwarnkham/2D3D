@@ -15,6 +15,6 @@ class AccountProvider extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)->using(UserProvider::class);
+        return $this->belongsToMany(User::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
     }
 }
