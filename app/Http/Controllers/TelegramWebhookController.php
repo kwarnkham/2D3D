@@ -21,10 +21,14 @@ class TelegramWebhookController extends Controller
             case 'hi':
             case 'account':
             case '/start':
-                $user = User::register($request);
+                list($user, $isNew) = User::summon($request);
                 $username = $user->name;
-                $password = '000000';
-                $message = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users, please click <a href='https://google.com'>here</a> to use the web application. Here is your account. Username '$username'. Password '$password'. Please change your password immediately after login.";
+                if ($isNew) {
+                    $password = str()->random(6);
+                    $message = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users, please click <a href='https://google.com'>here</a> to use the web application. Here is your account. Username '$username'. Password '$password'. Please change your password immediately after login.";
+                } else {
+                    $message = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users, please click <a href='https://google.com'>here</a> to use the web application. Your account username is '$username'";
+                }
                 $user->notify($message);
                 break;
             default:

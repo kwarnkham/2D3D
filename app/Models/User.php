@@ -41,10 +41,15 @@ class User extends Authenticatable
         return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
     }
 
-    public static function register(Request $request)
+    public static function summon(Request $request)
     {
         $userProvider = UserProvider::where('provider_id', $request->message['from']['id'])->first();
-        if ($userProvider) return $userProvider->user;
+        if ($userProvider) return [$userProvider->user, false];
+        return [static::register($request), true];
+    }
+
+    public static function register(Request $request)
+    {
         DB::beginTransaction();
         $user = User::create([
             'name' => 't' . $request->message['from']['username'],
@@ -62,6 +67,7 @@ class User extends Authenticatable
         DB::commit();
         return $user;
     }
+
 
     public function notify(string $message)
     {
