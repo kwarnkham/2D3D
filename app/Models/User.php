@@ -44,16 +44,17 @@ class User extends Authenticatable
     public static function summon(Request $request)
     {
         $userProvider = UserProvider::where('provider_id', $request->message['from']['id'])->first();
-        if ($userProvider) return [$userProvider->user, false];
-        return [static::register($request), true];
+        if ($userProvider) return [$userProvider->user, null];
+        return static::register($request);
     }
 
     public static function register(Request $request)
     {
         DB::beginTransaction();
+        $password = str()->random(6);
         $user = User::create([
             'name' => 't' . $request->message['from']['username'],
-            'password' => bcrypt('000000')
+            'password' => bcrypt($password)
         ]);
         $accountProvider = AccountProvider::where('name', 'telegram')->first();
         if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
@@ -65,7 +66,7 @@ class User extends Authenticatable
             'sent_at' => $request->message['date']
         ]);
         DB::commit();
-        return $user;
+        return [$user, $password];
     }
 
 
