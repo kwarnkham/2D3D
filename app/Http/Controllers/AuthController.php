@@ -22,4 +22,20 @@ class AuthController extends Controller
         $token = $user->createToken("");
         return response()->json(['token' => $token->plainTextToken, 'user' => $user]);
     }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'password' => ['required'],
+            'new_password' => ['required', 'confirmed', 'min:6']
+        ]);
+        $user = $request->user();
+        if (!Hash::check($request->password, $user->password)) {
+            abort(ResponseStatus::UNAUTHORIZED->value, "Incorrect password");
+        }
+
+        $user->password = $request->new_password;
+        $user->save();
+        return response()->json('success');
+    }
 }

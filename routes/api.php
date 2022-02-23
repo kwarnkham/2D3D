@@ -26,4 +26,5 @@ Route::post('/' . env('TELEGRAM_BOT_TOKEN'), [TelegramWebhookController::class, 
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
+    Route::post('/change-password', 'changePassword')->middleware('auth:sanctum');
 });

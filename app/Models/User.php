@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\TelegramService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
@@ -36,6 +37,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function password(): Attribute
+    {
+        return new Attribute(
+            set: fn ($value) => bcrypt($value),
+        );
+    }
+
     public function accountProviders()
     {
         return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
@@ -54,7 +62,7 @@ class User extends Authenticatable
         $password = str()->random(6);
         $user = User::create([
             'name' => 't' . $request->message['from']['username'],
-            'password' => bcrypt($password)
+            'password' => $password
         ]);
         $accountProvider = AccountProvider::where('name', 'telegram')->first();
         if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
