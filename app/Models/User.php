@@ -39,7 +39,7 @@ class User extends Authenticatable
 
     public function password(): Attribute
     {
-        return new Attribute(
+        return Attribute::make(
             set: fn ($value) => bcrypt($value),
         );
     }
