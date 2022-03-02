@@ -17,7 +17,8 @@ class PaymentFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => 'KBZpay',
+            'number' => '1231231'
         ];
     }
 }

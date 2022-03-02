@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TopUp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TopUpController extends Controller
 {
@@ -15,5 +17,14 @@ class TopUpController extends Controller
             'pictures' => 'array',
             'pictures.*' => 'image',
         ]);
+        $data['user_id'] = $request->user()->id;
+        $topUp = null;
+
+        DB::transaction(function () use ($data, &$topUp) {
+            $topUp = TopUp::create($data);
+            $topUp->savePictures($data['pictures']);
+        });
+
+        return response()->json($topUp);
     }
 }

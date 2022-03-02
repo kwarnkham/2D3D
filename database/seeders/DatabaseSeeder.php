@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        \App\Models\Payment::create(['name' => 'KBZpay', 'number' => '09123123123']);
+        \App\Models\Payment::create(['name' => 'Wave Pay', 'number' => '09123123123']);
     }
 }

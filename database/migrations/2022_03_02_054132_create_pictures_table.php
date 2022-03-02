@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pictures', function (Blueprint $table) {
             $table->id();
-            $table->string('url');
+            $table->string('name');
             $table->foreignId('pictureable_id');
             $table->string('pictureable_type');
             $table->timestamps();

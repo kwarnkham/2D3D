@@ -34,6 +34,80 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\Payment
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $number
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\PaymentFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+ */
+	class Payment extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Picture
+ *
+ * @property int $id
+ * @property string $url
+ * @property int $pictureable_id
+ * @property string $pictureable_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $pictureable
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture wherePictureableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture wherePictureableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Picture whereUrl($value)
+ */
+	class Picture extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\TopUp
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $payment_id
+ * @property string $payment_username
+ * @property float $amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @method static \Database\Factories\TopUpFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp wherePaymentUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TopUp whereUserId($value)
+ */
+	class TopUp extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * App\Models\User
  *
  * @property int $id
