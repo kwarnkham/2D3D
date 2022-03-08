@@ -49,6 +49,21 @@ class User extends Authenticatable
         return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
     }
 
+    public function points()
+    {
+        return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps();
+    }
+
+    public function mmk()
+    {
+        return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 2)->first();
+    }
+
+    public function freePoint()
+    {
+        return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 1)->first();
+    }
+
     public static function summon(Request $request)
     {
         $userProvider = UserProvider::where('provider_id', $request->message['from']['id'])->first();
