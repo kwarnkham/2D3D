@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\TopUpController;
+use App\Http\Controllers\TwoDigitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,4 +42,8 @@ Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group
 
 Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(function () {
     Route::get('/me', 'me');
+});
+
+Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {
+    Route::post('/two-digit', 'store');
 });

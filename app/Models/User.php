@@ -49,6 +49,11 @@ class User extends Authenticatable
         return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
     }
 
+    public function twoDigits()
+    {
+        return $this->hasMany(TwoDigit::class);
+    }
+
     public function points()
     {
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps();
@@ -90,6 +95,11 @@ class User extends Authenticatable
         ]);
         DB::commit();
         return [$user, $password];
+    }
+
+    public function getBalanceByPointId(int $point_id)
+    {
+        return $this->points()->where('point_id', $point_id)->first()->pivot->balance;
     }
 
 
