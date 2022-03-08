@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\TopUpController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,8 @@ Route::middleware(['auth:sanctum'])->controller(TopUpController::class)->group(f
 
 Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group(function () {
     Route::get('/payment', 'index');
+});
+
+Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(function () {
+    Route::get('/me', 'me');
 });
