@@ -12,8 +12,8 @@ class TwoDigitController extends Controller
     {
         $data = $request->validate([
             'numbers' => ['required', 'array'],
-            'numbers.*.number' => ['required', 'numeric'],
-            'numbers.*.amount' => ['required', 'numeric'],
+            'numbers.*.number' => ['required', 'numeric', 'digits_between:1,2'],
+            'numbers.*.amount' => ['required', 'numeric', 'min:100'],
             'point_id' => ['required', 'exists:points,id']
         ]);
         $user = $request->user();
