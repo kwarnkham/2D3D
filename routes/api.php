@@ -46,4 +46,5 @@ Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(fu
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {
     Route::post('/two-digit', 'store');
+    Route::get('/two-digit', 'index');
 });

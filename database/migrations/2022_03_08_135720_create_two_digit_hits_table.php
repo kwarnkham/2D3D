@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('two_digits', function (Blueprint $table) {
+        Schema::create('two_digit_hits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->tinyInteger('number');
-            $table->double('amount');
-            $table->foreignId('point_id')->constrained();
-            $table->foreignId('two_digit_hit_id')->nullable()->constrained();
-            $table->timestamp('settled_at')->nullable();
+            $table->string('number');
+            $table->tinyInteger('rate');
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_digits');
+        Schema::dropIfExists('two_digit_hits');
     }
 };

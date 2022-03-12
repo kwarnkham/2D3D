@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ResponseStatus;
+use App\Models\TwoDigit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,5 +34,10 @@ class TwoDigitController extends Controller
         });
 
         return response()->json(['result' => $result, 'user' => $user->load(['points'])]);
+    }
+
+    public function index()
+    {
+        return response()->json(TwoDigit::with(['point', 'twoDigitHit'])->orderBy('id', 'desc')->paginate(perPage: 30));
     }
 }
