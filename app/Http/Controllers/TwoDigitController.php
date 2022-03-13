@@ -17,6 +17,9 @@ class TwoDigitController extends Controller
             'numbers.*.amount' => ['required', 'numeric', 'min:100'],
             'point_id' => ['required', 'exists:points,id']
         ]);
+        TwoDigit::checkTime();
+
+
         $user = $request->user();
         $remainingBalance = $user->getBalanceByPointId($data['point_id']) - intval(collect($data['numbers'])->reduce(fn ($carry, $value) => $carry + $value['amount'], 0));
         if ($remainingBalance < 0) abort(ResponseStatus::BAD_REQUEST->value, 'Balance is not enough');

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('number');
             $table->tinyInteger('rate');
+            $table->timestamp('day');
+            $table->boolean('morning');
             $table->timestamps();
         });
     }
