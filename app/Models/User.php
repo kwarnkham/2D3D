@@ -161,6 +161,8 @@ class User extends Authenticatable
     public static function makeAdmin($name, $password)
     {
         if (User::where('name', $name)->exists()) return "$name is already taken";
-        return Role::where('name', 'admin')->first()->users()->attach(User::create(['name' => $name, 'password' => bcrypt($password)])->id);
+        return DB::transaction(function () use ($name, $password) {
+            return User::create(['name' => $name, 'password' => $password])->roles()->attach(Role::where('name', 'admin')->first());
+        });
     }
 }

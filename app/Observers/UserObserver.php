@@ -8,6 +8,13 @@ use App\Models\User;
 class UserObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the User "created" event.
      *
      * @param  \App\Models\User  $user
@@ -15,6 +22,7 @@ class UserObserver
      */
     public function created(User $user)
     {
+        if (in_array('admin', $user->roles()->pluck('name')->toArray())) return;
         $user->increasePoint(Point::find(1), 10000, 'Points given on account created for testing');
     }
 
