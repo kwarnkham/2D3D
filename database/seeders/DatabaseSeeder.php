@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Payment::create(['name' => 'Wave Pay', 'number' => '09123123123']);
         \App\Models\Point::create(['name' => 'Lucky Hi']);
         \App\Models\Point::create(['name' => 'MMK']);
+        \App\Models\Role::create(['name' => 'admin']);
     }
 }
