@@ -18,13 +18,11 @@ class TopUpController extends Controller
             'pictures.*' => 'image',
         ]);
         $data['user_id'] = $request->user()->id;
-        $topUp = null;
 
-        DB::transaction(function () use ($data, &$topUp) {
+        return response()->json(DB::transaction(function () use ($data, &$topUp) {
             $topUp = TopUp::create($data);
             $topUp->savePictures($data['pictures']);
-        });
-
-        return response()->json($topUp);
+            return $topUp;
+        }));
     }
 }

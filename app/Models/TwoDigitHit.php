@@ -21,19 +21,25 @@ class TwoDigitHit extends Model
     public function settle()
     {
         return DB::transaction(function () {
-            $today = new Carbon(explode(" ", $this->day)[0]);
+            $morningLastMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
+            $morningStartMinute = (new Carbon(explode(" ", $this->day)[0]))->subDay()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60);
+            $eveningStartMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
+            $eveningLastMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
+
             if ($this->morning) {
-                $builder = TwoDigit::where('created_at', '<=', $today->addMinutes(TwoDigit::MORNING_LAST_MINUTE))
-                    ->where('created_at', '>=', $today->subDay()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60))
+                $builder = TwoDigit::where('created_at', '<=', $morningLastMinute)
+                    ->where('created_at', '>=', $morningStartMinute)
                     ->whereNull('settled_at');
             } else {
-                $builder = TwoDigit::where('created_at', '>=', $today->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60))
-                    ->where('created_at', '<=', $today->addMinutes(TwoDigit::EVENING_LAST_MINUTE))
+                $builder = TwoDigit::where('created_at', '>=', $eveningStartMinute)
+                    ->where('created_at', '<=', $eveningLastMinute)
                     ->whereNull('settled_at');
             }
-
-            $builder->where('number', $this->number)->update(['two_digit_hit_id' => $this->id]);
+            (clone $builder)->where('number', $this->number)->update(['two_digit_hit_id' => $this->id]);
             $builder->update(['settled_at' => now()]);
+            foreach ($this->twoDigits as $twoDigit) {
+                $twoDigit->processPrize();
+            }
         });
     }
 }

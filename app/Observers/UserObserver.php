@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Point;
 use App\Models\User;
 
 class UserObserver
@@ -14,7 +15,7 @@ class UserObserver
      */
     public function created(User $user)
     {
-        $user->points()->attach(1, ['balance' => 10000]);
+        $user->increasePoint(Point::find(1), 10000, 'Points given on account created for testing');
     }
 
     /**

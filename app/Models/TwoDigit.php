@@ -48,4 +48,10 @@ class TwoDigit extends Model
             if (static::EVENING_LAST_MINUTE - $time < 0) abort(ResponseStatus::BAD_REQUEST->value, "Evening order is closed. Next order starts at 05:00 PM");
         }
     }
+
+    public function processPrize()
+    {
+        if (!$this->two_digit_hit_id || !$this->settled_at) return;
+        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate);
+    }
 }

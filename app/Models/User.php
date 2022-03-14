@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -78,28 +79,30 @@ class User extends Authenticatable
 
     public static function register(Request $request)
     {
-        DB::beginTransaction();
-        $password = str()->random(6);
-        $user = User::create([
-            'name' => 't' . $request->message['from']['username'],
-            'password' => $password
-        ]);
-        $accountProvider = AccountProvider::where('name', 'telegram')->first();
-        if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
-        UserProvider::create([
-            'user_id' => $user->id,
-            'account_provider_id' => $accountProvider->id,
-            'provider_id' => $request->message['from']['id'],
-            'username' => $request->message['from']['username'],
-            'sent_at' => $request->message['date']
-        ]);
-        DB::commit();
-        return [$user, $password];
+        return DB::transaction(function () use ($request) {
+            $password = str()->random(6);
+            $user = User::create([
+                'name' => 't' . $request->message['from']['username'],
+                'password' => $password
+            ]);
+            $accountProvider = AccountProvider::where('name', 'telegram')->first();
+            if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
+            UserProvider::create([
+                'user_id' => $user->id,
+                'account_provider_id' => $accountProvider->id,
+                'provider_id' => $request->message['from']['id'],
+                'username' => $request->message['from']['username'],
+                'sent_at' => $request->message['date']
+            ]);
+            return [$user, $password];
+        });
     }
 
-    public function getBalanceByPointId(int $point_id)
+    public function getBalanceByPoint(Point $point)
     {
-        return $this->points()->where('point_id', $point_id)->first()->pivot->balance;
+        $userPoint = $this->points()->where('point_id', $point->id)->first();
+        if (!$userPoint) return 0;
+        return $userPoint->pivot->balance;
     }
 
 
@@ -110,5 +113,43 @@ class User extends Authenticatable
                 TelegramService::sendMessage($message, $channel->pivot->provider_id);
             }
         }
+    }
+
+    public function decreasePoint(Point $point, $amount, $note = null)
+    {
+        DB::transaction(function () use ($point, $amount, $note) {
+            $this->points()->updateExistingPivot($point->id, [
+                'balance' => $this->getBalanceByPoint($point) - $amount,
+            ]);
+            //point_logs_type 1, decreasePoint
+            PointLog::create([
+                'user_id' => $this->id,
+                'point_id' => $point->id,
+                'amount' => -$amount,
+                'type' => 1,
+                'note' => $note
+            ]);
+        });
+    }
+
+    public function increasePoint(Point $point, $amount, $note = null)
+    {
+        Log::alert("Increase the point $point->name of $this->name by $amount");
+        DB::transaction(function () use ($point, $amount, $note) {
+            if (!$this->points()->where('point_id', $point->id)->first()) {
+                $this->points()->attach($point->id, ['balance' => 0]);
+            }
+            $this->points()->updateExistingPivot($point->id, [
+                'balance' => $this->getBalanceByPoint($point) + $amount,
+            ]);
+            //point_logs_type 2, increasePoint
+            PointLog::create([
+                'user_id' => $this->id,
+                'point_id' => $point->id,
+                'amount' => $amount,
+                'type' => 2,
+                'note' => $note
+            ]);
+        });
     }
 }
