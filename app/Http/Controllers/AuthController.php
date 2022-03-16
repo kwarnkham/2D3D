@@ -20,7 +20,7 @@ class AuthController extends Controller
         if (!Hash::check($request->password, $user->password)) abort(ResponseStatus::UNAUTHORIZED->value, 'Password is incorrect');
         $user->tokens()->delete();
         $token = $user->createToken("");
-        return response()->json(['token' => $token->plainTextToken, 'user' => $user->load(['points'])]);
+        return response()->json(['token' => $token->plainTextToken, 'user' => $user->load(['points', 'roles'])]);
     }
 
     public function changePassword(Request $request)
