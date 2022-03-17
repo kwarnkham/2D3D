@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\TwoDigit;
+use App\Models\TwoDigitHit;
 use App\Models\User;
-use App\Observers\TwoDigitObserver;
+use App\Observers\TwoDigitHitObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -33,5 +33,6 @@ class EventServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         // TwoDigit::observe(TwoDigitObserver::class);
+        TwoDigitHit::observe(TwoDigitHitObserver::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,5 +19,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Point::create(['name' => 'Lucky Hi']);
         \App\Models\Point::create(['name' => 'MMK']);
         \App\Models\Role::create(['name' => 'admin']);
+        Artisan::call('make:admin moon moon');
     }
 }
