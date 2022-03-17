@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('day');
             $table->boolean('morning');
             $table->timestamps();
+            $table->unique(['day', 'morning']);
         });
     }
 
