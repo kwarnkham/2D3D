@@ -38,7 +38,7 @@ class TwoDigitController extends Controller
                 if ($result) $user->decreasePoint($point, $totalAmount);
                 return $result;
             }),
-            'user' => $user->load(['points'])
+            'user' => $user->load(['points', 'roles'])
         ]);
     }
 
