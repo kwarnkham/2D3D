@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ResponseStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -33,9 +34,12 @@ class AuthController extends Controller
         if (!Hash::check($request->password, $user->password)) {
             abort(ResponseStatus::UNAUTHORIZED->value, "Incorrect password");
         }
-
-        $user->password = $request->new_password;
-        $user->save();
-        return response()->json('success');
+        DB::transaction(function () use ($user, $request) {
+            $user->password = $request->new_password;
+            $user->save();
+            //password_changes_type 1, changePassword
+            $user->passwordChanges()->create(['type' => 1]);
+        });
+        return response()->json($user->load(['points', 'roles']));
     }
 }

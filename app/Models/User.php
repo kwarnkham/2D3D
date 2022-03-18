@@ -38,11 +38,23 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['has_default_password'];
+
     public function password(): Attribute
     {
         return Attribute::make(
             set: fn ($value) => bcrypt($value),
         );
+    }
+
+    public function passwordChanges()
+    {
+        return $this->hasMany(PasswordChange::class);
     }
 
     public function roles()
@@ -73,6 +85,13 @@ class User extends Authenticatable
     public function freePoint()
     {
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 1)->first();
+    }
+
+    public function hasDefaultPassword(): Attribute
+    {
+        return new Attribute(
+            get: fn () => !$this->passwordChanges()->first(),
+        );
     }
 
     public static function summon(Request $request)
