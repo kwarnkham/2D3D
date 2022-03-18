@@ -82,6 +82,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 2)->first();
     }
 
+    public function recentPasswordChanged()
+    {
+        return $this->passwordChanges->count() > 1 &&
+            $this->passwordChanges()->orderBy('id', 'desc')->first()->created_at->diffInHours(now()) < 24;
+    }
+
     public function freePoint()
     {
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 1)->first();

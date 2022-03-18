@@ -31,9 +31,17 @@ class AuthController extends Controller
             'new_password' => ['required', 'confirmed', 'min:6']
         ]);
         $user = $request->user();
+
+        abort_if(
+            $user->recentPasswordChanged(),
+            ResponseStatus::BAD_REQUEST->value,
+            "Password can only be changed per 24 hours"
+        );
+
         if (!Hash::check($request->password, $user->password)) {
             abort(ResponseStatus::UNAUTHORIZED->value, "Incorrect password");
         }
+
         DB::transaction(function () use ($user, $request) {
             $user->password = $request->new_password;
             $user->save();
