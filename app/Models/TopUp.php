@@ -35,4 +35,18 @@ class TopUp extends Model
         }
         $this->pictures()->saveMany($pictures);
     }
+
+    /**
+     * Scope a query to filter.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(
+            $filters['status'] ?? false,
+            fn ($q, $status) => $q->where('status', $status)
+        );
+    }
 }

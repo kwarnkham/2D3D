@@ -30,7 +30,8 @@ class TopUpController extends Controller
 
     public function index(Request $request)
     {
-        return response()->json(TopUp::with(TopUp::RS)->paginate());
+        $request->validate(['status' => ['in:1,2,3,4']]);
+        return response()->json(TopUp::with(TopUp::RS)->filter($request->only(['status']))->paginate($request->per_page ?? 15));
     }
 
     public function approve(Request $request, TopUp $topUp)
