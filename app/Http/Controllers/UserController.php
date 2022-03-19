@@ -84,6 +84,6 @@ class UserController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user()->load(['points', 'roles']));
+        return response()->json($request->user()->load(User::RS));
     }
 }

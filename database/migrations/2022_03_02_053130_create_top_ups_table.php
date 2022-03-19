@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('payment_id')->constrained();
             $table->string('payment_username');
+            $table->tinyInteger('status')->default(1);
             $table->double('amount');
             $table->timestamps();
         });

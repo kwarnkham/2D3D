@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Payment::create(['name' => 'KBZpay', 'number' => '09123123123']);
-        \App\Models\Payment::create(['name' => 'Wave Pay', 'number' => '09123123123']);
+        \App\Models\Payment::create(['name' => 'KBZpay', 'number' => '09123123123', 'account_name' => 'moon']);
+        \App\Models\Payment::create(['name' => 'Wave Pay', 'number' => '09123123123', 'account_name' => 'moon']);
         \App\Models\Point::create(['name' => 'Lucky Hi']);
         \App\Models\Point::create(['name' => 'MMK']);
         \App\Models\Role::create(['name' => 'admin']);

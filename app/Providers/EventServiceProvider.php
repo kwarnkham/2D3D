@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\TopUp;
 use App\Models\TwoDigitHit;
 use App\Models\User;
+use App\Observers\TopUpObserver;
 use App\Observers\TwoDigitHitObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
@@ -34,5 +36,6 @@ class EventServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         // TwoDigit::observe(TwoDigitObserver::class);
         TwoDigitHit::observe(TwoDigitHitObserver::class);
+        TopUp::observe(TopUpObserver::class);
     }
 }

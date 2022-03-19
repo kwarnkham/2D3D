@@ -9,12 +9,22 @@ use Illuminate\Support\Facades\Storage;
 class TopUp extends Model
 {
     use HasFactory;
-
+    const RS = ['pictures', 'user', 'payment'];
     protected $guarded = ['id'];
 
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'pictureable');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
     }
 
     public function savePictures(array $files)

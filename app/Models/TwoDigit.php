@@ -14,6 +14,7 @@ class TwoDigit extends Model
     protected $guarded = ['id'];
     const MORNING_LAST_MINUTE = 300;
     const EVENING_LAST_MINUTE = 570;
+    const RS = ['point', 'twoDigitHit'];
     /**
      * Prepare a date for array / JSON serialization.
      *

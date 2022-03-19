@@ -35,6 +35,8 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::middleware(['auth:sanctum'])->controller(TopUpController::class)->group(function () {
     Route::post('/top-up', 'store');
+    Route::get('/top-up', 'index');
+    Route::post('/top-up/approve/{topUp}', 'approve');
 });
 
 Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group(function () {
