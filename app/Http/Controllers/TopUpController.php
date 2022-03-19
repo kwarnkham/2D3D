@@ -37,11 +37,26 @@ class TopUpController extends Controller
     public function approve(Request $request, TopUp $topUp)
     {
         Gate::authorize('admin');
-        $request->validate([
-            'status' => ['required', 'in:2,3,4']
-        ]);
-        if ($topUp->status != '1') abort(ResponseStatus::BAD_REQUEST->value, "Can only approve a pending Top UP");
-        $topUp->status = $request->status;
+        if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only approve a pending or drafted Top Up");
+        $topUp->status = 2;
+        $topUp->save();
+        return response()->json($topUp->load(TopUp::RS));
+    }
+
+    public function draft(Request $request, TopUp $topUp)
+    {
+        Gate::authorize('admin');
+        if (!in_array($topUp->status, ['1'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only approve a pending Top Up");
+        $topUp->status = 4;
+        $topUp->save();
+        return response()->json($topUp->load(TopUp::RS));
+    }
+
+    public function deny(Request $request, TopUp $topUp)
+    {
+        Gate::authorize('admin');
+        if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only deny a pending or drafted Top Up");
+        $topUp->status = 3;
         $topUp->save();
         return response()->json($topUp->load(TopUp::RS));
     }
