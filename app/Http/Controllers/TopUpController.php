@@ -30,8 +30,15 @@ class TopUpController extends Controller
 
     public function index(Request $request)
     {
-        $request->validate(['status' => ['in:1,2,3,4']]);
-        return response()->json(TopUp::with(TopUp::RS)->filter($request->only(['status']))->paginate($request->per_page ?? 15));
+        $request->validate([
+            'status' => ['in:1,2,3,4'],
+            'order_in' => ['in:desc,asc']
+        ]);
+        return response()->json(
+            TopUp::with(TopUp::RS)
+                ->filter($request->only(['status', 'order_in']))
+                ->paginate($request->per_page ?? 15)
+        );
     }
 
     public function approve(Request $request, TopUp $topUp)
@@ -57,6 +64,15 @@ class TopUpController extends Controller
         Gate::authorize('admin');
         if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only deny a pending or drafted Top Up");
         $topUp->status = 3;
+        $topUp->save();
+        return response()->json($topUp->load(TopUp::RS));
+    }
+
+    public function cancel(Request $request, TopUp $topUp)
+    {
+        Gate::authorize('cancel-top-up', $topUp);
+        if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only cancel a pending or drafted Top Up");
+        $topUp->status = 5;
         $topUp->save();
         return response()->json($topUp->load(TopUp::RS));
     }

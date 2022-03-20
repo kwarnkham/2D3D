@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum'])->controller(TopUpController::class)->group(f
     Route::post('/top-up/approve/{topUp}', 'approve');
     Route::post('/top-up/draft/{topUp}', 'draft');
     Route::post('/top-up/deny/{topUp}', 'deny');
+    Route::post('/top-up/cancel/{topUp}', 'cancel');
 });
 
 Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group(function () {

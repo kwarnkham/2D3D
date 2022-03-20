@@ -48,5 +48,10 @@ class TopUp extends Model
             $filters['status'] ?? false,
             fn ($q, $status) => $q->where('status', $status)
         );
+
+        $query->when(
+            $filters['order_in'] ?? false,
+            fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
+        );
     }
 }

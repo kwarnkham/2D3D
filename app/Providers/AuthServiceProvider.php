@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\TopUp;
 use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,12 @@ class AuthServiceProvider extends ServiceProvider
             return $user->roles->contains(function ($role) {
                 return $role->name == 'admin';
             });
+        });
+
+        Gate::define('cancel-top-up', function (User $user, TopUp $topUp) {
+            Log::alert(json_encode($user));
+            Log::alert(json_encode($topUp));
+            return $user->id == $topUp->user->id;
         });
     }
 }
