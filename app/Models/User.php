@@ -77,6 +77,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps();
     }
 
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class);
+    }
+
     public function mmk()
     {
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 2)->first();

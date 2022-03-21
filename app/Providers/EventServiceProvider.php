@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\TopUp;
 use App\Models\TwoDigitHit;
 use App\Models\User;
+use App\Models\Withdraw;
 use App\Observers\TopUpObserver;
 use App\Observers\TwoDigitHitObserver;
 use App\Observers\UserObserver;
+use App\Observers\WithdrawObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -37,5 +39,6 @@ class EventServiceProvider extends ServiceProvider
         // TwoDigit::observe(TwoDigitObserver::class);
         TwoDigitHit::observe(TwoDigitHitObserver::class);
         TopUp::observe(TopUpObserver::class);
+        Withdraw::observe(WithdrawObserver::class);
     }
 }

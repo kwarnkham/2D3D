@@ -7,6 +7,7 @@ use App\Http\Controllers\TopUpController;
 use App\Http\Controllers\TwoDigitController;
 use App\Http\Controllers\TwoDigitHitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WithdrawController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,4 +58,8 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->grou
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->group(function () {
     Route::post('/two-digit-hit', 'store');
+});
+
+Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {
+    Route::post('/withdraw', 'store');
 });
