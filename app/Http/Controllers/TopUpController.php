@@ -16,8 +16,8 @@ class TopUpController extends Controller
             'amount' => ['required', 'numeric'],
             'payment_id' => ['required', 'exists:payments,id'],
             'payment_username' => ['required'],
-            'pictures' => 'array',
-            'pictures.*' => 'image',
+            'pictures' => ['required', 'array'],
+            'pictures.*' => ['image'],
         ]);
         $data['user_id'] = $request->user()->id;
 
@@ -37,7 +37,7 @@ class TopUpController extends Controller
         return response()->json(
             TopUp::with(TopUp::RS)
                 ->filter($request->only(['status', 'order_in']))
-                ->paginate($request->per_page ?? 15)
+                ->paginate($request->per_page ?? 10)
         );
     }
 
@@ -53,7 +53,7 @@ class TopUpController extends Controller
     public function draft(Request $request, TopUp $topUp)
     {
         Gate::authorize('admin');
-        if (!in_array($topUp->status, ['1'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only approve a pending Top Up");
+        if (!in_array($topUp->status, ['1'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only draft a pending Top Up");
         $topUp->status = 4;
         $topUp->save();
         return response()->json($topUp->load(TopUp::RS));

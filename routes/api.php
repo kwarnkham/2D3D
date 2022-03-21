@@ -62,4 +62,10 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->g
 
 Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {
     Route::post('/withdraw', 'store');
+    Route::get('/withdraw', 'index');
+    Route::post('/withdraw/approve/{withdraw}', 'approve');
+    Route::post('/withdraw/draft/{withdraw}', 'draft');
+    Route::post('/withdraw/deny/{withdraw}', 'deny');
+    Route::post('/withdraw/cancel/{withdraw}', 'cancel');
+    Route::get('/withdraw/{withdraw}', 'find');
 });
