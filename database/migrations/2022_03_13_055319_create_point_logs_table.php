@@ -20,6 +20,8 @@ return new class extends Migration
             $table->double('amount');
             $table->tinyInteger('type')->index();
             $table->text('note')->nullable();
+            $table->foreignId('point_logable_id')->nullable();
+            $table->string('point_logable_type')->nullable();
             $table->timestamps();
         });
     }

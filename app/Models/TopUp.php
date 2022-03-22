@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Contracts\PointLogable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class TopUp extends Model
+class TopUp extends Model implements PointLogable
 {
     use HasFactory;
     const RS = ['pictures', 'user', 'payment'];
@@ -15,6 +16,11 @@ class TopUp extends Model
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'pictureable');
+    }
+
+    public function point_logs()
+    {
+        return $this->morphMany(PointLog::class, 'point_logable');
     }
 
     public function user()

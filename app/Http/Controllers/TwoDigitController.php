@@ -34,11 +34,9 @@ class TwoDigitController extends Controller
         ])->toArray();
 
         return response()->json([
-            'result' => DB::transaction(function () use ($twoDigits, $user, $point, $totalAmount) {
-                $result = $user->twoDigits()->createMany($twoDigits);
-                if ($result) $user->decreasePoint($point, $totalAmount, '2d ticket');
-                return $result;
-            }),
+            'result' => DB::transaction(
+                fn () => $user->twoDigits()->createMany($twoDigits)
+            ),
             'user' => $user->load(User::RS)
         ]);
     }

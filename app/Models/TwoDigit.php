@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Contracts\PointLogable;
 use App\Enums\ResponseStatus;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TwoDigit extends Model
+class TwoDigit extends Model implements PointLogable
 {
     use HasFactory;
     protected $guarded = ['id'];
@@ -28,6 +29,11 @@ class TwoDigit extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function point_logs()
+    {
+        return $this->morphMany(PointLog::class, 'point_logable');
     }
 
     public function point()

@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\TopUp;
+use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
 use App\Models\User;
 use App\Models\Withdraw;
 use App\Observers\TopUpObserver;
 use App\Observers\TwoDigitHitObserver;
+use App\Observers\TwoDigitObserver;
 use App\Observers\UserObserver;
 use App\Observers\WithdrawObserver;
 use Illuminate\Auth\Events\Registered;
@@ -36,7 +38,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
-        // TwoDigit::observe(TwoDigitObserver::class);
+        TwoDigit::observe(TwoDigitObserver::class);
         TwoDigitHit::observe(TwoDigitHitObserver::class);
         TopUp::observe(TopUpObserver::class);
         Withdraw::observe(WithdrawObserver::class);

@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+use App\Contracts\PointLogable;
 
 class User extends Authenticatable
 {
@@ -150,27 +151,29 @@ class User extends Authenticatable
         }
     }
 
-    public function decreasePoint(Point $point, $amount, $note = null)
+    public function decreasePoint(Point $point, $amount, $note = null, PointLogable $model = null)
     {
-        DB::transaction(function () use ($point, $amount, $note) {
+        DB::transaction(function () use ($point, $amount, $note, $model) {
             $this->points()->updateExistingPivot($point->id, [
                 'balance' => $this->getBalanceByPoint($point) - $amount,
             ]);
             //point_logs_type 1, decreasePoint
-            PointLog::create([
+            $data = [
                 'user_id' => $this->id,
                 'point_id' => $point->id,
                 'amount' => -$amount,
                 'type' => 1,
                 'note' => $note
-            ]);
+            ];
+            if (!$model) PointLog::create($data);
+            else $model->point_logs()->create($data);
         });
     }
 
-    public function increasePoint(Point $point, $amount, $note = null)
+    public function increasePoint(Point $point, $amount, $note = null, PointLogable $model = null)
     {
         Log::alert("Increase the point $point->name of $this->name by $amount");
-        DB::transaction(function () use ($point, $amount, $note) {
+        DB::transaction(function () use ($point, $amount, $note, $model) {
             if (!$this->points()->where('point_id', $point->id)->first()) {
                 $this->points()->attach($point->id, ['balance' => 0]);
             }
@@ -178,13 +181,15 @@ class User extends Authenticatable
                 'balance' => $this->getBalanceByPoint($point) + $amount,
             ]);
             //point_logs_type 2, increasePoint
-            PointLog::create([
+            $data = [
                 'user_id' => $this->id,
                 'point_id' => $point->id,
                 'amount' => $amount,
                 'type' => 2,
                 'note' => $note
-            ]);
+            ];
+            if (!$model) PointLog::create($data);
+            else $model->point_logs()->create($data);
         });
     }
 
