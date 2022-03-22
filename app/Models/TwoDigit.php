@@ -53,6 +53,6 @@ class TwoDigit extends Model
     public function processPrize()
     {
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
-        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate);
+        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, 'won the prize');
     }
 }
