@@ -79,7 +79,7 @@ class WithdrawController extends Controller
 
     public function cancel(Request $request, Withdraw $withdraw)
     {
-        Gate::authorize('cancel-top-up', $withdraw);
+        Gate::authorize('cancel-withdraw', $withdraw);
         if (!in_array($withdraw->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only cancel a pending or drafted Withdraw");
         $withdraw->status = 5;
         $withdraw->save();

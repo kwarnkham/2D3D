@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\TopUp;
 use App\Models\User;
+use App\Models\Withdraw;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -35,9 +36,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('cancel-top-up', function (User $user, TopUp $topUp) {
-            Log::alert(json_encode($user));
-            Log::alert(json_encode($topUp));
             return $user->id == $topUp->user->id;
+        });
+
+        Gate::define('cancel-withdraw', function (User $user, Withdraw $withdraw) {
+            return $user->id == $withdraw->user->id;
         });
     }
 }
