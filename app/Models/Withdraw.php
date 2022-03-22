@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Contracts\PointLogable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class Withdraw extends Model
+class Withdraw extends Model implements PointLogable
 {
     use HasFactory;
     const RS = ['user', 'point', 'pictures', 'payment'];
@@ -15,6 +16,11 @@ class Withdraw extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function point_logs()
+    {
+        return $this->morphMany(PointLog::class, 'point_logable');
     }
 
     public function point()

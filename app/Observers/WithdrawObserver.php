@@ -15,7 +15,7 @@ class WithdrawObserver
      */
     public function created(Withdraw $withdraw)
     {
-        $withdraw->user->decreasePoint($withdraw->point, $withdraw->amount, 'submit withdraw');
+        $withdraw->user->decreasePoint($withdraw->point, $withdraw->amount, 'submit withdraw', $withdraw);
     }
 
     /**
@@ -26,7 +26,7 @@ class WithdrawObserver
      */
     public function updated(Withdraw $withdraw)
     {
-        if ($withdraw->status == 3) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw rejected');
+        if ($withdraw->status == 3) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw rejected', $withdraw);
     }
 
     /**
