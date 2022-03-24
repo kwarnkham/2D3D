@@ -61,4 +61,10 @@ class TwoDigit extends Model implements PointLogable
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
         $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, 'won the prize', $this);
     }
+
+
+    public function scopeOf($query, User $user)
+    {
+        $query->where('user_id', $user->id);
+    }
 }

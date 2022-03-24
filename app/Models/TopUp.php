@@ -60,4 +60,9 @@ class TopUp extends Model implements PointLogable
             fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
         );
     }
+
+    public function scopeOf($query, User $user)
+    {
+        $query->where('user_id', $user->id);
+    }
 }

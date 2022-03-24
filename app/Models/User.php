@@ -193,6 +193,13 @@ class User extends Authenticatable
         });
     }
 
+    public function isAdmin()
+    {
+        return $this->roles->contains(function ($role) {
+            return $role->name == 'admin';
+        });
+    }
+
     public static function makeAdmin($name, $password)
     {
         if (User::where('name', $name)->exists()) return "$name is already taken";

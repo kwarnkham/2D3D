@@ -21,7 +21,6 @@ class TwoDigitController extends Controller
         ]);
         TwoDigit::checkTime();
 
-
         $user = $request->user();
         $point = Point::find($data['point_id']);
         $totalAmount = intval(collect($data['numbers'])->reduce(fn ($carry, $value) => $carry + $value['amount'], 0));
@@ -41,8 +40,10 @@ class TwoDigitController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(TwoDigit::with(TwoDigit::RS)->orderBy('id', 'desc')->paginate(perPage: 30));
+        $query = TwoDigit::with(TwoDigit::RS)->orderBy('id', 'desc');
+        if (!$request->user()->isAdmin()) $query->of($request->user());
+        return response()->json($query->paginate(perPage: 30));
     }
 }

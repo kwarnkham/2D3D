@@ -30,9 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('admin', function (User $user) {
-            return $user->roles->contains(function ($role) {
-                return $role->name == 'admin';
-            });
+            return $user->isAdmin();
         });
 
         Gate::define('cancel-top-up', function (User $user, TopUp $topUp) {

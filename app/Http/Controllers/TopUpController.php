@@ -34,10 +34,11 @@ class TopUpController extends Controller
             'status' => ['in:1,2,3,4'],
             'order_in' => ['in:desc,asc']
         ]);
+        $query = TopUp::with(TopUp::RS)
+            ->filter($request->only(['status', 'order_in']));
+        if (!$request->user()->isAdmin()) $query->of($request->user());
         return response()->json(
-            TopUp::with(TopUp::RS)
-                ->filter($request->only(['status', 'order_in']))
-                ->paginate($request->per_page ?? 10)
+            $query->paginate($request->per_page ?? 10)
         );
     }
 
