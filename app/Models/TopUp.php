@@ -18,9 +18,9 @@ class TopUp extends Model implements PointLogable
         return $this->morphMany(Picture::class, 'pictureable');
     }
 
-    public function point_logs()
+    public function point_log()
     {
-        return $this->morphMany(PointLog::class, 'point_logable');
+        return $this->morphOne(PointLog::class, 'point_loggable');
     }
 
     public function user()

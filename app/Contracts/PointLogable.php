@@ -4,8 +4,8 @@ namespace App\Contracts;
 
 interface PointLogable
 {
-    public function point_logs();
+    public function point_log();
     // {
-    //     return $this->morphMany(PointLog::class, 'point_logable');
+    //     return $this->morphOne(PointLog::class, 'point_loggable');
     // }
 }

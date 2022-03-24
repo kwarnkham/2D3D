@@ -9,8 +9,11 @@ class PointLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PointLog::query();
+        $request->validate([
+            'point_id' => ['exists:points,id']
+        ]);
+        $query = PointLog::with(PointLog::RS)->filter($request->only(['point_id']));
         if (!$request->user()->isAdmin()) $query->of($request->user());
-        return response()->json(PointLog::paginate($request->per_page ?? 10));
+        return response()->json($query->paginate($request->per_page ?? 10));
     }
 }

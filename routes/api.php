@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PointController;
 use App\Http\Controllers\PointLogController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\TopUpController;
@@ -73,4 +74,8 @@ Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->grou
 
 Route::middleware(['auth:sanctum'])->controller(PointLogController::class)->group(function () {
     Route::get('/point-log', 'index');
+});
+
+Route::middleware(['auth:sanctum'])->controller(PointController::class)->group(function () {
+    Route::get('/point', 'index');
 });
