@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Withdraw extends Model implements PointLogable
@@ -16,6 +18,11 @@ class Withdraw extends Model implements PointLogable
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return (new Carbon($date))->diffForHumans();
     }
 
     public function point_log()
