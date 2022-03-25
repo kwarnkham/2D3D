@@ -38,6 +38,7 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::middleware(['auth:sanctum'])->controller(TopUpController::class)->group(function () {
     Route::post('/top-up', 'store');
+    Route::get('/top-up/{topUp}', 'find');
     Route::get('/top-up', 'index');
     Route::post('/top-up/approve/{topUp}', 'approve');
     Route::post('/top-up/draft/{topUp}', 'draft');
@@ -56,10 +57,12 @@ Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(fu
 Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {
     Route::post('/two-digit', 'store');
     Route::get('/two-digit', 'index');
+    Route::get('/two-digit/{twoDigit}', 'find');
 });
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->group(function () {
     Route::post('/two-digit-hit', 'store');
+    Route::get('/two-digit-hit/{twoDigitHit}/point-log/{pointLog}', 'find');
 });
 
 Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {

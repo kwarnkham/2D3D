@@ -40,6 +40,8 @@ class WithdrawController extends Controller
 
     public function find(Request $request, Withdraw $withdraw)
     {
+        $user = $request->user();
+        if ($withdraw->user->id != $user->id && !$user->isAdmin()) abort(ResponseStatus::NOT_FOUND->value);
         return response()->json($withdraw->load(Withdraw::RS));
     }
 

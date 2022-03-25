@@ -46,4 +46,11 @@ class TwoDigitController extends Controller
         if (!$request->user()->isAdmin()) $query->of($request->user());
         return response()->json($query->paginate(perPage: 30));
     }
+
+    public function find(Request $request, TwoDigit $twoDigit)
+    {
+        $user = $request->user();
+        if ($twoDigit->user->id != $user->id && !$user->isAdmin()) abort(ResponseStatus::NOT_FOUND->value);
+        return response()->json($twoDigit->load(['point']));
+    }
 }

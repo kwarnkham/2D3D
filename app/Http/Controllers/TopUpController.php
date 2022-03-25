@@ -42,6 +42,13 @@ class TopUpController extends Controller
         );
     }
 
+    public function find(Request $request, TopUp $topUp)
+    {
+        $user = $request->user();
+        if ($topUp->user->id != $user->id && !$user->isAdmin()) abort(ResponseStatus::NOT_FOUND->value);
+        return response()->json($topUp->load(TopUp::RS));
+    }
+
     public function approve(Request $request, TopUp $topUp)
     {
         Gate::authorize('admin');

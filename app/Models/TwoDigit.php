@@ -6,6 +6,7 @@ use App\Contracts\PointLogable;
 use App\Enums\ResponseStatus;
 use Carbon\Carbon;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -59,12 +60,19 @@ class TwoDigit extends Model implements PointLogable
     public function processPrize()
     {
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
-        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, 'won the prize', $this);
+        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, $this->id . ', won the prize', $this->twoDigitHit);
     }
 
 
     public function scopeOf($query, User $user)
     {
         $query->where('user_id', $user->id);
+    }
+
+    public function settledAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => new Carbon($value),
+        );
     }
 }

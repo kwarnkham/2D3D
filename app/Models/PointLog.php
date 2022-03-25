@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class PointLog extends Model
 {
@@ -15,6 +17,11 @@ class PointLog extends Model
     public function point_loggable()
     {
         return $this->morphTo();
+    }
+
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return (new Carbon($date))->diffForHumans();
     }
 
     public function point()

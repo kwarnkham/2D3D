@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class TopUp extends Model implements PointLogable
@@ -31,6 +33,11 @@ class TopUp extends Model implements PointLogable
     public function payment()
     {
         return $this->belongsTo(Payment::class);
+    }
+
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return (new Carbon($date))->diffForHumans();
     }
 
     public function savePictures(array $files)

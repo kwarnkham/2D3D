@@ -8,4 +8,5 @@ interface PointLogable
     // {
     //     return $this->morphOne(PointLog::class, 'point_loggable');
     // }
+
 }
