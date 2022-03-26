@@ -69,6 +69,24 @@ class TwoDigit extends Model implements PointLogable
         $query->where('user_id', $user->id);
     }
 
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(
+            $filters['settled'] ?? false,
+            fn ($q, $settled) => $settled == 'yes' ? $q->whereNotNull('settled_at') : $q->whereNull('settled_at')
+        );
+
+        $query->when(
+            $filters['order_in'] ?? false,
+            fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
+        );
+
+        $query->when(
+            $filters['point_id'] ?? false,
+            fn ($q, $pointId) => $q->where('point_id', $pointId)
+        );
+    }
+
     public function settledAt(): Attribute
     {
         return Attribute::make(

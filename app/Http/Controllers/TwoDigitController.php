@@ -42,9 +42,14 @@ class TwoDigitController extends Controller
 
     public function index(Request $request)
     {
-        $query = TwoDigit::with(TwoDigit::RS)->orderBy('id', 'desc');
+        $request->validate([
+            'settled' => ['in:yes,no,all'],
+            'order_in' => ['in:desc,asc'],
+            'point_id' => ['exists:points,id']
+        ]);
+        $query = TwoDigit::with(TwoDigit::RS)->filter($request->only(['settled', 'order_in', 'point_id']));
         if (!$request->user()->isAdmin()) $query->of($request->user());
-        return response()->json($query->paginate(perPage: 30));
+        return response()->json($query->paginate($request->per_page ?? 10));
     }
 
     public function find(Request $request, TwoDigit $twoDigit)
