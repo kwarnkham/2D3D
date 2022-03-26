@@ -35,6 +35,11 @@ class PointLog extends Model
             $filters['point_id'] ?? false,
             fn ($q, $pointId) => $q->where('point_id', $pointId)
         );
+
+        $query->when(
+            $filters['order_in'] ?? false,
+            fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
+        );
     }
 
     public function scopeOf($query, User $user)

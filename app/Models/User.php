@@ -166,7 +166,7 @@ class User extends Authenticatable
                 'note' => $note
             ];
             if (!$model) PointLog::create($data);
-            else $model->point_logs()->create($data);
+            else $model->point_log()->create($data);
         });
     }
 
@@ -189,7 +189,7 @@ class User extends Authenticatable
                 'note' => $note
             ];
             if (!$model) PointLog::create($data);
-            else $model->point_logs()->create($data);
+            else $model->point_log()->create($data);
         });
     }
 
