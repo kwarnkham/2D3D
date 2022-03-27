@@ -50,4 +50,20 @@ class AuthController extends Controller
         });
         return response()->json($user->load(User::RS));
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed']
+        ]);
+        $user = User::findOrFail($request->user_id);
+        $user->password = $request->password;
+        $user->tokens()->delete();
+        //password_changes_type 2, reset password
+        $user->passwordChanges()->create([
+            'type' => 2
+        ]);
+
+        return response()->json(true);
+    }
 }

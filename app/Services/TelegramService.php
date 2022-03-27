@@ -18,7 +18,7 @@ class TelegramService
             'chat_id' => $chatId,
             'text' => $message,
             'parse_mode' => $parseMode,
-            'reply_markup' => json_encode(['keyboard' => [['Top up', 'Help'], ['Promotion']]])
+            'reply_markup' => json_encode(['keyboard' => [['Top up', 'Help', 'Forgot Password'], ['Promotion']]])
         ]);
 
         Log::info($response->json());
