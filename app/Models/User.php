@@ -88,10 +88,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps()->wherePivot('point_id', 2)->first();
     }
 
-    public function recentPasswordChanged()
+    public function hasRecentPasswordChange()
     {
         return $this->passwordChanges->count() > 1 &&
-            $this->passwordChanges()->orderBy('id', 'desc')->first()->created_at->diffInHours(now()) < 24;
+            $this->passwordChanges()->orderBy('id', 'desc')->first()->created_at->diffInMinutes(now()) < (24 * 60);
     }
 
     public function freePoint()
@@ -141,6 +141,11 @@ class User extends Authenticatable
         return $userPoint->pivot->balance;
     }
 
+    public function isBanned()
+    {
+        return !!$this->banned_at;
+    }
+
 
     public function notify(string $message)
     {
@@ -149,6 +154,19 @@ class User extends Authenticatable
                 TelegramService::sendMessage($message, $channel->pivot->provider_id);
             }
         }
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(
+            $filters['status'] ?? false,
+            fn ($q, $status) => $status != 'banned' ? $q->whereNull('banned_at') : $q->whereNotNull('banned_at')
+        );
+
+        $query->when(
+            $filters['order_in'] ?? false,
+            fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
+        );
     }
 
     public function decreasePoint(Point $point, $amount, $note = null, PointLogable $model = null)

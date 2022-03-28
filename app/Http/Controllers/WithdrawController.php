@@ -14,6 +14,11 @@ class WithdrawController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+        abort_if(
+            $user->hasRecentPasswordChange(),
+            ResponseStatus::BAD_REQUEST->value,
+            "To withdraw, you have to wait for 24 hours after changing password"
+        );
         $data = $request->validate([
             'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance],
             'account' => ['required'],

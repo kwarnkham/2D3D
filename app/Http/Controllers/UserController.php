@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -12,9 +13,33 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $request->validate([
+            'status' => ['in:banned'],
+            'order_in' => ['in:desc,asc']
+        ]);
+        $query = User::with(User::RS)
+            ->filter($request->only(['status', 'order_in']));
+        return response()->json(
+            $query->paginate($request->per_page ?? 10)
+        );
+    }
+
+    public function ban(Request $request, User $user)
+    {
+        Gate::authorize('admin');
+        $user->banned_at = now();
+        $user->save();
+        return response()->json($user->load(User::RS));
+    }
+
+    public function unBan(Request $request, User $user)
+    {
+        Gate::authorize('admin');
+        $user->banned_at = null;
+        $user->save();
+        return response()->json($user->load(User::RS));
     }
 
     /**

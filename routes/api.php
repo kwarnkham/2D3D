@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/' . env('TELEGRAM_BOT_TOKEN'), [TelegramWebhookController::class, 'handle']);
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('/login', 'login');
+    Route::post('/login', 'login')->middleware(['disallowBanned']);
     Route::post('/change-password', 'changePassword')->middleware('auth:sanctum');
     Route::post('/reset-password', 'resetPassword')->name('resetPassword')->middleware('signed');
 });
@@ -53,10 +53,13 @@ Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group
 
 Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(function () {
     Route::get('/me', 'me');
+    Route::get('/user', 'index');
+    Route::post('/user/ban/{user}', 'ban');
+    Route::post('/user/un-ban/{user}', 'unBan');
 });
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {
-    Route::post('/two-digit', 'store');
+    Route::post('/two-digit', 'store')->middleware(['disallowBanned']);
     Route::get('/two-digit', 'index');
     Route::get('/two-digit/{twoDigit}', 'find');
 });
@@ -67,7 +70,7 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->g
 });
 
 Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {
-    Route::post('/withdraw', 'store');
+    Route::post('/withdraw', 'store')->middleware(['disallowBanned']);
     Route::get('/withdraw', 'index');
     Route::post('/withdraw/approve/{withdraw}', 'approve');
     Route::post('/withdraw/draft/{withdraw}', 'draft');

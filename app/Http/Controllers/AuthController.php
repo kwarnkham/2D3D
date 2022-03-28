@@ -33,7 +33,7 @@ class AuthController extends Controller
         $user = $request->user();
 
         abort_if(
-            $user->recentPasswordChanged(),
+            $user->hasRecentPasswordChange(),
             ResponseStatus::BAD_REQUEST->value,
             "Password can only be changed per 24 hours"
         );
@@ -56,14 +56,16 @@ class AuthController extends Controller
         $request->validate([
             'password' => ['required', 'confirmed']
         ]);
-        $user = User::findOrFail($request->user_id);
-        $user->password = $request->password;
-        $user->tokens()->delete();
-        //password_changes_type 2, reset password
-        $user->passwordChanges()->create([
-            'type' => 2
-        ]);
-
+        DB::transaction(function () use ($request) {
+            $user = User::findOrFail($request->user_id);
+            $user->password = $request->password;
+            $user->tokens()->delete();
+            //password_changes_type 2, reset password
+            $user->passwordChanges()->create([
+                'type' => 2
+            ]);
+            $user->save();
+        });
         return response()->json(true);
     }
 }

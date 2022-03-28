@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('password');
+            $table->timestamp('banned_at')->nullable();
             $table->timestamps();
         });
     }
