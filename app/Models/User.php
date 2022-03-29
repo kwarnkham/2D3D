@@ -167,6 +167,21 @@ class User extends Authenticatable
             $filters['order_in'] ?? false,
             fn ($q, $orderIn) => $q->orderBy('id', $orderIn)
         );
+
+        $query->when(
+            $filters['name'] ?? false,
+            fn ($q, $name) => $q->where('name', 'like', '%' . $name . '%')
+        );
+
+        $query->when(
+            $filters['without_admin'] ?? false,
+            fn ($q) => $q->join('role_user', 'role_user.id', '!=', 'users.id')
+        );
+
+        $query->when(
+            $filters['without_user'] ?? false,
+            fn ($q) => $q->join('role_user', 'role_user.id', '=', 'users.id')
+        );
     }
 
     public function decreasePoint(Point $point, $amount, $note = null, PointLogable $model = null)

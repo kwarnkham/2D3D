@@ -16,11 +16,14 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'status' => ['in:banned'],
-            'order_in' => ['in:desc,asc']
+            'status' => ['in:banned,normal'],
+            'order_in' => ['in:desc,asc'],
+            'name' => ['string'],
+            'without_admin' => ['boolean'],
+            "without_user" => ['boolean'],
         ]);
         $query = User::with(User::RS)
-            ->filter($request->only(['status', 'order_in']));
+            ->filter($request->only(['status', 'order_in', 'name', 'without_admin', 'without_user']));
         return response()->json(
             $query->paginate($request->per_page ?? 10)
         );
