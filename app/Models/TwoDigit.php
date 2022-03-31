@@ -93,4 +93,23 @@ class TwoDigit extends Model implements PointLogable
             get: fn ($value) => new Carbon($value),
         );
     }
+
+    public static function getMaxPrize(int $number)
+    {
+        $morningLastMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
+        $morningStartMinute = today()->subDay()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60);
+        $eveningStartMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
+        $eveningLastMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
+        $isMorning = today()->diffInMinutes(now()) <= TwoDigit::MORNING_LAST_MINUTE;
+        if ($isMorning) {
+            $builder = TwoDigit::where('created_at', '<=', $morningLastMinute)
+                ->where('created_at', '>=', $morningStartMinute);
+        } else {
+            $builder = TwoDigit::where('created_at', '>=', $eveningStartMinute)
+                ->where('created_at', '<=', $eveningLastMinute);
+        }
+        $income = $builder->where('number', '!=', $number)->pluck('amount')->sum();
+        $capital = 1000000;
+        return $income + $capital;
+    }
 }
