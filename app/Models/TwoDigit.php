@@ -9,6 +9,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class TwoDigit extends Model implements PointLogable
 {
@@ -51,9 +52,16 @@ class TwoDigit extends Model implements PointLogable
     {
         $time = now()->diffInMinutes(today());
         if ($time < (static::MORNING_LAST_MINUTE + 60)) {
-            if (static::MORNING_LAST_MINUTE - $time < 0) abort(ResponseStatus::BAD_REQUEST->value, "Morning order is closed. Evening order starts at 12:30 PM");
+            Log::channel('debug')->info(static::MORNING_LAST_MINUTE - $time >= 0 ? 'allow' : 'abort');
+            return static::MORNING_LAST_MINUTE - $time >= 0;
+            // abort_if(static::MORNING_LAST_MINUTE - $time < 0, ResponseStatus::BAD_REQUEST->value, "Morning order is closed. Evening order starts at 12:30 PM");
         } else if ($time >= (static::MORNING_LAST_MINUTE + 60) && $time < (static::EVENING_LAST_MINUTE + 60)) {
-            if (static::EVENING_LAST_MINUTE - $time < 0) abort(ResponseStatus::BAD_REQUEST->value, "Evening order is closed. Next order starts at 05:00 PM");
+            Log::channel('debug')->info(static::EVENING_LAST_MINUTE - $time >= 0 ? 'allow' : 'abort');
+            return static::EVENING_LAST_MINUTE - $time >= 0;
+            // abort_if(static::EVENING_LAST_MINUTE - $time < 0, ResponseStatus::BAD_REQUEST->value, "Evening order is closed. Next order starts at 05:00 PM");
+        } else {
+            Log::channel('debug')->info('out of consider time, allow');
+            return true;
         }
     }
 
@@ -94,22 +102,46 @@ class TwoDigit extends Model implements PointLogable
         );
     }
 
-    public static function getMaxPrize(int $number)
+    public static function getQueryBuilderOfEffectedNumbers()
     {
-        $morningLastMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
-        $morningStartMinute = today()->subDay()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60);
-        $eveningStartMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
-        $eveningLastMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
-        $isMorning = today()->diffInMinutes(now()) <= TwoDigit::MORNING_LAST_MINUTE;
+
+        // should get today evening if run time is today evening
+        $isSameDay = now()->diffInMinutes(today()) <= TwoDigit::MORNING_LAST_MINUTE;
+        $isMorning = today()->diffInMinutes(now()) <= TwoDigit::MORNING_LAST_MINUTE || now()->greaterThanOrEqualTo(today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60));
         if ($isMorning) {
-            $builder = TwoDigit::where('created_at', '<=', $morningLastMinute)
-                ->where('created_at', '>=', $morningStartMinute);
+            $morningStartMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 30);
+            if (!$isSameDay) $morningStartMinute->subDay();
+            $morningLastMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
+            $query = TwoDigit::where('created_at', '<=', $morningLastMinute);
+            if (!$isSameDay) $query->where('created_at', '>=', $morningStartMinute);
+            else $query->where('created_at', '>=', today());
+            Log::channel('debug')->info("getMaxPrize is morning");
+            return $query;
         } else {
-            $builder = TwoDigit::where('created_at', '>=', $eveningStartMinute)
+            $eveningStartMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
+            $eveningLastMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
+            Log::channel('debug')->info("getMaxPrize is not morning");
+            return TwoDigit::where('created_at', '>=', $eveningStartMinute)
                 ->where('created_at', '<=', $eveningLastMinute);
         }
-        $income = $builder->where('number', '!=', $number)->pluck('amount')->sum();
+    }
+
+    public static function getMaxPrize(int $number)
+    {
+        $income = static::getQueryBuilderOfEffectedNumbers()
+            ->where('number', '!=', $number)
+            ->where('point_id', 2)->pluck('amount')->sum();
         $capital = 1000000;
         return $income + $capital;
+    }
+
+    public static function checkMaxPrize(array $numbers)
+    {
+        foreach ($numbers as $number) {
+            $maxPrize = static::getMaxPrize($number['number']) + (int)collect($numbers)->filter(fn ($value) => $value['number'] != $number['number'])->reduce(fn ($carry, $value) => $value['amount'] + $carry, 0);
+            $numberTotalAmount = static::getQueryBuilderOfEffectedNumbers()->where('number', $number['number'])->pluck('amount')->sum();
+            if ($maxPrize < (($number['amount'] + $numberTotalAmount) * 10)) return $number['number'];
+        }
+        return "passed";
     }
 }
