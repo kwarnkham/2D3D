@@ -20,7 +20,7 @@ class Picture extends Model
     public function name(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => env("AWS_URL") . "/2D3D/topup/" . $value,
+            get: fn ($value) => env("AWS_URL") . "/" . env("APP_NAME") . "/topup/" . $value,
         );
     }
 }
