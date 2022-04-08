@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
+    public function pointLogs()
+    {
+        return $this->hasMany(PointLog::class);
+    }
+
     public function accountProviders()
     {
         return $this->belongsToMany(AccountProvider::class)->using(UserProvider::class)->withPivot(['provider_id', 'username', 'sent_at']);
@@ -154,6 +159,14 @@ class User extends Authenticatable
                 TelegramService::sendMessage($message, $channel->pivot->provider_id);
             }
         }
+    }
+
+    public function reverseResitration()
+    {
+        $this->pointLogs()->delete();
+        DB::table('point_user')->where('user_id', $this->id)->delete();
+        DB::table('account_provider_user')->where('user_id', $this->id)->delete();
+        $this->delete();
     }
 
     public function scopeFilter($query, array $filters)

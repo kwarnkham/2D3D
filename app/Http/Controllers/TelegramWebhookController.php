@@ -49,6 +49,14 @@ class TelegramWebhookController extends Controller
             default:
                 break;
         }
-        $user->notify($message);
+
+        try {
+            $user->notify($message);
+        } catch (\Throwable $th) {
+            if ($password && str()->contains($message, $password)) {
+                $user->reverseResitration();
+            }
+            throw $th;
+        }
     }
 }
