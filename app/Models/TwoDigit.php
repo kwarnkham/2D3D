@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
-use App\Enums\ResponseStatus;
-use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TwoDigit extends Model implements PointLogable
@@ -36,6 +36,11 @@ class TwoDigit extends Model implements PointLogable
     public function point_log()
     {
         return $this->morphOne(PointLog::class, 'point_loggable');
+    }
+
+    public function jackPot()
+    {
+        return $this->morphOne(JackPot::class, 'jack_potable');
     }
 
     public function point()
@@ -143,5 +148,22 @@ class TwoDigit extends Model implements PointLogable
             if ($maxPrize < (($number['amount'] + $numberTotalAmount) * 10)) return $number['number'];
         }
         return "passed";
+    }
+
+    public static function processJackPot(TwoDigitHit $twoDigitHit)
+    {
+        if ($twoDigitHit->morning)
+            $query =  TwoDigit::where('created_at', '<=', (new Carbon($twoDigitHit->day))->addMinutes(static::MORNING_LAST_MINUTE));
+        else $query = TwoDigit::where('created_at', '>', (new Carbon($twoDigitHit->day))->addMinutes(static::MORNING_LAST_MINUTE))->where('created_at', '<=', today()->addMinutes(static::EVENING_LAST_MINUTE));
+        $query->whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
+
+        DB::transaction(function () use ($query) {
+            foreach ($query->get() as $twoDigit) {
+                $twoDigit->jackPot()->create([
+                    'amount' => $twoDigit->amount * 0.1
+                ]);
+            }
+            $query->update(['jack_potted_at' => now()]);
+        });
     }
 }

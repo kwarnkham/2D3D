@@ -13,16 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('two_digits', function (Blueprint $table) {
+        Schema::create('jack_pots', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->tinyInteger('number');
+            $table->foreignId('jack_potable_id');
+            $table->string('jack_potable_type');
             $table->double('amount');
-            $table->foreignId('point_id')->constrained();
-            $table->foreignId('two_digit_hit_id')->nullable()->constrained();
-            $table->timestamp('settled_at')->nullable();
-            $table->timestamp('jack_potted_at')->nullable();
             $table->timestamps();
+            $table->unique(['jack_potable_id', 'jack_potable_type']);
         });
     }
 
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_digits');
+        Schema::dropIfExists('jack_pots');
     }
 };

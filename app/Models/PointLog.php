@@ -19,6 +19,11 @@ class PointLog extends Model
         return $this->morphTo();
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected function serializeDate(DateTimeInterface $date)
     {
         return (new Carbon($date))->diffForHumans();

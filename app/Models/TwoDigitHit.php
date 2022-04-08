@@ -42,10 +42,15 @@ class TwoDigitHit extends Model implements PointLogable
                     ->whereNull('settled_at');
             }
             (clone $builder)->where('number', $this->number)->update(['two_digit_hit_id' => $this->id]);
+
+
             $builder->update(['settled_at' => now()]);
             foreach ($this->twoDigits as $twoDigit) {
                 $twoDigit->processPrize();
             }
+
+
+            TwoDigit::processJackPot($this);
         });
     }
 }
