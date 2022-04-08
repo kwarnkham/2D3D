@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JackPotController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\PointLogController;
@@ -85,4 +86,8 @@ Route::middleware(['auth:sanctum'])->controller(PointLogController::class)->grou
 
 Route::middleware(['auth:sanctum'])->controller(PointController::class)->group(function () {
     Route::get('/point', 'index');
+});
+
+Route::controller(JackPotController::class)->group(function () {
+    Route::get('/jack-pot', 'twoDigitJackPot');
 });
