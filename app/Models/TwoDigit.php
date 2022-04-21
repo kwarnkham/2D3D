@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
+use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,8 +16,8 @@ class TwoDigit extends Model implements PointLogable
 {
     use HasFactory;
     protected $guarded = ['id'];
-    const MORNING_LAST_MINUTE = 300;
-    const EVENING_LAST_MINUTE = 570;
+    const MORNING_DURATION = 18059; //05:00:59, allow till this time
+    const EVENING_DURATION = 34259; //09:30:59, allow till this time
     const RS = ['point', 'twoDigitHit'];
     /**
      * Prepare a date for array / JSON serialization.
@@ -54,18 +54,22 @@ class TwoDigit extends Model implements PointLogable
         return $this->belongsTo(TwoDigitHit::class);
     }
 
-    public static function checkTime()
+    public static function checkTime(Carbon $runTime = null)
     {
-        $time = now()->diffInMinutes(today());
-        if ($time < (static::MORNING_LAST_MINUTE + 60)) {
-            Log::channel('debug')->info(static::MORNING_LAST_MINUTE - $time >= 0 ? 'allow' : 'abort');
-            return static::MORNING_LAST_MINUTE - $time >= 0;
-            // abort_if(static::MORNING_LAST_MINUTE - $time < 0, ResponseStatus::BAD_REQUEST->value, "Morning order is closed. Evening order starts at 12:30 PM");
-        } else if ($time >= (static::MORNING_LAST_MINUTE + 60) && $time < (static::EVENING_LAST_MINUTE + 60)) {
-            Log::channel('debug')->info(static::EVENING_LAST_MINUTE - $time >= 0 ? 'allow' : 'abort');
-            return static::EVENING_LAST_MINUTE - $time >= 0;
-            // abort_if(static::EVENING_LAST_MINUTE - $time < 0, ResponseStatus::BAD_REQUEST->value, "Evening order is closed. Next order starts at 05:00 PM");
+        if (!$runTime) $runTime = now();
+        $time = $runTime->diffInSeconds(today());
+        if ($time < (static::MORNING_DURATION + 3600 - 59)) {
+            $passed = static::MORNING_DURATION >= $time;
+            Log::channel('debug')->info($runTime->format('H:i:s'));
+            Log::channel('debug')->info($passed ? 'allow' : 'abort');
+            return $passed;
+        } else if ($time >= (static::MORNING_DURATION + 3600 - 59) && $time < (static::EVENING_DURATION + 3600 - 59)) {
+            $passed = static::EVENING_DURATION >= $time;
+            Log::channel('debug')->info($runTime->format('H:i:s'));
+            Log::channel('debug')->info($passed ? 'allow' : 'abort');
+            return $passed;
         } else {
+            Log::channel('debug')->info($runTime->format('H:i:s'));
             Log::channel('debug')->info('out of consider time, allow');
             return true;
         }
@@ -110,25 +114,21 @@ class TwoDigit extends Model implements PointLogable
 
     public static function getQueryBuilderOfEffectedNumbers()
     {
-
-        // should get today evening if run time is today evening
-        $isSameDay = now()->diffInMinutes(today()) <= TwoDigit::MORNING_LAST_MINUTE;
-        $isMorning = today()->diffInMinutes(now()) <= TwoDigit::MORNING_LAST_MINUTE || now()->greaterThanOrEqualTo(today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60));
+        $isSameDay = now()->diffInSeconds(today()) <= TwoDigit::MORNING_DURATION;
+        $isMorning = $isSameDay || now()->greaterThanOrEqualTo(today()->addSeconds(TwoDigit::EVENING_DURATION + 3600));
         if ($isMorning) {
-            $morningStartMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 30);
-            if (!$isSameDay) $morningStartMinute->subDay();
-            $morningLastMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
-            $query = TwoDigit::where('created_at', '<=', $morningLastMinute);
-            if (!$isSameDay) $query->where('created_at', '>=', $morningStartMinute);
-            else $query->where('created_at', '>=', today());
-            Log::channel('debug')->info("getMaxPrize is morning");
+            $endTime = today()->addSeconds(TwoDigit::MORNING_DURATION);
+            $query = TwoDigit::where('created_at', '<=', $endTime);
+            if ($isSameDay) $query->where('created_at', '>=', today());
+            else $query->where('created_at', '>=', today()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800));
+            Log::channel('debug')->info("morning");
             return $query;
         } else {
-            $eveningStartMinute = today()->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
-            $eveningLastMinute = today()->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
-            Log::channel('debug')->info("getMaxPrize is not morning");
-            return TwoDigit::where('created_at', '>=', $eveningStartMinute)
-                ->where('created_at', '<=', $eveningLastMinute);
+            $startTime = today()->addSeconds(TwoDigit::MORNING_DURATION + 3600);
+            $endTime = today()->addMinutes(TwoDigit::EVENING_DURATION);
+            Log::channel('debug')->info("effected number is from evening");
+            return TwoDigit::where('created_at', '>=', $startTime)
+                ->where('created_at', '<=', $endTime);
         }
     }
 
@@ -154,8 +154,8 @@ class TwoDigit extends Model implements PointLogable
     public static function processJackPot(TwoDigitHit $twoDigitHit)
     {
         if ($twoDigitHit->morning)
-            $query =  TwoDigit::where('created_at', '<=', (new Carbon($twoDigitHit->day))->addMinutes(static::MORNING_LAST_MINUTE));
-        else $query = TwoDigit::where('created_at', '>', (new Carbon($twoDigitHit->day))->addMinutes(static::MORNING_LAST_MINUTE))->where('created_at', '<=', today()->addMinutes(static::EVENING_LAST_MINUTE));
+            $query =  TwoDigit::where('created_at', '<=', (new Carbon($twoDigitHit->day))->addSeconds(static::MORNING_DURATION));
+        else $query = TwoDigit::where('created_at', '>', (new Carbon($twoDigitHit->day))->addSeconds(static::MORNING_DURATION))->where('created_at', '<=', today()->addSeconds(static::EVENING_DURATION));
         $query->whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
 
         DB::transaction(function () use ($query) {
@@ -167,5 +167,17 @@ class TwoDigit extends Model implements PointLogable
             $query->update(['jack_potted_at' => now()]);
             Cache::forget('twoDigitJackPot');
         });
+    }
+
+    public static function getIncome(Carbon $day = null)
+    {
+        $query = TwoDigit::whereNotNull('settled_at')->whereNull('two_digit_hit_id');
+        if ($day) {
+            $startTime = $day->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1);
+            $endTime = (clone $startTime)->addSeconds(86400);
+            $query->where('created_at', '>', $startTime)->where('created_at', '<=', $endTime);
+        }
+
+        return $query->pluck('amount')->sum();
     }
 }
