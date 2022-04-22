@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class Simulate extends Command
 {
@@ -38,7 +39,8 @@ class Simulate extends Command
     public function handle()
     {
         for ($i = 0; $i < 86400; $i++) {
-            \App\Models\TwoDigit::checkTime(today()->addSeconds($i));
+            Log::channel('debug')->info($i);
+            Log::channel('debug')->info(json_encode(\App\Models\TwoDigit::getQueryBuilderOfEffectedNumbers(today()->addSeconds($i))->pluck('created_at')));
         }
         echo "done";
         return 0;

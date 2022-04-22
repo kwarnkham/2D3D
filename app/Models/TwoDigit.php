@@ -54,24 +54,71 @@ class TwoDigit extends Model implements PointLogable
         return $this->belongsTo(TwoDigitHit::class);
     }
 
+    public static function isMorningCheck(int $time)
+    {
+        return $time < (static::MORNING_DURATION + 3600 - 59);
+    }
+
+    public static function isEveningCheck(int $time)
+    {
+        return $time >= (static::MORNING_DURATION + 3600 - 59) && $time < (static::EVENING_DURATION + 3600 - 59);
+    }
+
+    public static function isMorningCheckDiffDay(int $time)
+    {
+        return $time >= (static::EVENING_DURATION + 3600 - 59);
+    }
+
+    public static function isMorning(int $time)
+    {
+        return static::MORNING_DURATION >= $time;
+    }
+
+    public static function isEvening(int $time)
+    {
+        return static::EVENING_DURATION >= $time;
+    }
+
     public static function checkTime(Carbon $runTime = null)
     {
         if (!$runTime) $runTime = now();
         $time = $runTime->diffInSeconds(today());
-        if ($time < (static::MORNING_DURATION + 3600 - 59)) {
-            $passed = static::MORNING_DURATION >= $time;
+        if (static::isMorningCheck($time)) {
+            $passed = static::isMorning($time);
             Log::channel('debug')->info($runTime->format('H:i:s'));
+            Log::channel('debug')->info('Morning');
             Log::channel('debug')->info($passed ? 'allow' : 'abort');
             return $passed;
-        } else if ($time >= (static::MORNING_DURATION + 3600 - 59) && $time < (static::EVENING_DURATION + 3600 - 59)) {
-            $passed = static::EVENING_DURATION >= $time;
+        } else if (static::isEveningCheck($time)) {
+            $passed = static::isEvening($time);
             Log::channel('debug')->info($runTime->format('H:i:s'));
+            Log::channel('debug')->info('Evening');
             Log::channel('debug')->info($passed ? 'allow' : 'abort');
             return $passed;
-        } else {
+        } else if (static::isMorningCheckDiffDay($time)) {
             Log::channel('debug')->info($runTime->format('H:i:s'));
-            Log::channel('debug')->info('out of consider time, allow');
+            Log::channel('debug')->info('Morning Diff Day');
+            Log::channel('debug')->info('allow');
             return true;
+        }
+    }
+
+    public static function getQueryBuilderOfEffectedNumbers(Carbon $runTime = null)
+    {
+        if (!$runTime) $runTime = now();
+        $time = $runTime->diffInSeconds(today());
+        $isMorning = static::isMorning($time) || static::isMorningCheckDiffDay($time);
+        if ($isMorning) {
+            $startTime = today()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800);
+            $endTime = today()->addSeconds(TwoDigit::MORNING_DURATION);
+            Log::channel('debug')->info('morning');
+            return TwoDigit::where('created_at', '<=', $endTime)->where('created_at', '>=', $startTime);
+        } else {
+            $startTime = today()->addSeconds(TwoDigit::MORNING_DURATION + 3600 - 59);
+            $endTime = today()->addSeconds(TwoDigit::EVENING_DURATION);
+            Log::channel('debug')->info('evening');
+            return TwoDigit::where('created_at', '>=', $startTime)
+                ->where('created_at', '<=', $endTime);
         }
     }
 
@@ -112,25 +159,7 @@ class TwoDigit extends Model implements PointLogable
         );
     }
 
-    public static function getQueryBuilderOfEffectedNumbers()
-    {
-        $isSameDay = now()->diffInSeconds(today()) <= TwoDigit::MORNING_DURATION;
-        $isMorning = $isSameDay || now()->greaterThanOrEqualTo(today()->addSeconds(TwoDigit::EVENING_DURATION + 3600));
-        if ($isMorning) {
-            $endTime = today()->addSeconds(TwoDigit::MORNING_DURATION);
-            $query = TwoDigit::where('created_at', '<=', $endTime);
-            if ($isSameDay) $query->where('created_at', '>=', today());
-            else $query->where('created_at', '>=', today()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800));
-            Log::channel('debug')->info("morning");
-            return $query;
-        } else {
-            $startTime = today()->addSeconds(TwoDigit::MORNING_DURATION + 3600);
-            $endTime = today()->addMinutes(TwoDigit::EVENING_DURATION);
-            Log::channel('debug')->info("effected number is from evening");
-            return TwoDigit::where('created_at', '>=', $startTime)
-                ->where('created_at', '<=', $endTime);
-        }
-    }
+
 
     public static function getMaxPrize(int $number)
     {
