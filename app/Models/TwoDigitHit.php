@@ -27,18 +27,17 @@ class TwoDigitHit extends Model implements PointLogable
     public function settle()
     {
         return DB::transaction(function () {
-            $morningLastMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::MORNING_LAST_MINUTE)->addSeconds(59);
-            $morningStartMinute = (new Carbon(explode(" ", $this->day)[0]))->subDay()->addMinutes(TwoDigit::EVENING_LAST_MINUTE + 60);
-            $eveningStartMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::MORNING_LAST_MINUTE + 60);
-            $eveningLastMinute = (new Carbon(explode(" ", $this->day)[0]))->addMinutes(TwoDigit::EVENING_LAST_MINUTE)->addSeconds(59);
-
             if ($this->morning) {
-                $builder = TwoDigit::where('created_at', '<=', $morningLastMinute)
-                    ->where('created_at', '>=', $morningStartMinute)
+                $morningStartTime = (new Carbon($this->day))->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 3600 - 59);
+                $morningEndTime = (new Carbon($this->day))->addSeconds(TwoDigit::MORNING_DURATION);
+                $builder = TwoDigit::where('created_at', '>=', $morningStartTime)
+                    ->where('created_at', '<=', $morningEndTime)
                     ->whereNull('settled_at');
             } else {
-                $builder = TwoDigit::where('created_at', '>=', $eveningStartMinute)
-                    ->where('created_at', '<=', $eveningLastMinute)
+                $eveningStartTime = (new Carbon($this->day))->addSeconds(TwoDigit::MORNING_DURATION + 3600 - 59);
+                $eveningEndTime = (new Carbon($this->day))->addSeconds(TwoDigit::EVENING_DURATION);
+                $builder = TwoDigit::where('created_at', '>=', $eveningStartTime)
+                    ->where('created_at', '<=', $eveningEndTime)
                     ->whereNull('settled_at');
             }
             (clone $builder)->where('number', $this->number)->update(['two_digit_hit_id' => $this->id]);
@@ -48,8 +47,6 @@ class TwoDigitHit extends Model implements PointLogable
             foreach ($this->twoDigits as $twoDigit) {
                 $twoDigit->processPrize();
             }
-
-
             TwoDigit::processJackPot($this);
         });
     }
