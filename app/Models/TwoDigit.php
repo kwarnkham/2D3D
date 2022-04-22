@@ -182,12 +182,8 @@ class TwoDigit extends Model implements PointLogable
 
     public static function processJackPot(TwoDigitHit $twoDigitHit)
     {
-        if ($twoDigitHit->morning)
-            $query =  TwoDigit::where('created_at', '<=', (new Carbon($twoDigitHit->day))->addSeconds(static::MORNING_DURATION));
-        else $query = TwoDigit::where('created_at', '>', (new Carbon($twoDigitHit->day))->addSeconds(static::MORNING_DURATION))->where('created_at', '<=', today()->addSeconds(static::EVENING_DURATION));
-        $query->whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
-
-        DB::transaction(function () use ($query) {
+        DB::transaction(function () {
+            $query = TwoDigit::whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
             foreach ($query->get() as $twoDigit) {
                 $twoDigit->jackPot()->create([
                     'amount' => $twoDigit->amount * 0.1
@@ -202,7 +198,7 @@ class TwoDigit extends Model implements PointLogable
     {
         $query = TwoDigit::whereNotNull('settled_at')->whereNull('two_digit_hit_id');
         if ($day) {
-            $startTime = $day->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1);
+            $startTime = $day->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION);
             $endTime = (clone $startTime)->addSeconds(86400);
             $query->where('created_at', '>', $startTime)->where('created_at', '<=', $endTime);
         }
