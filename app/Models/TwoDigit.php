@@ -54,6 +54,20 @@ class TwoDigit extends Model implements PointLogable
         return $this->belongsTo(TwoDigitHit::class);
     }
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['created_day'];
+
+    public function createdDay(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->format('d/m/Y'),
+        );
+    }
+
     public static function isMorningCheck(int $time)
     {
         return $time < (static::MORNING_DURATION + 3600 - 59);
