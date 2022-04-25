@@ -21,7 +21,8 @@ class TelegramWebhookController extends Controller
         list($user, $password) = User::summon($request);
         $username = $user->name;
         $message = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users,please click <a href='https://google.com'>here</a> to use the web application. Your account username is '$username'";
-        $starterMessage = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users, please click <a href='https://google.com'>here</a> to use the web application. Here is your account. Username '$username'. Password '$password'. Please change your password immediately after login.";
+        $starterMessage = "Click <a href='https://google.com'>here</a> to download the app. IOS is not supported yet. For ios users, please click <a href='https://google.com'>here</a> to use the web application. Here is your account. Username is '$username'. Please change your password immediately after login. Your password is the following message.";
+        $passwordMessage = "'$password'";
         switch ($request->message['text']) {
             case 'hi':
             case 'account':
@@ -51,7 +52,10 @@ class TelegramWebhookController extends Controller
         }
 
         try {
-            $user->notify($message);
+            if ($password)
+                $user->notify([$message, $passwordMessage]);
+            else
+                $user->notify($message);
         } catch (\Throwable $th) {
             if ($password && str()->contains($message, $password)) {
                 $user->reverseResitration();
