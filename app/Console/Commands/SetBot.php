@@ -39,7 +39,8 @@ class SetBot extends Command
     public function handle()
     {
         $token = env("TELEGRAM_BOT_TOKEN");
-        $respobnse = Http::post("https://api.telegram.org/bot$token/setWebhook?url=https://c676-103-215-193-85.ngrok.io/api/$token");
+        $host = env("APP_URL");
+        $respobnse = Http::post("https://api.telegram.org/bot$token/setWebhook?url=$host/api/$token");
         echo $respobnse->body();
     }
 }
