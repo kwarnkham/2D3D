@@ -41,9 +41,8 @@ class SetBot extends Command
         $token = env("TELEGRAM_BOT_TOKEN");
         $host = env("APP_URL");
         $url = "https://api.telegram.org/bot$token/setWebhook?url=$host/api/$token";
-        echo $host . '\n';
-        echo $token . '\n';
-        echo $url . '\n';
+
+        echo $url . "\n";
 
         $respobnse = Http::post($url);
         echo $respobnse->body();
