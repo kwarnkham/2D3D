@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use App\Contracts\PointLogable;
+use Illuminate\Contracts\Translation\HasLocalePreference;
+use Illuminate\Support\Facades\App;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasLocalePreference
 {
     use HasApiTokens, HasFactory, Notifiable;
     const RS = ['points', 'roles'];
@@ -29,6 +31,25 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Get the user's preferred locale.
+     *
+     * @return string
+     */
+    public function preferredLocale()
+    {
+        return $this->locale;
+    }
+
+    public function setLocale($locale)
+    {
+        if (in_array($locale, ['my', 'en'])) {
+            App::setLocale($locale);
+            $this->locale = $locale;
+            $this->save();
+        }
+    }
 
     /**
      * The attributes that should be cast.

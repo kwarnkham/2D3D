@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\URL;
 
 class TelegramWebhookController extends Controller
@@ -18,17 +19,31 @@ class TelegramWebhookController extends Controller
             'message.date' => ['required']
         ]);
         list($user, $password) = User::summon($request);
+        switch (strtolower($request->message['text'])) {
+            case 'english':
+                $user->setLocale('en');
+                break;
+            case 'မြန်မာ':
+                $user->setLocale('my');
+                break;
+            default:
+                if (in_array($user->preferredLocale(), ['en', 'my'])) App::setLocale($user->preferredLocale());
+                break;
+        }
+
+
         $username = $user->name;
         $appName = env('APP_NAME');
         $appApk = env('APP_APK');
         $appClient = env("APP_CLIENT_URL");
-        $message = "Welcome from '$appName'. Download <a href='$appApk'>Android App</a>. Use <a href='$appClient'>Web Application</a>.";
-        $starterMessage = $message . " The followings are username and password.";
-        switch ($request->message['text']) {
+        $message = __("messages.default message", compact('appName', 'appApk', 'appClient'));
+        $starterMessage = $message . __("messages.The followings are username and password.");
+        switch (strtolower($request->message['text'])) {
             case 'hi':
             case 'account':
             case '/start':
                 if ($password) $message = $starterMessage;
+                else $message = $message . __("messages.is your username", compact('username'));
                 break;
             case 'Forgot Password':
                 if ($password) {
@@ -49,7 +64,7 @@ class TelegramWebhookController extends Controller
                 }
                 break;
             default:
-                $message = $message . " $username is your username";
+                $message = $message . __("messages.is your username", compact('username'));
                 break;
         }
 

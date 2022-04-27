@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 
 class TelegramService
@@ -13,21 +14,19 @@ class TelegramService
     }
     public static function sendMessage($message, $chatId, $parseMode = 'HTML')
     {
+        $options = [
+            'chat_id' => $chatId,
+            'parse_mode' => $parseMode,
+            'reply_markup' => json_encode(['keyboard' => [['Top up', 'Help', 'Forgot Password'], ['Promotion', App::isLocale('my') ? 'English' : 'မြန်မာ']]])
+        ];
         if (is_array($message)) {
             foreach ($message as $msg) {
-                Http::get(static::getUrl(), [
-                    'chat_id' => $chatId,
-                    'text' => $msg,
-                    'parse_mode' => $parseMode,
-                    'reply_markup' => json_encode(['keyboard' => [['Top up', 'Help', 'Forgot Password'], ['Promotion']]])
-                ]);
+                $options['text'] = $msg;
+                Http::get(static::getUrl(), $options);
             }
-        } else
-            Http::get(static::getUrl(), [
-                'chat_id' => $chatId,
-                'text' => $message,
-                'parse_mode' => $parseMode,
-                'reply_markup' => json_encode(['keyboard' => [['Top up', 'Help', 'Forgot Password'], ['Promotion']]])
-            ]);
+        } else {
+            $options['text'] = $message;
+            Http::get(static::getUrl(), $options);
+        }
     }
 }
