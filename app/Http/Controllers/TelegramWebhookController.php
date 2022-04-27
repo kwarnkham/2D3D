@@ -19,8 +19,11 @@ class TelegramWebhookController extends Controller
         ]);
         list($user, $password) = User::summon($request);
         $username = $user->name;
-        $message = "Welcome from env('APP_NAME'). For android, click <a href='https://google.com'>here</a> to download the app. Click <a href='https://google.com'>here</a> to use the web application. $username is your username";
-        $starterMessage = "Welcome from env('APP_NAME'). For android, click <a href='https://google.com'>here</a> to download the app. Click <a href='https://google.com'>here</a> to use the web application. The followings are username and password.";
+        $appName = env('APP_NAME');
+        $appApk = env('APP_APK');
+        $appClient = env("APP_CLIENT_URL");
+        $message = "Welcome from '$appName'. Download <a href='$appApk'>Android App</a>. Use <a href='$appClient'>Web Application</a>.";
+        $starterMessage = $message . " The followings are username and password.";
         switch ($request->message['text']) {
             case 'hi':
             case 'account':
@@ -46,6 +49,7 @@ class TelegramWebhookController extends Controller
                 }
                 break;
             default:
+                $message = $message . " $username is your username";
                 break;
         }
 
