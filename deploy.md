@@ -46,13 +46,10 @@ sudo certbot renew --dry-run
 
 sudo mkdir -p /var/www/lucky-hi.itismoon.fun && cd /var/www/lucky-hi.itismoon.fun
 
-```
-cd ~/Projects/online_T && ditto -c -k --sequesterRsrc --keepParent dist/spa spa.zip
-scp spa.zip root@2d3d.itismoon.fun:/var/www/lucky-hi.itismoon.fun/
-```
+scp ~/Desktop/spa.zip root@2d3d.itismoon.fun:/root/
 
 ```
-unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
+mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 ```
 
 sudo chown -R www-data:www-data /var/www/lucky-hi.itismoon.fun

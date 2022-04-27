@@ -152,7 +152,7 @@ class User extends Authenticatable
     }
 
 
-    public function notify(string $message)
+    public function notify($message)
     {
         foreach ($this->accountProviders as $channel) {
             if ($channel->name == 'telegram') {
