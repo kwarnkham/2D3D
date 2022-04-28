@@ -45,6 +45,19 @@ class UserController extends Controller
         return response()->json($user->load(User::RS));
     }
 
+    public function setLocale(Request $request)
+    {
+        $request->validate([
+            'locale' => ['required', 'in:en-US,mm']
+        ]);
+        $supported = [
+            'en-US' => 'en',
+            'mm' => 'mm'
+        ];
+        $request->user()->setLocale($supported[$request->locale]);
+        return response()->json('ok');
+    }
+
     /**
      * Show the form for creating a new resource.
      *
