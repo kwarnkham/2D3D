@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class TelegramWebhookController extends Controller
@@ -45,13 +46,13 @@ class TelegramWebhookController extends Controller
                 if ($password) $message = $starterMessage;
                 else $message = $message . __("messages.is your username", compact('username'));
                 break;
-            case 'Forgot Password':
+            case strtolower(__("messages.forgot password")):
                 if ($password) {
                     $message = $starterMessage;
                     break;
                 }
                 if ($user->hasRecentPasswordChange()) {
-                    $message = "To reset password again, you have to wait for 24 hours after changing password";
+                    $message = __("messages.To reset password again, you have to wait for 24 hours after changing password");
                 } else {
                     $url = URL::temporarySignedRoute(
                         'resetPassword',
@@ -60,7 +61,8 @@ class TelegramWebhookController extends Controller
                     );
                     parse_str(parse_url($url)['query'], $query);
                     $clientUrl = env("APP_CLIENT_URL") . "/reset-password/$query[expires]/$query[user_id]/$query[signature]";
-                    $message = "You can change or reset your password only one time in 24 hours and withdraw is blocked for 24 hours after chaniging the password for security reasons. Click <a href='$clientUrl'>here</a> to reset the password.";
+                    $message = __("messages.password change warning", compact('clientUrl'));
+                    Log::channel('debug')->alert($message);
                 }
                 break;
             default:
