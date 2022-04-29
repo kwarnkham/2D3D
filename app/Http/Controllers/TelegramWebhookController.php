@@ -43,6 +43,8 @@ class TelegramWebhookController extends Controller
             case 'hi':
             case 'account':
             case '/start':
+            case 'english':
+            case 'မြန်မာ':
                 if ($password) $message = $starterMessage;
                 else $message = $message . __("messages.is your username", compact('username'));
                 break;
@@ -65,21 +67,25 @@ class TelegramWebhookController extends Controller
                     Log::channel('debug')->alert($message);
                 }
                 break;
+            case strtolower(__("messages.help")):
+                $message = "help ";
+                break;
             default:
-                $message = $message . __("messages.is your username", compact('username'));
+                $message = null;
                 break;
         }
-
-        try {
-            if ($password)
-                $user->notify([$message, $username, $password]);
-            else
-                $user->notify($message);
-        } catch (\Throwable $th) {
-            if ($password && str()->contains($message, $password)) {
-                $user->reverseResitration();
+        if ($message) {
+            try {
+                if ($password)
+                    $user->notify([$message, $username, $password]);
+                else
+                    $user->notify($message);
+            } catch (\Throwable $th) {
+                if ($password && str()->contains($message, $password)) {
+                    $user->reverseResitration();
+                }
+                throw $th;
             }
-            throw $th;
         }
     }
 }
