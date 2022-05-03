@@ -71,7 +71,9 @@ class TelegramWebhookController extends Controller
                 $message = "help ";
                 break;
             default:
-                $message = null;
+                if ($password) $message = $starterMessage;
+                else
+                    $message = null;
                 break;
         }
         if ($message) {

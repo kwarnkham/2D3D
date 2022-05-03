@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('mm_name');
+            $table->tinyInteger('type');
             $table->string('number');
             $table->string('account_name');
             $table->unique(['name', 'number']);
