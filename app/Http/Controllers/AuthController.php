@@ -35,11 +35,11 @@ class AuthController extends Controller
         abort_if(
             $user->hasRecentPasswordChange(),
             ResponseStatus::BAD_REQUEST->value,
-            "Password can only be changed per 24 hours"
+            __("messages.Password can be changed only one time in 24 hours")
         );
 
         if (!Hash::check($request->password, $user->password)) {
-            abort(ResponseStatus::UNAUTHORIZED->value, "Incorrect password");
+            abort(ResponseStatus::UNAUTHORIZED->value, __("messages.Incorrect password"));
         }
 
         DB::transaction(function () use ($user, $request) {

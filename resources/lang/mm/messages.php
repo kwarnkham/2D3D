@@ -7,5 +7,7 @@ return [
     "forgot password" => "Password မေ့သွားသည်",
     "help" => "အကူအညီရယူရန်",
     "To reset password again, you have to wait for 24 hours after changing password" => "၂၄ နာရီအတွင်း တစ်ကြိမ်သာ password ပြောင်းခွင့်ရှိသည်။ ",
-    "password change warning" => " Password <a href=':clientUrl'>ပြောင်းရန်</a> ။ Password ကို ၂၄ နာရီအတွင်း တစ်ကြိမ်သာ ပြောင်းခွင့်ရှိသည်။ Password ပြောင်းပြီးတိုင်း ၂၄ နာရီ ငွေထုတ်ခွင့် တားမြစ်ထားမည်။ မသမာသူများ Password ပြောင်းပြီး ငွေမထုတ်နိုင်ရန် ဖြစ်သည်။"
+    "password change warning" => " Password <a href=':clientUrl'>ပြောင်းရန်</a> ။ Password ကို ၂၄ နာရီအတွင်း တစ်ကြိမ်သာ ပြောင်းခွင့်ရှိသည်။ Password ပြောင်းပြီးတိုင်း ၂၄ နာရီ ငွေထုတ်ခွင့် တားမြစ်ထားမည်။ မသမာသူများ Password ပြောင်းပြီး ငွေမထုတ်နိုင်ရန် ဖြစ်သည်။",
+    "Incorrect password" => "လျှိုးဝှက်စကားလုံး မမှန်ပါ",
+    "Password can be changed only one time in 24 hours" => "၂၄ နာရီအတွင်း လျှိုးဝှက်စကားလုံးကို တစ်ကြိမ်သာ ပြောင်းနိုင်သည်။"
 ];
