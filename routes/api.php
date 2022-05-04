@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JackPotController;
 use App\Http\Controllers\PaymentController;
@@ -31,6 +32,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('/' . env('TELEGRAM_BOT_TOKEN'), [TelegramWebhookController::class, 'handle']);
+
+Route::get('/app-version', [AppVersionController::class, 'index']);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login')->middleware(['disallowBanned']);
