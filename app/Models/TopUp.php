@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\PointLogable;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -38,6 +39,14 @@ class TopUp extends Model implements PointLogable
     protected function serializeDate(DateTimeInterface $date)
     {
         return (new Carbon($date))->diffForHumans();
+    }
+    protected $appends = ['created_time'];
+
+    public function createdTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->timestamp,
+        );
     }
 
     public function savePictures(array $files)
