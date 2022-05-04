@@ -44,7 +44,7 @@ class User extends Authenticatable implements HasLocalePreference
 
     public function setLocale($locale)
     {
-        if (in_array($locale, ['mm', 'en'])) {
+        if (in_array($locale, ['my', 'en'])) {
             App::setLocale($locale);
             $this->locale = $locale;
             $this->save();

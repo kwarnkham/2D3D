@@ -48,11 +48,11 @@ class UserController extends Controller
     public function setLocale(Request $request)
     {
         $request->validate([
-            'locale' => ['required', 'in:en-US,mm']
+            'locale' => ['required', 'in:en-US,my']
         ]);
         $supported = [
             'en-US' => 'en',
-            'mm' => 'mm'
+            'my' => 'my'
         ];
         $request->user()->setLocale($supported[$request->locale]);
         return response()->json('ok');

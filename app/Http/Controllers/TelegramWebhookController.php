@@ -25,10 +25,10 @@ class TelegramWebhookController extends Controller
                 $user->setLocale('en');
                 break;
             case 'မြန်မာ':
-                $user->setLocale('mm');
+                $user->setLocale('my');
                 break;
             default:
-                if (in_array($user->preferredLocale(), ['en', 'mm'])) App::setLocale($user->preferredLocale());
+                if (in_array($user->preferredLocale(), ['en', 'my'])) App::setLocale($user->preferredLocale());
                 break;
         }
 
