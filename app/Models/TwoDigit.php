@@ -168,8 +168,9 @@ class TwoDigit extends Model implements PointLogable
 
     public function settledAt(): Attribute
     {
+
         return Attribute::make(
-            get: fn ($value) => new Carbon($value),
+            get: fn ($value) => $value ? new Carbon($value) : $value,
         );
     }
 

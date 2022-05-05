@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Point::create(['name' => 'Lucky Hi']);
         \App\Models\Point::create(['name' => 'MMK']);
         \App\Models\Role::create(['name' => 'admin']);
+        \App\Models\AppVersion::create(['version' => '1.0.0']);
         Artisan::call('make:admin moon moon');
     }
 }
