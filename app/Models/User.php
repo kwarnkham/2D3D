@@ -65,7 +65,7 @@ class User extends Authenticatable implements HasLocalePreference
      *
      * @var array
      */
-    protected $appends = ['has_default_password'];
+    protected $appends = ['has_default_password', 'can_withdraw', 'last_password_change'];
 
     public function password(): Attribute
     {
@@ -129,6 +129,20 @@ class User extends Authenticatable implements HasLocalePreference
     {
         return new Attribute(
             get: fn () => !$this->passwordChanges()->first(),
+        );
+    }
+
+    public function canWithdraw(): Attribute
+    {
+        return new Attribute(
+            get: fn () => !$this->hasRecentPasswordChange(),
+        );
+    }
+
+    public function lastPasswordChange(): Attribute
+    {
+        return new Attribute(
+            get: fn () => PasswordChange::where('user_id', $this->id)->orderBy('id', 'desc')->first(),
         );
     }
 

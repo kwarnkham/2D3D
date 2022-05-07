@@ -8,6 +8,7 @@ use App\Models\Withdraw;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class WithdrawController extends Controller
 {
@@ -17,13 +18,13 @@ class WithdrawController extends Controller
         abort_if(
             $user->hasRecentPasswordChange(),
             ResponseStatus::BAD_REQUEST->value,
-            "To withdraw, you have to wait for 24 hours after changing password"
+            __("messages.To withdraw, you have to wait for 24 hours after changing password")
         );
         $data = $request->validate([
             'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance],
             'account' => ['required'],
-            'username' => ['required'],
-            'payment_id' => ['exists:payments,id']
+            'payment_id' => ['exists:payments,id'],
+            'username' => [Rule::requiredIf($request->payment_id == 1)],
         ]);
         $data['point_id'] = 2;
         $user->withdraws()->create($data);

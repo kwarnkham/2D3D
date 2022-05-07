@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('point_id')->constrained();
             $table->foreignId('payment_id')->constrained();
             $table->double('amount');
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->string('account');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

@@ -9,5 +9,6 @@ return [
     "To reset password again, you have to wait for 24 hours after changing password" => "To reset password again, you have to wait for 24 hours after changing password. ",
     "password change warning" => "You can change or reset your password only one time in 24 hours and withdraw is blocked for 24 hours after chaniging the password for security reasons. Click <a href=':clientUrl'>here</a> to reset the password.",
     "Incorrect password" => "Incorrect password",
-    "Password can be changed only one time in 24 hours" => "Password can be changed only one time in 24 hours"
+    "Password can be changed only one time in 24 hours" => "Password can be changed only one time in 24 hours",
+    "To withdraw, you have to wait for 24 hours after changing password" => "To withdraw, you have to wait for 24 hours after changing password"
 ];
