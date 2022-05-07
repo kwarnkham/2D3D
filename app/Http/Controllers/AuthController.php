@@ -48,7 +48,8 @@ class AuthController extends Controller
             //password_changes_type 1, changePassword
             $user->passwordChanges()->create(['type' => 1]);
         });
-        return response()->json($user->load(User::RS));
+
+        return response()->json($user->refresh()->load(User::RS));
     }
 
     public function resetPassword(Request $request)
