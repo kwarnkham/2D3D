@@ -21,7 +21,7 @@ class WithdrawController extends Controller
             __("messages.To withdraw, you have to wait for 24 hours after changing password")
         );
         $data = $request->validate([
-            'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance],
+            'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance, 'gte:500'],
             'account' => ['required'],
             'payment_id' => ['exists:payments,id'],
             'username' => [Rule::requiredIf($request->payment_id == 1)],
@@ -78,9 +78,13 @@ class WithdrawController extends Controller
 
     public function deny(Request $request, Withdraw $withdraw)
     {
+        $request->validate([
+            'denied_reason' => ['required']
+        ]);
         Gate::authorize('admin');
         if (!in_array($withdraw->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only deny a pending or drafted Withdraw");
         $withdraw->status = 3;
+        $withdraw->denied_reason = $request->denied_reason;
         $withdraw->save();
         return response()->json($withdraw->load(Withdraw::RS));
     }
