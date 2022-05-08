@@ -56,7 +56,7 @@ return [
         'array' => 'The :attribute must have more than :value items.',
     ],
     'gte' => [
-        'numeric' => 'The :attribute must be greater than or equal to :value.',
+        'numeric' => ':attribute သည်အနည်းဆုံး :value ဖြစ်ရမည်။',
         'file' => 'The :attribute must be greater than or equal to :value kilobytes.',
         'string' => 'The :attribute must be greater than or equal to :value characters.',
         'array' => 'The :attribute must have :value items or more.',
@@ -157,6 +157,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'amount' => 'ငွေပမာဏ'
+    ],
 
 ];

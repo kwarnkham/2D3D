@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->string('account');
             $table->tinyInteger('status')->default(1);
+            $table->string('denied_reason')->nullable();
             $table->timestamps();
         });
     }
