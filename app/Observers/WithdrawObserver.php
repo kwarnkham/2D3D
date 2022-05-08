@@ -27,6 +27,7 @@ class WithdrawObserver
     public function updated(Withdraw $withdraw)
     {
         if ($withdraw->status == 3) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw rejected', $withdraw);
+        if ($withdraw->status == 5) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw canceled', $withdraw);
     }
 
     /**
