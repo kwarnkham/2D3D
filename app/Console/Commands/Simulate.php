@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\TwoDigit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -38,9 +39,11 @@ class Simulate extends Command
      */
     public function handle()
     {
-        for ($i = 0; $i < 86400; $i++) {
-            Log::channel('debug')->info($i);
-            Log::channel('debug')->info(json_encode(\App\Models\TwoDigit::getQueryBuilderOfEffectedNumbers(today()->addSeconds($i))->pluck('created_at')));
+        for ($i = 0; $i < 60 * 24 * 60; $i++) {
+            $days = [0 => 'sun', 1 => 'mon', 2 => 'tue', 3 => 'wed', 4 => 'thur', 5 => 'fri', 6 => 'sat'];
+            $time = today()->addSeconds($i + (24 * 60 * 60 * 2));
+            Log::channel('debug')->info($time->format('d-m-Y h:i:s A') . " => " . $days[$time->dayOfWeek]);
+            Log::channel('debug')->debug((TwoDigit::checkDay($time) && TwoDigit::checkTime(($time))) ? 'allow' : 'limit');
         }
         echo "done";
         return 0;

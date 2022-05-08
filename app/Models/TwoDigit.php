@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TwoDigit extends Model implements PointLogable
 {
@@ -93,26 +92,34 @@ class TwoDigit extends Model implements PointLogable
         return static::EVENING_DURATION >= $time;
     }
 
+    public static function checkDay(Carbon $runTime = null)
+    {
+        if (!$runTime) $runTime = now();
+        $today = (clone $runTime)->startOfDay();
+        if ($runTime->isDayOfWeek(Carbon::SATURDAY)) {
+            return false;
+        } else if ($runTime->isDayOfWeek(Carbon::FRIDAY)) {
+            return $runTime->diffInSeconds($today) <= static::EVENING_DURATION;
+        } else if ($runTime->isDayOfWeek(Carbon::SUNDAY)) {
+            return static::isMorningCheckDiffDay($runTime->diffInSeconds($today));
+        } else {
+            return true;
+        }
+    }
+
     public static function checkTime(Carbon $runTime = null)
     {
         if (!$runTime) $runTime = now();
-        $time = $runTime->diffInSeconds(today());
+        $today = (clone $runTime)->startOfDay();
+        $time = $runTime->diffInSeconds($today);
         if (static::isMorningCheck($time)) {
             $passed = static::isMorning($time);
-            Log::channel('debug')->info($runTime->format('H:i:s'));
-            Log::channel('debug')->info('Morning');
-            Log::channel('debug')->info($passed ? 'allow' : 'abort');
             return $passed;
         } else if (static::isEveningCheck($time)) {
             $passed = static::isEvening($time);
-            Log::channel('debug')->info($runTime->format('H:i:s'));
-            Log::channel('debug')->info('Evening');
-            Log::channel('debug')->info($passed ? 'allow' : 'abort');
+
             return $passed;
         } else if (static::isMorningCheckDiffDay($time)) {
-            Log::channel('debug')->info($runTime->format('H:i:s'));
-            Log::channel('debug')->info('Morning Diff Day');
-            Log::channel('debug')->info('allow');
             return true;
         }
     }
@@ -125,12 +132,12 @@ class TwoDigit extends Model implements PointLogable
         if ($isMorning) {
             $startTime = today()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800);
             $endTime = today()->addSeconds(TwoDigit::MORNING_DURATION);
-            Log::channel('debug')->info('morning');
+
             return TwoDigit::where('created_at', '<=', $endTime)->where('created_at', '>=', $startTime);
         } else {
             $startTime = today()->addSeconds(TwoDigit::MORNING_DURATION + 3600 - 59);
             $endTime = today()->addSeconds(TwoDigit::EVENING_DURATION);
-            Log::channel('debug')->info('evening');
+
             return TwoDigit::where('created_at', '>=', $startTime)
                 ->where('created_at', '<=', $endTime);
         }

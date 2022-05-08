@@ -64,7 +64,6 @@ class TelegramWebhookController extends Controller
                     parse_str(parse_url($url)['query'], $query);
                     $clientUrl = env("APP_CLIENT_URL") . "/reset-password/$query[expires]/$query[user_id]/$query[signature]";
                     $message = __("messages.password change warning", compact('clientUrl'));
-                    Log::channel('debug')->alert($message);
                 }
                 break;
             case strtolower(__("messages.help")):
