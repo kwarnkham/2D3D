@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\PointLogable;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -39,7 +40,14 @@ class Withdraw extends Model implements PointLogable
     {
         return $this->belongsTo(Payment::class);
     }
+    protected $appends = ['created_time'];
 
+    public function createdTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->timestamp,
+        );
+    }
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'pictureable');
