@@ -10,5 +10,9 @@ return [
     "password change warning" => " Password <a href=':clientUrl'>ပြောင်းရန်</a> ။ Password ကို ၂၄ နာရီအတွင်း တစ်ကြိမ်သာ ပြောင်းခွင့်ရှိသည်။ Password ပြောင်းပြီးတိုင်း ၂၄ နာရီ ငွေထုတ်ခွင့် တားမြစ်ထားမည်။ မသမာသူများ Password ပြောင်းပြီး ငွေမထုတ်နိုင်ရန် ဖြစ်သည်။",
     "Incorrect password" => "လျှိုးဝှက်စကားလုံး မမှန်ပါ",
     "Password can be changed only one time in 24 hours" => "၂၄ နာရီအတွင်း လျှိုးဝှက်စကားလုံးကို တစ်ကြိမ်သာ ပြောင်းနိုင်သည်။",
-    "To withdraw, you have to wait for 24 hours after changing password" => "လျှိုးဝှက်စကားလုံးပြောင်းလဲပြီးတိုင်း ၂၄နာရီ ကြာပြီးမှ ငွေထုတ်ယူနိုင်မည်"
+    "To withdraw, you have to wait for 24 hours after changing password" => "လျှိုးဝှက်စကားလုံးပြောင်းလဲပြီးတိုင်း ၂၄နာရီ ကြာပြီးမှ ငွေထုတ်ယူနိုင်မည်",
+    "points given on account created for testing" => "စမ်းသပ်အသုံးပြုရန် ပေးထားသောအမှတ်",
+    "top up approved" => "ငွေဖြည့်သွင်းခြင်း",
+    "submit withdraw" => "ငွေထုတ်ရန် ပေးပို့ထားခြင်း",
+    "2d ticket" => "2D လက်မှတ်"
 ];

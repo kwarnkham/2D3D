@@ -26,6 +26,7 @@ class TwoDigitHitController extends Controller
 
     public function find(Request $request, TwoDigitHit $twoDigitHit, PointLog $pointLog)
     {
+        return [$twoDigitHit, $pointLog];
         $twoDigit = $twoDigitHit->twoDigits()->where('id', explode(",", $pointLog->note)[0])->first();
         $twoDigitHit->twoDigit = $twoDigit->load(['point']);
         return response()->json($twoDigitHit);

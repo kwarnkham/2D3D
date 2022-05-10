@@ -58,6 +58,6 @@ class TwoDigitController extends Controller
     {
         $user = $request->user();
         if ($twoDigit->user->id != $user->id && !$user->isAdmin()) abort(ResponseStatus::NOT_FOUND->value);
-        return response()->json($twoDigit->load(['point']));
+        return response()->json($twoDigit->load(TwoDigit::RS));
     }
 }

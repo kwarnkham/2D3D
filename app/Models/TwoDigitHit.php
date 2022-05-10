@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Contracts\PointLogable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class TwoDigitHit extends Model implements PointLogable
+class TwoDigitHit extends Model
 {
     use HasFactory;
 
@@ -17,11 +16,6 @@ class TwoDigitHit extends Model implements PointLogable
     public function twoDigits()
     {
         return $this->hasMany(TwoDigit::class);
-    }
-
-    public function point_log()
-    {
-        return $this->morphMany(PointLog::class, 'point_loggable');
     }
 
     public function settle()

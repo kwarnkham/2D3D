@@ -17,7 +17,7 @@ class TwoDigit extends Model implements PointLogable
     protected $guarded = ['id'];
     const MORNING_DURATION = 18059; //05:00:59, allow till this time
     const EVENING_DURATION = 34259; //09:30:59, allow till this time
-    const RS = ['point', 'twoDigitHit'];
+    const RS = ['point', 'twoDigitHit', 'user'];
     /**
      * Prepare a date for array / JSON serialization.
      *
@@ -58,7 +58,7 @@ class TwoDigit extends Model implements PointLogable
      *
      * @var array
      */
-    protected $appends = ['created_day'];
+    protected $appends = ['created_day', 'created_time'];
 
     public function createdDay(): Attribute
     {
@@ -146,7 +146,7 @@ class TwoDigit extends Model implements PointLogable
     public function processPrize()
     {
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
-        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, $this->id . ', won the prize', $this->twoDigitHit);
+        $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, '2d prize', $this);
     }
 
 
@@ -170,6 +170,13 @@ class TwoDigit extends Model implements PointLogable
         $query->when(
             $filters['point_id'] ?? false,
             fn ($q, $pointId) => $q->where('point_id', $pointId)
+        );
+    }
+
+    public function createdTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->timestamp,
         );
     }
 
