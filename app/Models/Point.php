@@ -13,6 +13,6 @@ class Point extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['balance']);
+        return $this->belongsToMany(User::class)->withPivot(['balance', 'referrable_balance']);
     }
 }

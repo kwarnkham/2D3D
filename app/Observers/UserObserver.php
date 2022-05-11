@@ -23,7 +23,7 @@ class UserObserver
     public function created(User $user)
     {
         if (in_array('admin', $user->roles()->pluck('name')->toArray())) return;
-        $user->increasePoint(Point::find(1), 10000, 'points given on account created for testing');
+        $user->increasePoint(Point::find(1), 10000, 'points given on account created for testing', referrable: true);
     }
 
     /**

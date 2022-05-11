@@ -28,7 +28,7 @@ class TopUpObserver
     {
         if ($topUp->status == 2) {
             //top_ups_status 2, approve
-            $topUp->user->increasePoint(Point::find(2), $topUp->amount, 'top up approved', $topUp);
+            $topUp->user->increasePoint(Point::find(2), $topUp->amount, 'top up approved', $topUp, referrable: true);
         }
     }
 

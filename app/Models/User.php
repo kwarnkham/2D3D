@@ -126,7 +126,7 @@ class User extends Authenticatable implements HasLocalePreference
 
     public function points()
     {
-        return $this->belongsToMany(Point::class)->withPivot(['balance'])->withTimestamps();
+        return $this->belongsToMany(Point::class)->withPivot(['balance', 'referrable_balance'])->withTimestamps();
     }
 
     public function withdraws()
@@ -213,6 +213,13 @@ class User extends Authenticatable implements HasLocalePreference
         return $userPoint->pivot->balance;
     }
 
+    public function getReferableBalanceByPoint(Point $point)
+    {
+        $userPoint = $this->points()->where('point_id', $point->id)->first();
+        if (!$userPoint) return 0;
+        return $userPoint->pivot->referrable_balance;
+    }
+
     public function isBanned()
     {
         return !!$this->banned_at;
@@ -264,6 +271,24 @@ class User extends Authenticatable implements HasLocalePreference
         );
     }
 
+    public function processReferrerReward(User $referree, $spentAmount, Point $point)
+    {
+        if ($referree->decreaseReferrablePoint($point, $spentAmount)) {
+            $this->increasePoint(point: $point, amount: $spentAmount * 0.05, note: "referral reward");
+        }
+    }
+
+    public function decreaseReferrablePoint(Point $point, $amount)
+    {
+        $referrableBalance = $this->getReferableBalanceByPoint($point);
+        if ($referrableBalance <= 0) return;
+        return DB::transaction(function () use ($point, $amount, $referrableBalance) {
+            return $this->points()->updateExistingPivot($point->id, [
+                'referrable_balance' => $referrableBalance - $amount,
+            ]);
+        });
+    }
+
     public function decreasePoint(Point $point, $amount, $note = null, PointLogable $model = null)
     {
         DB::transaction(function () use ($point, $amount, $note, $model) {
@@ -283,16 +308,18 @@ class User extends Authenticatable implements HasLocalePreference
         });
     }
 
-    public function increasePoint(Point $point, $amount, $note = null, PointLogable $model = null)
+    public function increasePoint(Point $point, $amount, $note = null, PointLogable $model = null, $referrable = false)
     {
         Log::alert("Increase the point $point->name of $this->name by $amount");
-        DB::transaction(function () use ($point, $amount, $note, $model) {
+        DB::transaction(function () use ($point, $amount, $note, $model, $referrable) {
             if (!$this->points()->where('point_id', $point->id)->first()) {
-                $this->points()->attach($point->id, ['balance' => 0]);
+                $this->points()->attach($point->id, ['balance' => 0, 'referrable_balance' => 0]);
             }
-            $this->points()->updateExistingPivot($point->id, [
+            $balanceData =  [
                 'balance' => $this->getBalanceByPoint($point) + $amount,
-            ]);
+            ];
+            if ($referrable) $balanceData['referrable_balance'] = $this->getReferableBalanceByPoint($point) + $amount;
+            $this->points()->updateExistingPivot($point->id, $balanceData);
             //point_logs_type 2, increasePoint
             $data = [
                 'user_id' => $this->id,

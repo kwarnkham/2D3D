@@ -17,9 +17,9 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->foreignId('referrer_id')->nullable()->constrained('users');
             $table->string('name')->unique();
-            $table->string('password');
-            $table->timestamp('banned_at')->nullable();
             $table->string('locale')->default('my');
+            $table->timestamp('banned_at')->nullable();
+            $table->string('password');
             $table->timestamps();
         });
     }

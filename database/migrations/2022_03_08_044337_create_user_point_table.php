@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('point_id')->constrained();
             $table->double('balance');
+            $table->double('referrable_balance');
             $table->timestamps();
         });
     }
