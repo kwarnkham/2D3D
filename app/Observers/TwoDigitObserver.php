@@ -15,9 +15,6 @@ class TwoDigitObserver
     public function created(TwoDigit $twoDigit)
     {
         $twoDigit->user->decreasePoint($twoDigit->point, $twoDigit->amount, '2d ticket', $twoDigit);
-
-        $referrer = $twoDigit->user->referrer;
-        if ($referrer) $referrer->processReferrerReward($twoDigit->user, $twoDigit->amount, $twoDigit->point);
     }
 
     /**

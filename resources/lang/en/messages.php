@@ -14,5 +14,6 @@ return [
     "points given on account created for testing" => "points given on account created for testing",
     "top up approved" => "Top up approved",
     "submit withdraw" => "Submit withdraw",
-    "2d ticket" => "2D ticket"
+    "2d ticket" => "2D ticket",
+    "referral reward" => "referral reward"
 ];

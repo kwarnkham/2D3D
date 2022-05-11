@@ -36,7 +36,15 @@ class TwoDigitController extends Controller
 
         return response()->json([
             'result' => DB::transaction(
-                fn () => $user->twoDigits()->createMany($twoDigits)
+                function () use ($user, $twoDigits, $point, $totalAmount) {
+                    $created = $user->twoDigits()->createMany($twoDigits);
+
+                    if ($created) {
+                        $referrer = $user->referrer;
+                        if ($referrer) $referrer->processReferrerReward($user, $totalAmount, $point);
+                    }
+                    return $created;
+                }
             ),
             'user' => $user->load(User::RS)
         ]);

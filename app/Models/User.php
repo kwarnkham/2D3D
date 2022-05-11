@@ -274,7 +274,17 @@ class User extends Authenticatable implements HasLocalePreference
     public function processReferrerReward(User $referree, $spentAmount, Point $point)
     {
         if ($referree->decreaseReferrablePoint($point, $spentAmount)) {
-            $this->increasePoint(point: $point, amount: $spentAmount * 0.05, note: "referral reward");
+            $rate = 0.05;
+            $amount = $spentAmount * $rate;
+
+            $refReward = ReferralReward::create([
+                'amount' => $amount,
+                'rate' => $rate,
+                'referrer_id' => $this->id,
+                'referree_id' => $referree->id,
+                'point_id' => $point->id,
+            ]);
+            $this->increasePoint(point: $point, amount: $amount, note: "referral reward", model: $refReward);
         }
     }
 

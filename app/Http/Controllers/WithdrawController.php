@@ -21,7 +21,7 @@ class WithdrawController extends Controller
             __("messages.To withdraw, you have to wait for 24 hours after changing password")
         );
         $data = $request->validate([
-            'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance, 'gte:500'],
+            'amount' => ['required', 'lte:' . $user->mmk()->pivot->balance, 'gte:500', 'integer', 'numeric'],
             'account' => ['required'],
             'payment_id' => ['exists:payments,id'],
             'username' => [Rule::requiredIf($request->payment_id == 1)],

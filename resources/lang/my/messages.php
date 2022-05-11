@@ -14,5 +14,6 @@ return [
     "points given on account created for testing" => "စမ်းသပ်အသုံးပြုရန် ပေးထားသောအမှတ်",
     "top up approved" => "ငွေဖြည့်သွင်းခြင်း",
     "submit withdraw" => "ငွေထုတ်ရန် ပေးပို့ထားခြင်း",
-    "2d ticket" => "2D လက်မှတ်"
+    "2d ticket" => "2D လက်မှတ်",
+    "referral reward" => "ရည်ညွှန်းဆုငွေ"
 ];
