@@ -12,10 +12,10 @@ class TelegramWebhookController extends Controller
 {
     public function handle(Request $request)
     {
+        Log::info(json_encode($request->all()));
         $request->validate([
             'message' => ['required'],
             'message.from.id' => ['required'],
-            'message.from.username' => ['required'],
             'message.text' => ['required'],
             'message.date' => ['required']
         ]);

@@ -18,7 +18,7 @@ class CreateAccountProviderUserTable extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('account_provider_id')->constrained();
             $table->bigInteger('provider_id');
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->timestamp('sent_at');
             $table->timestamps();
             $table->unique(['account_provider_id', 'provider_id']);

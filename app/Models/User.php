@@ -42,6 +42,16 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->locale;
     }
 
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referrer_id', 'id');
+    }
+
+    public function referrees()
+    {
+        return $this->hasMany(User::class, 'referrer_id', 'id');
+    }
+
     public function setLocale($locale)
     {
         if (in_array($locale, ['my', 'en'])) {
@@ -65,13 +75,28 @@ class User extends Authenticatable implements HasLocalePreference
      *
      * @var array
      */
-    protected $appends = ['has_default_password', 'can_withdraw', 'last_password_change'];
+    protected $appends = ['has_default_password', 'can_withdraw', 'last_password_change', 'referral_code'];
 
     public function password(): Attribute
     {
         return Attribute::make(
             set: fn ($value) => bcrypt($value),
         );
+    }
+
+    public function referralCode(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => "888X" . $this->id * 6 . "X666" . $this->id,
+        );
+    }
+
+    public static function getIdFromReferralCode($referrerCode)
+    {
+        $temp = substr(substr($referrerCode, 4), 0, strpos(substr($referrerCode, 4), "X"));
+        if (!$temp) return;
+        if ($temp % 6 != 0) return;
+        return $temp / 6;
     }
 
     public function passwordChanges()
@@ -157,17 +182,24 @@ class User extends Authenticatable implements HasLocalePreference
     {
         return DB::transaction(function () use ($request) {
             $password = str()->random(6);
-            $user = User::create([
-                'name' => 't' . $request->message['from']['username'],
+            $data = [
+                'name' => 't' . $request->message['from']['id'],
                 'password' => $password
-            ]);
+            ];
+            $text = explode(" ", $request->message['text']);
+            if ($text[0] == '/start' && array_key_exists(1, $text) && static::getIdFromReferralCode($text[1])) {
+                $data['referrer_id'] = static::getIdFromReferralCode($text[1]);
+            } else {
+                $data['referrer_id'] = 1;
+            }
+            $user = User::create($data);
             $accountProvider = AccountProvider::where('name', 'telegram')->first();
             if (!$accountProvider) $accountProvider = AccountProvider::create(['name' => 'telegram']);
             UserProvider::create([
                 'user_id' => $user->id,
                 'account_provider_id' => $accountProvider->id,
                 'provider_id' => $request->message['from']['id'],
-                'username' => $request->message['from']['username'],
+                'username' => array_key_exists('username', $request->message['from']) ? $request->message['from']['username'] : null,
                 'sent_at' => $request->message['date']
             ]);
             return [$user, $password];

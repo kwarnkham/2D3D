@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('referrer_id')->nullable()->constrained('users');
             $table->string('name')->unique();
             $table->string('password');
             $table->timestamp('banned_at')->nullable();
