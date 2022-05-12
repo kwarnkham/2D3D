@@ -5,5 +5,3 @@ test app update
 test jackpot, collect and given and point log
 2d result history
 change username
-withdraw password
-withdraw no digit

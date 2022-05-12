@@ -8,6 +8,7 @@ use App\Models\Withdraw;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class WithdrawController extends Controller
@@ -25,7 +26,9 @@ class WithdrawController extends Controller
             'account' => ['required'],
             'payment_id' => ['exists:payments,id'],
             'username' => [Rule::requiredIf($request->payment_id == 1)],
+            'password' => ['required']
         ]);
+        abort_if(!Hash::check($data['password'], $user->password), ResponseStatus::UNAUTHORIZED->value, __("messages.Incorrect password"));
         $data['point_id'] = 2;
         $user->withdraws()->create($data);
         return response()->json($user->load(User::RS));
