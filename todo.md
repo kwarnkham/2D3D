@@ -1,4 +1,3 @@
-topup approve prove
 qrcode
 test app update
 2d api

@@ -13,12 +13,17 @@ use Illuminate\Support\Facades\Storage;
 class TopUp extends Model implements PointLogable
 {
     use HasFactory;
-    const RS = ['pictures', 'user', 'payment'];
+    const RS = ['pictures', 'user', 'payment', 'approved_top_up'];
     protected $guarded = ['id'];
 
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'pictureable');
+    }
+
+    public function approved_top_up()
+    {
+        return $this->hasOne(ApprovedTopUp::class);
     }
 
     public function point_log()

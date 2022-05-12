@@ -51,10 +51,16 @@ class TopUpController extends Controller
 
     public function approve(Request $request, TopUp $topUp)
     {
+        $data = $request->validate([
+            'picture' => ['required', 'image'],
+        ]);
         Gate::authorize('admin');
         if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only approve a pending or drafted Top Up");
         $topUp->status = 2;
-        $topUp->save();
+        if ($topUp->save()) {
+            $approved = $topUp->approved_top_up()->create();
+            $approved->savePicture($data['picture']);
+        }
         return response()->json($topUp->load(TopUp::RS));
     }
 
@@ -69,9 +75,13 @@ class TopUpController extends Controller
 
     public function deny(Request $request, TopUp $topUp)
     {
+        $request->validate([
+            'denied_reason' => ['required']
+        ]);
         Gate::authorize('admin');
         if (!in_array($topUp->status, ['1', '4'])) abort(ResponseStatus::BAD_REQUEST->value, "Can only deny a pending or drafted Top Up");
         $topUp->status = 3;
+        $topUp->denied_reason = $request->denied_reason;
         $topUp->save();
         return response()->json($topUp->load(TopUp::RS));
     }

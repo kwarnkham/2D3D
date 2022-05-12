@@ -13,14 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('top_ups', function (Blueprint $table) {
+        Schema::create('approved_top_ups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('payment_id')->constrained();
-            // $table->string('payment_username');
-            $table->tinyInteger('status')->default(1);
-            $table->double('amount');
-            $table->string('denied_reason')->nullable();
+            $table->foreignId('top_up_id')->unique()->constrained();
             $table->timestamps();
         });
     }
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('top_ups');
+        Schema::dropIfExists('approved_top_ups');
     }
 };
