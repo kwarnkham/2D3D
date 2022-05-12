@@ -20,7 +20,7 @@ return [
     'after_or_equal' => 'The :attribute must be a date after or equal to :date.',
     'alpha' => 'The :attribute must only contain letters.',
     'alpha_dash' => 'The :attribute must only contain letters, numbers, dashes and underscores.',
-    'alpha_num' => 'The :attribute must only contain letters and numbers.',
+    'alpha_num' => ':attribute သည် နံပါတ်နှင့်စကားလုံး သာဖြစ်ရမည်',
     'array' => 'The :attribute must be an array.',
     'before' => 'The :attribute must be a date before :date.',
     'before_or_equal' => 'The :attribute must be a date before or equal to :date.',
@@ -124,7 +124,7 @@ return [
     'starts_with' => 'The :attribute must start with one of the following: :values.',
     'string' => 'The :attribute must be a string.',
     'timezone' => 'The :attribute must be a valid timezone.',
-    'unique' => 'The :attribute has already been taken.',
+    'unique' => 'ယခု:attributeကမရတော့ပါ အခြား ပေးပါ',
     'uploaded' => 'The :attribute failed to upload.',
     'url' => 'The :attribute must be a valid URL.',
     'uuid' => 'The :attribute must be a valid UUID.',
@@ -158,7 +158,8 @@ return [
     */
 
     'attributes' => [
-        'amount' => 'ငွေပမာဏ'
+        'amount' => 'ငွေပမာဏ',
+        'name' => 'အမည်'
     ],
 
 ];

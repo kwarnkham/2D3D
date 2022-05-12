@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ResponseStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -109,7 +111,14 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'unique:users,name', 'alpha_num'],
+            'password' => ['required']
+        ]);
+        abort_if(!Hash::check($request->password, $user->password), ResponseStatus::UNAUTHORIZED->value, __("messages.Incorrect password"));
+        $user->name = $request->name;
+        $user->save();
+        return response()->json($user->load(User::RS));
     }
 
     /**
