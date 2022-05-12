@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Point::create(['name' => 'MMK']);
         \App\Models\Role::create(['name' => 'admin']);
         \App\Models\AppVersion::create(['version' => '1.0.0']);
-        Artisan::call('make:admin moon moon');
+        Artisan::call('make:admin moon ninjamoon');
+        Artisan::call('simulate');
     }
 }

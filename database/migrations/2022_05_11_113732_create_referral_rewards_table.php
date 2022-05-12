@@ -18,10 +18,10 @@ return new class extends Migration
             $table->double('amount');
             $table->double('rate');
             $table->unsignedBigInteger('referrer_id');
-            $table->unsignedBigInteger('referree_id');
+            $table->unsignedBigInteger('referee_id');
             $table->foreignId('point_id')->constrained();
             $table->foreign('referrer_id')->references('id')->on('users');
-            $table->foreign('referree_id')->references('id')->on('users');
+            $table->foreign('referee_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

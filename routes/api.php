@@ -6,6 +6,7 @@ use App\Http\Controllers\JackPotController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\PointLogController;
+use App\Http\Controllers\ReferralRewardController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\TopUpController;
 use App\Http\Controllers\TwoDigitController;
@@ -53,6 +54,10 @@ Route::middleware(['auth:sanctum'])->controller(TopUpController::class)->group(f
 
 Route::middleware(['auth:sanctum'])->controller(PaymentController::class)->group(function () {
     Route::get('/payment', 'index');
+});
+
+Route::middleware(['auth:sanctum'])->controller(ReferralRewardController::class)->group(function () {
+    Route::get('/referral-reward/{referralReward}', 'find');
 });
 
 Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(function () {
