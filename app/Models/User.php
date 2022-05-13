@@ -146,8 +146,9 @@ class User extends Authenticatable implements HasLocalePreference
 
     public function hasRecentPasswordChange()
     {
-        return $this->passwordChanges->count() > 1 &&
-            $this->passwordChanges()->orderBy('id', 'desc')->first()->created_at->diffInMinutes(now()) < (24 * 60);
+        $passwordChanges = $this->passwordChanges()->orderBy('id', 'desc')->get();
+        return $passwordChanges->count() > 1 &&
+            $passwordChanges->first()->created_at->diffInMinutes(now()) < (24 * 60);
     }
 
     public function freePoint()

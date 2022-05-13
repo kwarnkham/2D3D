@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class TelegramService
@@ -32,6 +32,10 @@ class TelegramService
 
     public static function getLink()
     {
-        return "https://t.me/" . Http::get(static::getUrl() . '/getMe')->json()['result']['username'];
+        $botInfo = json_decode(Cache::rememberForever('telegramBotInfo', function () {
+            return Http::get(static::getUrl() . '/getMe')->body();
+        }));
+
+        return "https://t.me/" . $botInfo->result->username;
     }
 }
