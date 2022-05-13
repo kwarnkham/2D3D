@@ -78,7 +78,7 @@ class TwoDigit extends AppModel implements PointLogable
         $r = Http::get("https://wwwa1.settrade.com/C13_MarketSummary.jsp");
         $str = trim(preg_replace("/\s+|\n+|\r/", ' ', $r->body()));
 
-        $first = "\<td class='mktDL' width='34%'\>";
+        $first = "\width='34%'\>";
         $second = "\<\/td\>";
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Set is " . str_replace(',', '', $match[1]));
@@ -88,7 +88,6 @@ class TwoDigit extends AppModel implements PointLogable
         }
 
         $first = "\<td class='mktD' width='22%'\>";
-        $second = "\<\/td\>";
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Value is " . str_replace(',', '', $match[1]));
         } else {
