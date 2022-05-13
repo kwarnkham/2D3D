@@ -15,5 +15,8 @@ return [
     "top up approved" => "Top up approved",
     "submit withdraw" => "Submit withdraw",
     "2d ticket" => "2D ticket",
-    "referral reward" => "referral reward"
+    "referral reward" => "referral reward",
+    "2d prize" => "2D Prize",
+    "withdraw rejected" => "Withdraw Rejected",
+    "withdraw canceled" => "Withdraw Canceled",
 ];

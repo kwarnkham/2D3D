@@ -15,5 +15,8 @@ return [
     "top up approved" => "ငွေဖြည့်သွင်းခြင်း",
     "submit withdraw" => "ငွေထုတ်ရန် ပေးပို့ထားခြင်း",
     "2d ticket" => "2D လက်မှတ်",
-    "referral reward" => "ရည်ညွှန်းဆုငွေ"
+    "referral reward" => "ရည်ညွှန်းဆုငွေ",
+    "2d prize" => "2D ဆုကြေးငွေ",
+    "withdraw rejected" => "ငွေထုတ် မအောင်မြင်",
+    "withdraw canceled" => "ငွေထုတ် ပယ်ဖျက်ခဲ့",
 ];
