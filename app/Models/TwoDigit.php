@@ -83,7 +83,7 @@ class TwoDigit extends AppModel implements PointLogable
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Set is " . str_replace(',', '', $match[1]));
         } else {
-            Log::channel('deubg')->alert('set not found');
+            Log::channel('deubg')->info('set not found');
             Log::channel('debug')->info($str);
         }
 
@@ -92,7 +92,7 @@ class TwoDigit extends AppModel implements PointLogable
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Value is " . str_replace(',', '', $match[1]));
         } else {
-            Log::channel('deubg')->alert('value not found');
+            Log::channel('deubg')->info('value not found');
             Log::channel('debug')->info($str);
         }
     }
