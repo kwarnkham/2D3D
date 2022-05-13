@@ -54,6 +54,14 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'two-digit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/' . now()->toDateString() . '/two-digit.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 360,
+        ],
+
+
         'debug' => [
             'driver' => 'single',
             'path' => storage_path('logs/debug.log'),

@@ -16,11 +16,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->call(function () {
-        //     TwoDigit::getMaxPrize(0);
-        //     TwoDigit::checkTime();
-        // })->everyMinute();
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            TwoDigit::getResult();
+        })->everyMinute();
     }
 
     /**
