@@ -10,7 +10,7 @@ class TelegramService
 
     public static function getUrl()
     {
-        return 'https://api.telegram.org/bot' . env("TELEGRAM_BOT_TOKEN") . '/sendMessage';
+        return 'https://api.telegram.org/bot' . env("TELEGRAM_BOT_TOKEN");
     }
     public static function sendMessage($message, $chatId, $parseMode = 'HTML')
     {
@@ -22,11 +22,16 @@ class TelegramService
         if (is_array($message)) {
             foreach ($message as $msg) {
                 $options['text'] = $msg;
-                Http::get(static::getUrl(), $options);
+                Http::get(static::getUrl() . '/sendMessage', $options);
             }
         } else {
             $options['text'] = $message;
-            Http::get(static::getUrl(), $options);
+            Http::get(static::getUrl() . '/sendMessage', $options);
         }
+    }
+
+    public static function getLink()
+    {
+        return "https://t.me/" . Http::get(static::getUrl() . '/getMe')->json()['result']['username'];
     }
 }

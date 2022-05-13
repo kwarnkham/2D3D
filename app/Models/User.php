@@ -75,7 +75,7 @@ class User extends Authenticatable implements HasLocalePreference
      *
      * @var array
      */
-    protected $appends = ['has_default_password', 'can_withdraw', 'last_password_change', 'referral_code'];
+    protected $appends = ['has_default_password', 'can_withdraw', 'last_password_change', 'referral_code', 'invite_link'];
 
     public function password(): Attribute
     {
@@ -102,6 +102,11 @@ class User extends Authenticatable implements HasLocalePreference
     public function passwordChanges()
     {
         return $this->hasMany(PasswordChange::class);
+    }
+
+    public function getInviteLink()
+    {
+        return TelegramService::getLink() . "?start=" . $this->referralCode;
     }
 
     public function roles()
@@ -161,6 +166,13 @@ class User extends Authenticatable implements HasLocalePreference
     {
         return new Attribute(
             get: fn () => !$this->hasRecentPasswordChange(),
+        );
+    }
+
+    public function inviteLink(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->getInviteLink(),
         );
     }
 
