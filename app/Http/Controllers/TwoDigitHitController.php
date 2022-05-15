@@ -7,6 +7,7 @@ use App\Models\PointLog;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -35,5 +36,12 @@ class TwoDigitHitController extends Controller
         $twoDigit = $twoDigitHit->twoDigits()->where('id', explode(",", $pointLog->note)[0])->first();
         $twoDigitHit->twoDigit = $twoDigit->load(['point']);
         return response()->json($twoDigitHit);
+    }
+
+    public function index(Request $request)
+    {
+        return response()->json(Cache::rememberForever('twoDigitHits', function () {
+            return TwoDigitHit::all();
+        }));
     }
 }

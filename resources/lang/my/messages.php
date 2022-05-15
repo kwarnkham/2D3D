@@ -19,4 +19,6 @@ return [
     "2d prize" => "2D ဆုကြေးငွေ",
     "withdraw rejected" => "ငွေထုတ် မအောင်မြင်",
     "withdraw canceled" => "ငွေထုတ် ပယ်ဖျက်ခဲ့",
+    "jackpot prize" => "ဂျက်ခ်ပေါ့ ဆုကြေးငွေ",
+    "more points for testing" => "စမ်းသပ်အသုံးပြုရန် ထပ်မံ ပေးထားသောအမှတ်"
 ];

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\TwoDigitHit;
+use Illuminate\Support\Facades\Cache;
 
 class TwoDigitHitObserver
 {
@@ -14,6 +15,7 @@ class TwoDigitHitObserver
      */
     public function created(TwoDigitHit $twoDigitHit)
     {
+        Cache::forget('twoDigitHits');
     }
 
     /**

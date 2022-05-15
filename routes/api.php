@@ -78,6 +78,7 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->grou
 Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->group(function () {
     Route::post('/two-digit-hit', 'store');
     Route::get('/two-digit-hit/{twoDigitHit}/point-log/{pointLog}', 'find');
+    Route::get('/two-digit-hit', 'index');
 });
 
 Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {

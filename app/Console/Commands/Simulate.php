@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\TwoDigit;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -47,7 +48,7 @@ class Simulate extends Command
         //     Log::channel('debug')->info($time->format('d-m-Y h:i:s A') . " => " . $days[$time->dayOfWeek]);
         //     Log::channel('debug')->debug((TwoDigit::checkDay($time) && TwoDigit::checkTime(($time))) ? 'allow' : 'limit');
         // }
-
+        Artisan::call('cache:clear');
         return 0;
     }
 }

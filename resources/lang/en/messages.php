@@ -19,4 +19,5 @@ return [
     "2d prize" => "2D Prize",
     "withdraw rejected" => "Withdraw Rejected",
     "withdraw canceled" => "Withdraw Canceled",
+    "more points for testing" => "More points for testing"
 ];
