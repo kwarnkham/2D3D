@@ -1,4 +1,2 @@
 test app update
-find out 2d closed days
-auto renew test point
-system config => jackpot rate, referral rate
+system config => jackpot rate, referral rate, pool money as column

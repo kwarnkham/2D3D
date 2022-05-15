@@ -19,6 +19,27 @@ class TwoDigit extends AppModel implements PointLogable
     const MORNING_DURATION = 18059; //05:00:59, allow till this time
     const EVENING_DURATION = 34259; //09:30:59, allow till this time
     const RS = ['point', 'twoDigitHit', 'user'];
+    const CLOSED_DAYS = [
+        '2022-01-03',
+        '2022-02-16',
+        '2022-04-06',
+        '2022-04-13',
+        '2022-04-14',
+        '2022-04-15',
+        '2022-05-02',
+        '2022-05-04',
+        '2022-05-16',
+        '2022-06-03',
+        '2022-07-13',
+        '2022-07-28',
+        '2022-07-29',
+        '2022-08-12',
+        '2022-10-13',
+        '2022-10-14',
+        '2022-10-24',
+        '2022-12-05',
+        '2022-12-12'
+    ];
     /**
      * Prepare a date for array / JSON serialization.
      *
@@ -125,6 +146,12 @@ class TwoDigit extends AppModel implements PointLogable
     {
         if (!$runTime) $runTime = now();
         $today = (clone $runTime)->startOfDay();
+        if (in_array($today, array_map(
+            fn ($day) => new Carbon($day),
+            static::CLOSED_DAYS
+        ))) {
+            return false;
+        };
         if ($runTime->isDayOfWeek(Carbon::SATURDAY)) {
             return false;
         } else if ($runTime->isDayOfWeek(Carbon::FRIDAY)) {
