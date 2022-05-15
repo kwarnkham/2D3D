@@ -7,6 +7,7 @@ use App\Models\PointLog;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class TwoDigitHitController extends Controller
@@ -21,7 +22,11 @@ class TwoDigitHitController extends Controller
             'morning' => ['required', 'boolean']
         ]);
         if (TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) abort(ResponseStatus::BAD_REQUEST->value, "Already settled for " . $data['day'] . ($data['morning'] ? " morning" : " evening"));
-        return response()->json(TwoDigitHit::create($data));
+        return response()->json(DB::transaction(function () use ($data) {
+            $twoDigitHit =  TwoDigitHit::create($data);
+            $twoDigitHit->settle();
+            return $twoDigitHit;
+        }), ResponseStatus::CREATED->value);
     }
 
     public function find(Request $request, TwoDigitHit $twoDigitHit, PointLog $pointLog)

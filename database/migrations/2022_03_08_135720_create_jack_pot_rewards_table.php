@@ -13,14 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('two_digit_hits', function (Blueprint $table) {
+        Schema::create('jack_pot_rewards', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('number');
-            $table->tinyInteger('rate');
-            $table->timestamp('day');
-            $table->boolean('morning');
+            $table->double('amount');
+            $table->double('shared_amount');
+            $table->foreignId('jack_pot_number_id')->constrained();
             $table->timestamps();
-            $table->unique(['day', 'morning']);
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_digit_hits');
+        Schema::dropIfExists('jack_pot_rewards');
     }
 };

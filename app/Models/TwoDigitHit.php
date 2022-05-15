@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ResponseStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -34,7 +35,32 @@ class TwoDigitHit extends Model
                     ->where('created_at', '<=', $eveningEndTime)
                     ->whereNull('settled_at');
             }
-            (clone $builder)->where('number', $this->number)->update(['two_digit_hit_id' => $this->id]);
+            $twoDigitUpdateData = ['two_digit_hit_id' => $this->id];
+            $jackPotNumber = JackPotNumber::whereNull('hit_at')->orderBy('id', 'desc')->first();
+
+            //hit jackpot
+            if ($jackPotNumber && $this->number == $jackPotNumber->number) {
+                $shared = (clone $builder)->where('number', $this->number)->count();
+                if ($shared > 0) {
+                    $amount = JackPot::getJackPot(false);
+                    $sharedAmount = floor($amount / $shared);
+                    $jackPotReward = JackPotReward::create([
+                        'amount' => $amount,
+                        'shared_amount' => $sharedAmount,
+                        'jack_pot_number_id' => $jackPotNumber->id
+                    ]);
+                    $twoDigitUpdateData['jack_pot_reward_id'] = $jackPotReward->id;
+                    $jackPotNumber->hit_at = now();
+                    $jackPotNumber->save();
+                    JackPotNumber::create([
+                        'number' => $jackPotNumber->number == 99 ? 0 : $jackPotNumber->number + 1
+                    ]);
+                    JackPot::whereIn('id', JackPot::effectiveQuery()->pluck('id')->toArray())
+                        ->update(['status' => 2, 'jack_pot_reward_id' => $jackPotReward->id]);
+                }
+            };
+
+            (clone $builder)->where('number', $this->number)->update($twoDigitUpdateData);
 
 
             $builder->update(['settled_at' => now()]);

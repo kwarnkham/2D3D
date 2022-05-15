@@ -1,6 +1,4 @@
-qrcode
 test app update
-test jackpot, collect and given and point log
 2d result history
-find out 2d closed day
+find out 2d closed days
 auto renew test point

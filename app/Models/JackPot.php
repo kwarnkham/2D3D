@@ -3,16 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
-class JackPot extends Model
+class JackPot extends AppModel
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function jack_potable()
+    public function twoDigit()
     {
-        return $this->morphTo();
+        return $this->belongsTo(TwoDigit::class);
+    }
+
+    public static function effectiveQuery()
+    {
+        return JackPot::where('status', 1);
+    }
+
+    public static function getJackPot($fromCache = true)
+    {
+        if ($fromCache)
+            return Cache::rememberForever('twoDigitJackPot', function () {
+                return static::effectiveQuery()
+                    ->pluck('amount')->sum();
+            });
+        else {
+            Cache::forget('twoDigitJackPot');
+            return static::effectiveQuery()
+                ->pluck('amount')->sum();
+        }
     }
 }

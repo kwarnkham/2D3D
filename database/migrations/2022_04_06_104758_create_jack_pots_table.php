@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('jack_pots', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('jack_potable_id');
-            $table->string('jack_potable_type');
+            $table->foreignId('two_digit_id')->constrained();
             $table->double('amount');
+            $table->foreignId('jack_pot_reward_id')->nullable()->constrained();
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
-            $table->unique(['jack_potable_id', 'jack_potable_type']);
+            $table->unique('two_digit_id');
         });
     }
 

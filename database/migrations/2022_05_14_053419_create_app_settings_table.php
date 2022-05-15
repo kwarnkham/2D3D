@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('two_digit_hits', function (Blueprint $table) {
+        Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('number');
-            $table->tinyInteger('rate');
-            $table->timestamp('day');
-            $table->boolean('morning');
+            $table->jsonb('config')->nullable();
             $table->timestamps();
-            $table->unique(['day', 'morning']);
         });
     }
 
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_digit_hits');
+        Schema::dropIfExists('app_settings');
     }
 };

@@ -14,7 +14,6 @@ class TwoDigitHitObserver
      */
     public function created(TwoDigitHit $twoDigitHit)
     {
-        $twoDigitHit->settle();
     }
 
     /**

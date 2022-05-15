@@ -47,7 +47,7 @@ class TwoDigitController extends Controller
                 }
             ),
             'user' => $user->load(User::RS)
-        ]);
+        ], ResponseStatus::CREATED->value);
     }
 
     public function index(Request $request)

@@ -25,7 +25,7 @@ class TopUpController extends Controller
             $topUp = TopUp::create($data);
             $topUp->savePictures($data['pictures']);
             return $topUp;
-        }));
+        }), ResponseStatus::CREATED->value);
     }
 
     public function index(Request $request)

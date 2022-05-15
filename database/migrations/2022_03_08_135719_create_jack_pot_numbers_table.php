@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('two_digit_hits', function (Blueprint $table) {
+        Schema::create('jack_pot_numbers', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('number');
-            $table->tinyInteger('rate');
-            $table->timestamp('day');
-            $table->boolean('morning');
+            $table->timestamp('hit_at')->nullable();
             $table->timestamps();
-            $table->unique(['day', 'morning']);
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_digit_hits');
+        Schema::dropIfExists('jack_pot_numbers');
     }
 };
