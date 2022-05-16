@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Artisan::call('cache:clear');
+        \App\Models\AppSetting::create([
+            'pool_amount' => '1000000', 'config' => [
+                'jackpot_rate' => '0.1',
+                'refferal_rate' => '0.05'
+            ]
+        ]);
         \App\Models\Payment::create([
             'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => '09123123123', 'account_name' => 'moon'
         ]);

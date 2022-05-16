@@ -5,15 +5,12 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-class PointLog extends Model
+class PointLog extends AppModel
 {
     const RS = ['point_loggable', 'point'];
     use HasFactory;
-
-    protected $guarded = ['id'];
 
     public function point_loggable()
     {
@@ -23,11 +20,6 @@ class PointLog extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return (new Carbon($date))->diffForHumans();
     }
 
     public function point()

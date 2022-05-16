@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
-use App\Enums\ResponseStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class TwoDigitHit extends Model
+class TwoDigitHit extends AppModel
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
 
     public function twoDigits()
     {

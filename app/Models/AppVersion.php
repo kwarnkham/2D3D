@@ -3,11 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class AppVersion extends Model
+class AppVersion extends AppModel
 {
     use HasFactory;
-
-    protected $guarded = [''];
 }

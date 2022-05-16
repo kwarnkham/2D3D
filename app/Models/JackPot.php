@@ -9,8 +9,6 @@ class JackPot extends AppModel
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
-
     public function twoDigit()
     {
         return $this->belongsTo(TwoDigit::class);

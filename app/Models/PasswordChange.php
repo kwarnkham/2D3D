@@ -3,11 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class PasswordChange extends Model
+class PasswordChange extends AppModel
 {
     use HasFactory;
-
-    protected $guarded = ["id"];
 }

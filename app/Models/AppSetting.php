@@ -2,10 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class AppSetting extends Model
+class AppSetting extends AppModel
 {
     use HasFactory;
+
+    public static function current()
+    {
+        return AppSetting::orderBy('id', 'desc')->first();
+    }
+
+    public function config(): Attribute
+    {
+        return new Attribute(
+            get: fn ($value) => json_decode($value),
+            set: fn ($value) => json_encode($value),
+        );
+    }
 }

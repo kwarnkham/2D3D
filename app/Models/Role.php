@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Role extends AppModel
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
 
     public function users()
     {

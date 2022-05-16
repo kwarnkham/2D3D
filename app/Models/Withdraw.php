@@ -3,27 +3,17 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-class Withdraw extends Model implements PointLogable
+class Withdraw extends AppModel implements PointLogable
 {
     use HasFactory;
     const RS = ['user', 'point', 'pictures', 'payment'];
-    protected $guarded = ['id'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return (new Carbon($date))->diffForHumans();
     }
 
     public function point_log()
@@ -42,12 +32,6 @@ class Withdraw extends Model implements PointLogable
     }
     protected $appends = ['created_time'];
 
-    public function createdTime(): Attribute
-    {
-        return new Attribute(
-            get: fn () => $this->created_at->timestamp,
-        );
-    }
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'pictureable');

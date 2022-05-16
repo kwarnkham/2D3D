@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Contracts\PointLogable;
 use Carbon\Carbon;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Cache;
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Log;
 class TwoDigit extends AppModel implements PointLogable
 {
     use HasFactory;
-    protected $guarded = ['id'];
     const MORNING_DURATION = 18059; //05:00:59, allow till this time
     const EVENING_DURATION = 34259; //09:30:59, allow till this time
     const RS = ['point', 'twoDigitHit', 'user'];
@@ -40,16 +38,7 @@ class TwoDigit extends AppModel implements PointLogable
         '2022-12-05',
         '2022-12-12'
     ];
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return (new Carbon($date))->diffForHumans();
-    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -228,13 +217,6 @@ class TwoDigit extends AppModel implements PointLogable
         $query->when(
             $filters['point_id'] ?? false,
             fn ($q, $pointId) => $q->where('point_id', $pointId)
-        );
-    }
-
-    public function createdTime(): Attribute
-    {
-        return new Attribute(
-            get: fn () => $this->created_at->timestamp,
         );
     }
 

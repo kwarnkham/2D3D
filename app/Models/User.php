@@ -20,7 +20,6 @@ class User extends Authenticatable implements HasLocalePreference
 {
     use HasApiTokens, HasFactory, Notifiable;
     const RS = ['points', 'roles'];
-    protected $guarded = ['id'];
 
     /**
      * The attributes that should be hidden for serialization.
