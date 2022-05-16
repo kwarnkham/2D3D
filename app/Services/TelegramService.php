@@ -30,12 +30,17 @@ class TelegramService
         }
     }
 
-    public static function getLink()
+    public static function getLink($fresh = false)
     {
-        $botInfo = json_decode(Cache::rememberForever('telegramBotInfo', function () {
-            return Http::get(static::getUrl() . '/getMe')->body();
-        }));
+        if (!$fresh)
+            $botInfo = json_decode(Cache::rememberForever('telegramBotInfo', function () {
+                return Http::get(static::getUrl() . '/getMe')->body();
+            }), true);
+        else {
+            Cache::forget('telegramBotInfo');
+            $botInfo = Http::get(static::getUrl() . '/getMe')->json();
+        }
 
-        return "https://t.me/" . $botInfo->result->username;
+        return "https://t.me/" . $botInfo['result']['username'];
     }
 }

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\AppSetting::create([
             'pool_amount' => '1000000', 'config' => [
                 'jackpot_rate' => '0.1',
-                'refferal_rate' => '0.05'
+                'referral_rate' => '0.05'
             ]
         ]);
         \App\Models\Payment::create([

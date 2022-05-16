@@ -255,7 +255,7 @@ class TwoDigit extends AppModel implements PointLogable
             $query = TwoDigit::whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
             foreach ($query->get() as $twoDigit) {
                 $twoDigit->jackPot()->create([
-                    'amount' => $twoDigit->amount * 0.1
+                    'amount' => $twoDigit->amount * AppSetting::current()->config->jackpot_rate
                 ]);
             }
             $query->update(['jack_potted_at' => now()]);
