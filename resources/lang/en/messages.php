@@ -19,5 +19,7 @@ return [
     "2d prize" => "2D Prize",
     "withdraw rejected" => "Withdraw Rejected",
     "withdraw canceled" => "Withdraw Canceled",
-    "more points for testing" => "More points for testing"
+    "more points for testing" => "More points for testing",
+    "get application" => "Click <a href=':apkUrl'>here</a> to download the <strong>Android</strong> application.",
+    "application" => "Application"
 ];

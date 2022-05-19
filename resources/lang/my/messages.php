@@ -20,5 +20,7 @@ return [
     "withdraw rejected" => "ငွေထုတ် မအောင်မြင်",
     "withdraw canceled" => "ငွေထုတ် ပယ်ဖျက်ခဲ့",
     "jackpot prize" => "ဂျက်ခ်ပေါ့ ဆုကြေးငွေ",
-    "more points for testing" => "စမ်းသပ်အသုံးပြုရန် ထပ်မံ ပေးထားသောအမှတ်"
+    "more points for testing" => "စမ်းသပ်အသုံးပြုရန် ထပ်မံ ပေးထားသောအမှတ်",
+    "get application" => "<strong>Android</strong> အပလီကေးရှင်းကိုဒေါင်းလုဒ်လုပ်ရန် <a href=':apkUrl'>ဤနေရာ</a> ကိုနှိပ်ပါ။",
+    "application" => "အပလီကေးရှင်း"
 ];

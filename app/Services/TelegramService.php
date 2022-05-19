@@ -17,7 +17,7 @@ class TelegramService
         $options = [
             'chat_id' => $chatId,
             'parse_mode' => $parseMode,
-            'reply_markup' => json_encode(['keyboard' => [[__("messages.help"), __("messages.forgot password")], ['English', 'မြန်မာ']]])
+            'reply_markup' => json_encode(['keyboard' => [[__("messages.help"), __("messages.application"), __("messages.forgot password")], ['English', 'မြန်မာ']]])
         ];
         if (is_array($message)) {
             foreach ($message as $msg) {

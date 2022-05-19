@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppVersion;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -40,6 +41,11 @@ class TelegramWebhookController extends Controller
         $message = __("messages.default message", compact('appName', 'appApk', 'appClient'));
         $starterMessage = $message . __("messages.The followings are username and password.");
         switch (strtolower($request->message['text'])) {
+            case 'application':
+            case 'အပလီကေးရှင်း':
+                $apkUrl = AppVersion::apkUrl();
+                $message = __("messages.get application", compact('apkUrl'));
+                break;
             case 'hi':
             case 'account':
             case '/start':
