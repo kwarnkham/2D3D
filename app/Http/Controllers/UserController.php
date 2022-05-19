@@ -35,7 +35,7 @@ class UserController extends Controller
     {
         Gate::authorize('admin');
         $user->banned_at = now();
-        $user->save();
+        if ($user->save()) $user->tokens()->delete();
         return response()->json($user->load(User::RS));
     }
 
