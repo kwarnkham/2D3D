@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('number');
             $table->string('account_name')->nullable();
             $table->unique('number');
+            $table->string('qr')->nullable();
             $table->timestamps();
         });
     }
