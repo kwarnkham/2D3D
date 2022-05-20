@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('mm_name')->nullable();
             $table->tinyInteger('type');
-            $table->string('number');
+            $table->string('number')->nullable();
             $table->string('account_name')->nullable();
             $table->unique('number');
             $table->string('qr')->nullable();
