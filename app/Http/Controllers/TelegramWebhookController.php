@@ -36,14 +36,14 @@ class TelegramWebhookController extends Controller
 
         $username = $user->name;
         $appName = env('APP_NAME');
-        $appApk = env('APP_APK');
+        $apkUrl = AppVersion::apkUrl();
         $appClient = env("APP_CLIENT_URL");
-        $message = __("messages.default message", compact('appName', 'appApk', 'appClient'));
+        $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
         $starterMessage = $message . __("messages.The followings are username and password.");
         switch (strtolower($request->message['text'])) {
             case 'application':
             case 'အပလီကေးရှင်း':
-                $apkUrl = AppVersion::apkUrl();
+
                 $message = __("messages.get application", compact('apkUrl'));
                 break;
             case 'hi':
