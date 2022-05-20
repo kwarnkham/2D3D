@@ -20,15 +20,11 @@ class AppVersion extends AppModel
         );
     }
 
-    public static function apkUrl($fromCache = true)
+    public static function apkUrl()
     {
-        if ($fromCache)
-            return Cache::rememberForever('apkUrl', function () {
-                return static::orderBy('id', 'desc')->first()->url;
-            });
-        else {
-            Cache::forget('apkUrl');
-            return static::orderBy('id', 'desc')->first()->url;
-        }
+        $app = static::orderBy('id', 'desc')->first();
+        $array = explode('.', $app->url);
+        $array[3] .= $app->version;
+        return implode(".", $array);
     }
 }

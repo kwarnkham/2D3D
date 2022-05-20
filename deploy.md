@@ -52,6 +52,7 @@ scp C:\Users\kwarn\Projects\online_T\dist\spa.zip root@2d3d.itismoon.fun:/root/
 ```
 rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
+systemctl restart nginx
 ```
 
 sudo chown -R www-data:www-data /var/www/lucky-hi.itismoon.fun
