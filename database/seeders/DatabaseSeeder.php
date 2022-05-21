@@ -23,10 +23,13 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
         \App\Models\Payment::create([
-            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => '09123123123', 'account_name' => 'moon'
+            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => 'https://lunarblessing.sgp1.cdn.digitaloceanspaces.com/QR/KpayQR.PNG'
         ]);
         \App\Models\Payment::create([
-            'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09505050',
+            'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09792761207',
+        ]);
+        \App\Models\Payment::create([
+            'name' => 'WAVEPAY (Wave Money) 2', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09452538242',
         ]);
         \App\Models\Point::create(['name' => 'Lucky Hi']);
         \App\Models\Point::create(['name' => 'MMK']);
