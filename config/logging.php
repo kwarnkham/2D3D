@@ -58,7 +58,14 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/' . now()->toDateString() . '/two-digit.log'),
             'level' => env('LOG_LEVEL', 'info'),
-            'days' => 360,
+            'days' => 365,
+        ],
+
+        'telegram' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/' . now()->toDateString() . '/telegram.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 365,
         ],
 
 
