@@ -202,7 +202,7 @@ class User extends Authenticatable implements HasLocalePreference
             if ($text[0] == '/start' && array_key_exists(1, $text) && static::getIdFromReferralCode($text[1])) {
                 $data['referrer_id'] = static::getIdFromReferralCode($text[1]);
             } else {
-                $data['referrer_id'] = 1;
+                $data['referrer_id'] = null;
             }
             $user = User::create($data);
             $accountProvider = AccountProvider::where('name', 'telegram')->first();
