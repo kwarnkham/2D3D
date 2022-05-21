@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Point;
 use App\Models\TopUp;
+use App\Services\TelegramService;
 
 class TopUpObserver
 {
@@ -15,7 +16,8 @@ class TopUpObserver
      */
     public function created(TopUp $topUp)
     {
-        //
+        //notify admin
+        TelegramService::sendAdminMessage("Received a new top up <a href='" . $topUp->getApproveLink() . "'>here</a>");
     }
 
     /**
@@ -28,6 +30,7 @@ class TopUpObserver
     {
         if ($topUp->status == 2) {
             //top_ups_status 2, approve
+            $topUp->user->notify(__("messages.Top Up has been approved"));
             $topUp->user->increasePoint(Point::find(2), $topUp->amount, 'top up approved', $topUp, referrable: true);
         }
     }

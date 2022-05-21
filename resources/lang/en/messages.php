@@ -21,5 +21,6 @@ return [
     "withdraw canceled" => "Withdraw Canceled",
     "more points for testing" => "More points for testing",
     "get application" => "Click <a href=':apkUrl'>here</a> to download the <strong>Android</strong> application.",
-    "application" => "Application"
+    "application" => "Application",
+    "Top Up has been approved" => "Top Up has been approved"
 ];

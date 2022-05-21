@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 class TelegramService
 {
 
-    public static function getUrl()
+    public static function getUrl($admin = false)
     {
-        return 'https://api.telegram.org/bot' . env("TELEGRAM_BOT_TOKEN");
+        return 'https://api.telegram.org/bot' . ($admin ? env("TELEGRAM_ADMIN_BOT_TOKEN") : env("TELEGRAM_BOT_TOKEN"));
     }
     public static function sendMessage($message, $chatId, $parseMode = 'HTML')
     {
@@ -27,6 +27,23 @@ class TelegramService
         } else {
             $options['text'] = $message;
             Http::get(static::getUrl() . '/sendMessage', $options);
+        }
+    }
+
+    public static function sendAdminMessage($message)
+    {
+        $options = [
+            'chat_id' => env('TELEGRAM_RECEIVER'),
+            'parse_mode' => 'HTML',
+        ];
+        if (is_array($message)) {
+            foreach ($message as $msg) {
+                $options['text'] = $msg;
+                Http::get(static::getUrl(true) . '/sendMessage', $options);
+            }
+        } else {
+            $options['text'] = $message;
+            Http::get(static::getUrl(true) . '/sendMessage', $options);
         }
     }
 

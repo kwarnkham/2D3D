@@ -46,10 +46,8 @@ sudo certbot renew --dry-run
 
 sudo mkdir -p /var/www/lucky-hi.itismoon.fun && cd /var/www/lucky-hi.itismoon.fun
 
-scp ~/Desktop/spa.zip root@2d3d.itismoon.fun:/root/
-scp C:\Users\kwarn\Projects\online_T\dist\spa.zip root@2d3d.itismoon.fun:/root/
-
 ```
+scp spa.zip root@2d3d.itismoon.fun:/root/
 rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 systemctl restart nginx
