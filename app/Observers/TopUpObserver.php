@@ -17,7 +17,7 @@ class TopUpObserver
     public function created(TopUp $topUp)
     {
         //notify admin
-        TelegramService::sendAdminMessage("Received a new top up <a href='" . $topUp->getApproveLink() . "'>here</a>");
+        TelegramService::sendAdminMessage("Received a new top up from user id of " . $topUp->user->id . " <a href='" . $topUp->getApproveLink() . "'>here</a>");
     }
 
     /**
