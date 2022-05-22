@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\RenewTestPoint;
 use App\Models\TwoDigit;
+use App\Models\TwoDigitHit;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -20,7 +21,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            if (TwoDigit::checkTime())
+            if (TwoDigitHit::checkDay())
                 TwoDigit::getResult();
         })->everyMinute();
 

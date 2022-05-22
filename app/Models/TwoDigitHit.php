@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class TwoDigitHit extends AppModel
@@ -14,6 +14,22 @@ class TwoDigitHit extends AppModel
     public function twoDigits()
     {
         return $this->hasMany(TwoDigit::class);
+    }
+
+    public static function checkDay(Carbon $runTime = null)
+    {
+        if (!$runTime) $runTime = now();
+        $today = (clone $runTime)->startOfDay();
+        if (in_array($today, array_map(
+            fn ($day) => new Carbon($day),
+            TwoDigit::CLOSED_DAYS
+        ))) {
+            return false;
+        } else if ($runTime->isDayOfWeek(Carbon::SATURDAY) || $runTime->isDayOfWeek(Carbon::SUNDAY)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function settle()

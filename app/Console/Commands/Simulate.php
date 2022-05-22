@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\TwoDigit;
+use App\Models\TwoDigitHit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -42,13 +42,11 @@ class Simulate extends Command
      */
     public function handle()
     {
-        // for ($i = 0; $i < 60 * 24 * 60; $i++) {
-        //     $days = [0 => 'sun', 1 => 'mon', 2 => 'tue', 3 => 'wed', 4 => 'thur', 5 => 'fri', 6 => 'sat'];
-        //     $time = today()->addSeconds($i + (24 * 60 * 60 * 2));
-        //     Log::channel('debug')->info($time->format('d-m-Y h:i:s A') . " => " . $days[$time->dayOfWeek]);
-        //     Log::channel('debug')->debug((TwoDigit::checkDay($time) && TwoDigit::checkTime(($time))) ? 'allow' : 'limit');
-        // }
-        Artisan::call('cache:clear');
-        return 0;
+        for ($i = 0; $i < 365; $i++) {
+            $day = today()->startOfYear()->addDay($i);
+            Log::channel('debug')->info($day->format("Y-m-dD") . " " . json_encode(TwoDigitHit::checkDay($day)));
+        }
+
+        echo 'done';
     }
 }
