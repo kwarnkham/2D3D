@@ -24,9 +24,7 @@ class TwoDigitHitController extends Controller
         ]);
         if (TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) abort(ResponseStatus::BAD_REQUEST->value, "Already settled for " . $data['day'] . ($data['morning'] ? " morning" : " evening"));
         return response()->json(DB::transaction(function () use ($data) {
-            $twoDigitHit =  TwoDigitHit::create($data);
-            $twoDigitHit->settle();
-            return $twoDigitHit;
+            return TwoDigitHit::create($data);
         }), ResponseStatus::CREATED->value);
     }
 

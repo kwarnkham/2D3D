@@ -20,7 +20,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            TwoDigit::getResult();
+            if (TwoDigit::checkTime())
+                TwoDigit::getResult();
         })->everyMinute();
 
         $schedule->call(function () {

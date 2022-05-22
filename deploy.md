@@ -24,6 +24,11 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+supervisorctl reread
+supervisorctl update
+supervisorctl start laravel-worker:\*
+supervisorctl status
+
 sudo chgrp -R www-data storage bootstrap/cache
 sudo chmod -R ug+rwx storage bootstrap/cache
 

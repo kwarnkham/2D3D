@@ -95,8 +95,11 @@ class TwoDigit extends AppModel implements PointLogable
 
         $first = "\width='34%'\>";
         $second = "\<\/td\>";
+        $firstDigit = null;
+        $secondDigit = null;
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Set is " . str_replace(',', '', $match[1]));
+            $firstDigit = substr($match[1], -1);
         } else {
             Log::channel('deubg')->info('set not found');
             Log::channel('debug')->info($str);
@@ -105,10 +108,34 @@ class TwoDigit extends AppModel implements PointLogable
         $first = "\<td class='mktD' width='22%'\>";
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Value is " . str_replace(',', '', $match[1]));
+            $secondDigit = substr(explode('.', $match[1])[0], -1);
         } else {
             Log::channel('deubg')->info('value not found');
             Log::channel('debug')->info($str);
         }
+        if (is_null($firstDigit) || is_null($secondDigit)) return;
+        $result = $firstDigit . $secondDigit;
+        $runTime = now();
+        $isMorningTime = ((today()->addHours(5)->addMinutes(30)) < $runTime) && ($runTime < (today()->addHours(5)->addMinutes(32)));
+        $isEveningTime = ((today()->addHours(11)->addMinutes(59)) < $runTime) && ($runTime < (today()->addHours(12)->addMinutes(1)));
+        $data = [
+            'number' => $result,
+            'rate' => 85, //store in config?
+            'day' => today(),
+            'morning' => $isMorningTime
+        ];
+
+        if ($isMorningTime) {
+            if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
+                TwoDigitHit::create($data);
+            Log::channel('two-digit')->info("Morning result is $result");
+        } else if ($isEveningTime) {
+            if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
+                TwoDigitHit::create($data);
+            Log::channel('two-digit')->info("Evening result is $result");
+        }
+
+        return $result;
     }
 
     public static function isEveningCheck(int $time)

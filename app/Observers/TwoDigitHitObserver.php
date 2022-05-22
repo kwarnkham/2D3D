@@ -16,6 +16,7 @@ class TwoDigitHitObserver
     public function created(TwoDigitHit $twoDigitHit)
     {
         Cache::forget('twoDigitHits');
+        $twoDigitHit->settle();
     }
 
     /**
