@@ -28,6 +28,7 @@ supervisorctl reread
 supervisorctl update
 supervisorctl start laravel-worker:\*
 supervisorctl status
+php artisan queue:restart
 
 sudo chgrp -R www-data storage bootstrap/cache
 sudo chmod -R ug+rwx storage bootstrap/cache
