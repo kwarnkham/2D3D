@@ -23,5 +23,8 @@ return [
     "more points for testing" => "စမ်းသပ်အသုံးပြုရန် ထပ်မံ ပေးထားသောအမှတ်",
     "get application" => "<strong>Android</strong> အပလီကေးရှင်းကိုဒေါင်းလုဒ်လုပ်ရန် <a href=':apkUrl'>ဤနေရာ</a> ကိုနှိပ်ပါ။",
     "application" => "အပလီကေးရှင်း",
-    "Top Up has been approved" => "ငွေဖြည့်သွင်းခြင်းကို အတည်ပြုပြီးပါပြီ"
+    "Top Up has been approved" => "ငွေဖြည့်သွင်းခြင်းကို အတည်ပြုပြီးပါပြီ",
+    "You have reached the maximum number of orders" => "ထပ်ထိုးလို့မရတော့ပါ",
+    "Order is closed. Please try again later." => "2D ပိတ်ချိန်ဖြစ်ပါသည်",
+    "maxPrice" => "နံပါတ် : ':number' ထိုးကြေးအလွန်များနေပါသည်။ ထိုးကြေးလျော့ပြီး သို့မဟုတ် နောက်မှ ထပ်ထိုးကြည့်ပါ"
 ];

@@ -19,9 +19,10 @@ class TwoDigitController extends Controller
             'numbers.*.amount' => ['required', 'numeric', 'min:100'],
             'point_id' => ['required', 'exists:points,id']
         ]);
-        abort_unless(TwoDigit::checkTime(), ResponseStatus::BAD_REQUEST->value, "Order is closed. Please try again later.");
+        abort_unless(TwoDigit::checkTime(), ResponseStatus::BAD_REQUEST->value, __("messages.Order is closed. Please try again later."));
         $maxCheck = TwoDigit::checkMaxPrize($data['numbers']);
-        abort_unless($maxCheck == 'passed', ResponseStatus::BAD_REQUEST->value, "Number : '$maxCheck' amount is too much, please reduce the amount and try again");
+        abort_unless($maxCheck == 'passed', ResponseStatus::BAD_REQUEST->value, __("messages.maxPrice", ['number' => $maxCheck]));
+        abort_unless($request->user()->check2DCount(55), ResponseStatus::BAD_REQUEST->value, __("messages.You have reached the maximum number of orders"));
 
         $user = $request->user();
         $point = Point::find($data['point_id']);

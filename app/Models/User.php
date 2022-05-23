@@ -225,6 +225,11 @@ class User extends Authenticatable implements HasLocalePreference
         return $userPoint->pivot->balance;
     }
 
+    public function check2DCount(int $limit)
+    {
+        return $this->twoDigits()->where('point_id', 2)->whereNull('settled_at')->whereDay('created_at', now())->distinct('number')->count() < $limit;
+    }
+
     public function getReferableBalanceByPoint(Point $point)
     {
         $userPoint = $this->points()->where('point_id', $point->id)->first();

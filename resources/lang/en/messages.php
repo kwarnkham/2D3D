@@ -22,5 +22,8 @@ return [
     "more points for testing" => "More points for testing",
     "get application" => "Click <a href=':apkUrl'>here</a> to download the <strong>Android</strong> application.",
     "application" => "Application",
-    "Top Up has been approved" => "Top Up has been approved"
+    "Top Up has been approved" => "Top Up has been approved",
+    "You have reached the maximum number of orders" => "You have reached the maximum number of orders",
+    "Order is closed. Please try again later" => "Order is closed. Please try again later",
+    "maxPrice" => "Number : ':number' amount is too much, please reduce the amount and try again"
 ];

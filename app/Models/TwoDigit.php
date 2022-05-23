@@ -83,11 +83,6 @@ class TwoDigit extends AppModel implements PointLogable
         );
     }
 
-    public static function isMorningCheck(int $time)
-    {
-        return $time < (static::MORNING_DURATION + 3600 - 59);
-    }
-
     public static function getResult()
     {
         $r = Http::get("https://wwwa1.settrade.com/C13_MarketSummary.jsp");
@@ -138,6 +133,11 @@ class TwoDigit extends AppModel implements PointLogable
         return $result;
     }
 
+    public static function isMorningCheck(int $time)
+    {
+        return $time < (static::MORNING_DURATION + 3600 - 59);
+    }
+
     public static function isEveningCheck(int $time)
     {
         return $time >= (static::MORNING_DURATION + 3600 - 59) && $time < (static::EVENING_DURATION + 3600 - 59);
@@ -158,19 +158,29 @@ class TwoDigit extends AppModel implements PointLogable
         return static::EVENING_DURATION >= $time;
     }
 
+
+
     public static function checkDay(Carbon $runTime = null)
     {
+
         if (!$runTime) $runTime = now();
+        if ($runTime->isDayOfWeek(Carbon::SATURDAY)) return false;
         $today = (clone $runTime)->startOfDay();
+        if (in_array($today, array_map(
+            fn ($day) => (new Carbon($day))->subDay(),
+            static::CLOSED_DAYS
+        ))) {
+            if ($today->isDayOfWeek(Carbon::SUNDAY) || $today->isDayOfWeek(Carbon::SATURDAY)) return false;
+            else return $runTime->diffInSeconds($today) <= static::EVENING_DURATION;
+        };
         if (in_array($today, array_map(
             fn ($day) => new Carbon($day),
             static::CLOSED_DAYS
         ))) {
-            return false;
+            if ($today->isDayOfWeek(Carbon::FRIDAY) || $today->isDayOfWeek(Carbon::SATURDAY)) return false;
+            else return static::isMorningCheckDiffDay($runTime->diffInSeconds($today));
         };
-        if ($runTime->isDayOfWeek(Carbon::SATURDAY)) {
-            return false;
-        } else if ($runTime->isDayOfWeek(Carbon::FRIDAY)) {
+        if ($runTime->isDayOfWeek(Carbon::FRIDAY)) {
             return $runTime->diffInSeconds($today) <= static::EVENING_DURATION;
         } else if ($runTime->isDayOfWeek(Carbon::SUNDAY)) {
             return static::isMorningCheckDiffDay($runTime->diffInSeconds($today));
@@ -181,18 +191,22 @@ class TwoDigit extends AppModel implements PointLogable
 
     public static function checkTime(Carbon $runTime = null)
     {
-        if (!static::checkDay()) return;
+        if (!static::checkDay($runTime)) return;
         if (!$runTime) $runTime = now();
         $today = (clone $runTime)->startOfDay();
         $time = $runTime->diffInSeconds($today);
+        // b4 12:30:00
         if (static::isMorningCheck($time)) {
-            $passed = static::isMorning($time);
-            return $passed;
-        } else if (static::isEveningCheck($time)) {
-            $passed = static::isEvening($time);
-
-            return $passed;
-        } else if (static::isMorningCheckDiffDay($time)) {
+            // b4 11:30:59(inclusive)
+            return static::isMorning($time);
+        }
+        // after 12:30:00(inclusive) and b4 05:00:00
+        else if (static::isEveningCheck($time)) {
+            // b4 04:00:59(inclusive)
+            return static::isEvening($time);
+        }
+        // after 05:00:00(inclusive)
+        else if (static::isMorningCheckDiffDay($time)) {
             return true;
         }
     }
@@ -272,7 +286,7 @@ class TwoDigit extends AppModel implements PointLogable
         foreach ($numbers as $number) {
             $maxPrize = static::getMaxPrize($number['number']) + (int)collect($numbers)->filter(fn ($value) => $value['number'] != $number['number'])->reduce(fn ($carry, $value) => $value['amount'] + $carry, 0);
             $numberTotalAmount = static::getQueryBuilderOfEffectedNumbers()->where('number', $number['number'])->pluck('amount')->sum();
-            if ($maxPrize < (($number['amount'] + $numberTotalAmount) * 10)) return $number['number'];
+            if ($maxPrize < (($number['amount'] + $numberTotalAmount) * 85)) return $number['number'];
         }
         return "passed";
     }
