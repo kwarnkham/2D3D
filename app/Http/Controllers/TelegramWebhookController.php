@@ -73,7 +73,7 @@ class TelegramWebhookController extends Controller
                 }
                 break;
             case strtolower(__("messages.help")):
-                $message = "help ";
+                $message = __("messages.please message to get help");
                 break;
             default:
                 if ($password) $message = $starterMessage;

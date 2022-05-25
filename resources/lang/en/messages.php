@@ -25,5 +25,6 @@ return [
     "Top Up has been approved" => "Top Up has been approved",
     "You have reached the maximum number of orders" => "You have reached the maximum number of orders",
     "Order is closed. Please try again later" => "Order is closed. Please try again later",
-    "maxPrice" => "Number : ':number' amount is too much, please reduce the amount and try again"
+    "maxPrice" => "Number : ':number' amount is too much, please reduce the amount and try again",
+    "please message to get help" => "Please message <a href='https://t.me/luckyhi2d'>me</a> to get help"
 ];

@@ -26,5 +26,6 @@ return [
     "Top Up has been approved" => "ငွေဖြည့်သွင်းခြင်းကို အတည်ပြုပြီးပါပြီ",
     "You have reached the maximum number of orders" => "ထပ်ထိုးလို့မရတော့ပါ",
     "Order is closed. Please try again later." => "2D ပိတ်ချိန်ဖြစ်ပါသည်",
-    "maxPrice" => "နံပါတ် : ':number' ထိုးကြေးအလွန်များနေပါသည်။ ထိုးကြေးလျော့ပြီး သို့မဟုတ် နောက်မှ ထပ်ထိုးကြည့်ပါ"
+    "maxPrice" => "နံပါတ် : ':number' ထိုးကြေးအလွန်များနေပါသည်။ ထိုးကြေးလျော့ပြီး သို့မဟုတ် နောက်မှ ထပ်ထိုးကြည့်ပါ",
+    "please message to get help" => "အကူအညီရယူရန် <a href='https://t.me/luckyhi2d'>ကျွန်တော့်ကို</a> မက်ဆေ့ချ်ပို့ပါ။"
 ];
