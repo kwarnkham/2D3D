@@ -46,7 +46,7 @@ class TwoDigit extends AppModel implements PointLogable
 
     public function jackPotReward()
     {
-        return $this->belongsTo(JackPotReward::class);
+        return $this->belongsTo(JackpotReward::class);
     }
 
     public function point_log()
@@ -56,7 +56,7 @@ class TwoDigit extends AppModel implements PointLogable
 
     public function jackPot()
     {
-        return $this->hasOne(JackPot::class);
+        return $this->hasOne(Jackpot::class);
     }
 
     public function point()
@@ -170,14 +170,21 @@ class TwoDigit extends AppModel implements PointLogable
             fn ($day) => (new Carbon($day))->subDay(),
             static::CLOSED_DAYS
         ))) {
-            if ($today->isDayOfWeek(Carbon::SUNDAY) || $today->isDayOfWeek(Carbon::SATURDAY)) return false;
+            if (
+                $today->isDayOfWeek(Carbon::SUNDAY)
+                || $today->isDayOfWeek(Carbon::SATURDAY)
+                || in_array($today, array_map(
+                    fn ($day) => new Carbon($day),
+                    static::CLOSED_DAYS
+                ))
+            ) return false;
             else return $runTime->diffInSeconds($today) <= static::EVENING_DURATION;
         };
         if (in_array($today, array_map(
             fn ($day) => new Carbon($day),
             static::CLOSED_DAYS
         ))) {
-            if ($today->isDayOfWeek(Carbon::FRIDAY) || $today->isDayOfWeek(Carbon::SATURDAY)) return false;
+            if ($today->isDayOfWeek(Carbon::FRIDAY) || $today->isDayOfWeek(Carbon::SATURDAY) || in_array((clone $today)->addDay(), array_map(fn ($value) => new Carbon($value), TwoDigit::CLOSED_DAYS))) return false;
             else return static::isMorningCheckDiffDay($runTime->diffInSeconds($today));
         };
         if ($runTime->isDayOfWeek(Carbon::FRIDAY)) {
@@ -291,7 +298,7 @@ class TwoDigit extends AppModel implements PointLogable
         return "passed";
     }
 
-    public static function processJackPot(TwoDigitHit $twoDigitHit)
+    public static function processJackpot(TwoDigitHit $twoDigitHit)
     {
         DB::transaction(function () use ($twoDigitHit) {
             $query = TwoDigit::whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
@@ -301,7 +308,7 @@ class TwoDigit extends AppModel implements PointLogable
                 ]);
             }
             $query->update(['jack_potted_at' => now()]);
-            Cache::forget('twoDigitJackPot');
+            Cache::forget('twoDigitJackpot');
         });
     }
 

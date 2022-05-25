@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Point::create(['name' => 'MMK']);
         \App\Models\Role::create(['name' => 'admin']);
         \App\Models\AppVersion::create(['version' => '1.0.0']);
-        \App\Models\JackPotNumber::create(['number' => 0]);
+        \App\Models\JackpotNumber::create(['number' => 0]);
         Artisan::call('make:admin moon ninjamoon');
         if (env("APP_ENV") != 'production')
             DB::transaction(function () {

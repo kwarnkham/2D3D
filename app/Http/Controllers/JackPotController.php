@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JackPot;
+use App\Models\Jackpot;
 use App\Models\TwoDigit;
 use Illuminate\Http\Request;
 
 
-class JackPotController extends Controller
+class JackpotController extends Controller
 {
-    public function twoDigitJackPot()
+    public function twoDigitJackpot()
     {
-        return response()->json(JackPot::getJackPot());
+        return response()->json(Jackpot::getJackpot());
     }
 }

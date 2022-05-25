@@ -6,7 +6,7 @@ use App\Contracts\PointLogable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 
-class JackPotReward extends AppModel implements PointLogable
+class JackpotReward extends AppModel implements PointLogable
 {
     use HasFactory;
 

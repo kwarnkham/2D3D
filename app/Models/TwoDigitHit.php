@@ -49,15 +49,15 @@ class TwoDigitHit extends AppModel
                     ->whereNull('settled_at');
             }
             $twoDigitUpdateData = ['two_digit_hit_id' => $this->id];
-            $jackPotNumber = JackPotNumber::whereNull('hit_at')->orderBy('id', 'desc')->first();
+            $jackPotNumber = JackpotNumber::whereNull('hit_at')->orderBy('id', 'desc')->first();
 
             //hit jackpot
             if ($jackPotNumber && $this->number == $jackPotNumber->number) {
                 $shared = (clone $builder)->where('number', $this->number)->count();
                 if ($shared > 0) {
-                    $amount = JackPot::getJackPot(false);
+                    $amount = Jackpot::getJackpot(false);
                     $sharedAmount = floor($amount / $shared);
-                    $jackPotReward = JackPotReward::create([
+                    $jackPotReward = JackpotReward::create([
                         'amount' => $amount,
                         'shared_amount' => $sharedAmount,
                         'jack_pot_number_id' => $jackPotNumber->id
@@ -65,10 +65,10 @@ class TwoDigitHit extends AppModel
                     $twoDigitUpdateData['jack_pot_reward_id'] = $jackPotReward->id;
                     $jackPotNumber->hit_at = now();
                     $jackPotNumber->save();
-                    JackPotNumber::create([
+                    JackpotNumber::create([
                         'number' => $jackPotNumber->number == 99 ? 0 : $jackPotNumber->number + 1
                     ]);
-                    JackPot::whereIn('id', JackPot::effectiveQuery()->pluck('id')->toArray())
+                    Jackpot::whereIn('id', Jackpot::effectiveQuery()->pluck('id')->toArray())
                         ->update(['status' => 2, 'jack_pot_reward_id' => $jackPotReward->id]);
                 }
             };
@@ -80,7 +80,7 @@ class TwoDigitHit extends AppModel
             foreach ($this->twoDigits as $twoDigit) {
                 $twoDigit->processPrize();
             }
-            TwoDigit::processJackPot($this);
+            TwoDigit::processJackpot($this);
         });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -42,9 +43,9 @@ class Simulate extends Command
      */
     public function handle()
     {
-        for ($i = 0; $i < 365; $i++) {
-            $day = today()->startOfYear()->addDay($i);
-            Log::channel('debug')->info($day->format("Y-m-dD") . " " . json_encode(TwoDigitHit::checkDay($day)));
+        for ($i = 0; $i < 60 * 60 * 24; $i++) {
+            $day = today()->addDay()->addSeconds($i);
+            Log::channel('debug')->info($day->format("Y-m-d h:i:s A") . " " . json_encode(TwoDigit::checkTime($day)));
         }
 
         echo 'done';

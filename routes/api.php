@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\JackPotController;
+use App\Http\Controllers\JackpotController;
+use App\Http\Controllers\JackpotNumberController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\PointLogController;
@@ -99,6 +100,10 @@ Route::middleware(['auth:sanctum'])->controller(PointController::class)->group(f
     Route::get('/point', 'index');
 });
 
-Route::controller(JackPotController::class)->group(function () {
-    Route::get('/jack-pot', 'twoDigitJackPot');
+Route::controller(JackpotController::class)->group(function () {
+    Route::get('/jackpot', 'twoDigitJackpot');
+});
+
+Route::controller(JackpotNumberController::class)->group(function () {
+    Route::get('/jackpot-number', 'current');
 });

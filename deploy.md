@@ -15,9 +15,12 @@ git clone https://github.com/kwarnkham/2D3D.git
 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
 apt install composer
 composer install --optimize-autoloader --no-dev
-sudo chown -R www-data:www-data /var/www/2d3d.itismoon.fun
-sudo chmod -R 755 /var/www/2d3d.itismoon.fun
-sudo chmod -R 755 /var/www
+
+sudo chown -R www-data:www-data /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
+sudo chmod -R 755 /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
+
+sudo chgrp -R www-data /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
+sudo chmod -R ug+rwx /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
 
 php artisan optimize:clear
 php artisan config:cache

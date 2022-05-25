@@ -34,6 +34,27 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\AppSetting
+ *
+ * @property int $id
+ * @property float $pool_amount
+ * @property string|null $config
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting whereConfig($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting wherePoolAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AppSetting whereUpdatedAt($value)
+ */
+	class AppSetting extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * App\Models\AppVersion
  *
  * @property int $id
@@ -80,26 +101,39 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\JackPot
+ * App\Models\Jackpot
  *
- * @property int $id
- * @property int $jack_potable_id
- * @property string $jack_potable_type
- * @property float $amount
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $jack_potable
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot query()
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereJackPotableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereJackPotableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|JackPot whereUpdatedAt($value)
+ * @property-read \App\Models\TwoDigit|null $twoDigit
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot query()
  */
-	class JackPot extends \Eloquent {}
+	class Jackpot extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\JackpotNumber
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber query()
+ */
+	class JackpotNumber extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\JackpotReward
+ *
+ * @property-read \App\Models\PointLog|null $point_log
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TwoDigit[] $twoDigits
+ * @property-read int|null $two_digits_count
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward query()
+ */
+	class JackpotReward extends \Eloquent implements \App\Contracts\PointLogable {}
 }
 
 namespace App\Models{
@@ -132,8 +166,9 @@ namespace App\Models{
  * @property string $name
  * @property string|null $mm_name
  * @property int $type
- * @property string $number
+ * @property string|null $number
  * @property string|null $account_name
+ * @property string|null $qr
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Database\Factories\PaymentFactory factory(...$parameters)
@@ -146,6 +181,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereMmName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereQr($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
  */
@@ -332,11 +368,13 @@ namespace App\Models{
  * @property float $amount
  * @property int $point_id
  * @property int|null $two_digit_hit_id
+ * @property int|null $jack_pot_reward_id
  * @property string|null $settled_at
  * @property string|null $jack_potted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\JackPot|null $jackPot
+ * @property-read \App\Models\Jackpot|null $jackPot
+ * @property-read \App\Models\JackpotReward|null $jackPotReward
  * @property-read \App\Models\Point $point
  * @property-read \App\Models\PointLog|null $point_log
  * @property-read \App\Models\TwoDigitHit|null $twoDigitHit
@@ -350,6 +388,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackPotRewardId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackPottedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit wherePointId($value)
@@ -366,7 +405,7 @@ namespace App\Models{
  * App\Models\TwoDigitHit
  *
  * @property int $id
- * @property string $number
+ * @property int $number
  * @property int $rate
  * @property string $day
  * @property int $morning
