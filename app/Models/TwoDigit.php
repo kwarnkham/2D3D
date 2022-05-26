@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
+use App\Jobs\ProcessResult;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -92,11 +93,14 @@ class TwoDigit extends AppModel implements PointLogable
         $second = "\<\/td\>";
         $firstDigit = null;
         $secondDigit = null;
+        $set = null;
+        $value = null;
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Set is " . str_replace(',', '', $match[1]));
             $firstDigit = substr($match[1], -1);
+            $set = $match[1];
         } else {
-            Log::channel('deubg')->info('set not found');
+            Log::channel('debug')->info('set not found');
             Log::channel('debug')->info($str);
         }
 
@@ -104,20 +108,23 @@ class TwoDigit extends AppModel implements PointLogable
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
             Log::channel('two-digit')->info("Value is " . str_replace(',', '', $match[1]));
             $secondDigit = substr(explode('.', $match[1])[0], -1);
+            $value = $match[1];
         } else {
-            Log::channel('deubg')->info('value not found');
+            Log::channel('debug')->info('value not found');
             Log::channel('debug')->info($str);
         }
         if (is_null($firstDigit) || is_null($secondDigit)) return;
         $result = $firstDigit . $secondDigit;
         $runTime = now();
-        $isMorningTime = ((today()->addHours(5)->addMinutes(30)) < $runTime) && ($runTime < (today()->addHours(5)->addMinutes(32)));
-        $isEveningTime = ((today()->addHours(11)->addMinutes(59)) < $runTime) && ($runTime < (today()->addHours(12)->addMinutes(1)));
+        $isMorningTime = ((today()->addHours(5)->addMinutes(30))->addSeconds(20) < $runTime) && ($runTime < (today()->addHours(5)->addMinutes(30)->addSeconds(50)));
+        $isEveningTime = ((today()->addHours(12)->addSeconds(20)) < $runTime) && ($runTime < (today()->addHours(12)->addSeconds(50)));
         $data = [
             'number' => $result,
-            'rate' => 85, //store in config?
+            'rate' => AppSetting::current()->config->rate,
             'day' => today(),
-            'morning' => $isMorningTime
+            'morning' => $isMorningTime,
+            'set' => $set,
+            'value' => $value
         ];
 
         if ($isMorningTime) {
@@ -129,7 +136,6 @@ class TwoDigit extends AppModel implements PointLogable
                 TwoDigitHit::create($data);
             Log::channel('two-digit')->info("Evening result is $result");
         }
-
         return $result;
     }
 
@@ -221,19 +227,18 @@ class TwoDigit extends AppModel implements PointLogable
     public static function getQueryBuilderOfEffectedNumbers(Carbon $runTime = null)
     {
         if (!$runTime) $runTime = now();
-        $time = $runTime->diffInSeconds(today());
-        $isMorning = static::isMorning($time) || static::isMorningCheckDiffDay($time);
-        if ($isMorning) {
-            $startTime = today()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800);
-            $endTime = today()->addSeconds(TwoDigit::MORNING_DURATION);
-
-            return TwoDigit::where('created_at', '<=', $endTime)->where('created_at', '>=', $startTime);
+        $time = $runTime->diffInSeconds((clone $runTime)->startOfDay());
+        if (static::isMorning($time)) {
+            $startTime = (clone $runTime)->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800);
+            $endTime = (clone $runTime)->startOfDay()->addSeconds(TwoDigit::MORNING_DURATION);
+            return TwoDigit::where('created_at', '>=', $startTime)->where('created_at', '<=', $endTime);
+        } else if (static::isMorningCheckDiffDay($time)) {
+            $startTime = (clone $runTime)->startOfDay()->addSeconds(TwoDigit::EVENING_DURATION + 1800);
+            return TwoDigit::where('created_at', '>=', $startTime);
         } else {
-            $startTime = today()->addSeconds(TwoDigit::MORNING_DURATION + 3600 - 59);
-            $endTime = today()->addSeconds(TwoDigit::EVENING_DURATION);
-
-            return TwoDigit::where('created_at', '>=', $startTime)
-                ->where('created_at', '<=', $endTime);
+            $startTime = (clone $runTime)->startOfDay()->addSeconds(TwoDigit::MORNING_DURATION + 3600 - 59);
+            $endTime = (clone $runTime)->startOfDay()->addSeconds(TwoDigit::EVENING_DURATION);
+            return TwoDigit::where('created_at', '>=', $startTime)->where('created_at', '<=', $endTime);
         }
     }
 
@@ -316,7 +321,7 @@ class TwoDigit extends AppModel implements PointLogable
     {
         $query = TwoDigit::whereNotNull('settled_at')->whereNull('two_digit_hit_id');
         if ($day) {
-            $startTime = $day->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION);
+            $startTime = (clone $day)->startOfDay()->subDay()->addSeconds(TwoDigit::EVENING_DURATION);
             $endTime = (clone $startTime)->addSeconds(86400);
             $query->where('created_at', '>', $startTime)->where('created_at', '<=', $endTime);
         }

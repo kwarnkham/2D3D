@@ -20,7 +20,9 @@ class TwoDigitHitController extends Controller
             'number' => ['required', 'numeric', 'digits_between:1,2'],
             'rate' => ['required', 'numeric'],
             'day' => ['required', 'string', 'date'],
-            'morning' => ['required', 'boolean']
+            'morning' => ['required', 'boolean'],
+            'set' => ['required', 'numeric'],
+            'value' => ['required', 'numeric'],
         ]);
         if (TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) abort(ResponseStatus::BAD_REQUEST->value, "Already settled for " . $data['day'] . ($data['morning'] ? " morning" : " evening"));
         return response()->json(DB::transaction(function () use ($data) {

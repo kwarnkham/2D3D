@@ -19,6 +19,8 @@ return new class extends Migration
             $table->tinyInteger('rate');
             $table->timestamp('day');
             $table->boolean('morning');
+            $table->double('set');
+            $table->double('value');
             $table->timestamps();
             $table->unique(['day', 'morning']);
         });

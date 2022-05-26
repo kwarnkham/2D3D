@@ -38,10 +38,6 @@ class TwoDigitHit extends AppModel
             if ($this->morning) {
                 $morningStartTime = (new Carbon($this->day))->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 3600 - 59);
                 $morningEndTime = (new Carbon($this->day))->addSeconds(TwoDigit::MORNING_DURATION);
-                // if (now()->greaterThan(today()->addHours(9)->addMinutes(31))) {
-                //     $morningStartTime->addDay();
-                //     $morningEndTime->addDay();
-                // }
                 $builder = TwoDigit::where('created_at', '>=', $morningStartTime)
                     ->where('created_at', '<=', $morningEndTime)
                     ->whereNull('settled_at');

@@ -20,6 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
@@ -46,9 +47,9 @@ class TwoDigitTest extends TestCase
         Point::create(['name' => 'MMK']);
         AppSetting::create([
             'pool_amount' => '1000000', 'config' => [
-                'jackpot_rate' => '0.1',
-                'referral_rate' => '0.05',
-                'rate' => '85'
+                'jackpot_rate' => '0.131',
+                'referral_rate' => '0.0532',
+                'rate' => '50'
             ]
         ]);
         Payment::create([
@@ -117,14 +118,17 @@ class TwoDigitTest extends TestCase
         ]);
         $response->assertStatus(201);
         //settle 99
+
         $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '99',
             'rate' => $rate,
-            'day' => today()->format("Y/m/d"),
+            'set' => '1',
+            'value' => '1',
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
             'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
         $response->assertStatus(201);
-        assertTrue(Jackpot::getJackpot(false) == 25);
+        $this->assertEquals(Jackpot::getJackpot(false), 250 * $this->config->jackpot_rate);
         //update settle
         assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
 
@@ -161,7 +165,9 @@ class TwoDigitTest extends TestCase
         $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '0',
             'rate' => $rate,
-            'day' => today()->format("Y/m/d"),
+            'set' => '1',
+            'value' => '1',
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
             'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
         $response->assertStatus(201);
@@ -177,8 +183,8 @@ class TwoDigitTest extends TestCase
         assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
         assertTrue(PointLog::where('note', '2d prize')->count() == 2);
         assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
-        assertTrue($this->user->getBalanceByPoint(Point::find(2)) == (30000 - 450 + (100 * $rate) + 12));
-        assertTrue($this->user2->getBalanceByPoint(Point::find(2)) == (10000 - 200 + (100 * $rate) + 12));
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (30000 - 450 + (100 * $rate) + JackpotReward::find(1)->shared_amount));
+        $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 + (100 * $rate) + JackpotReward::find(1)->shared_amount));
     }
 
 
@@ -216,13 +222,17 @@ class TwoDigitTest extends TestCase
 
         $response->assertCreated();
 
+        $this->assertDatabaseCount('referral_rewards', 1);
         $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200);
         $this->assertEquals($user->getReferableBalanceByPoint(Point::find(2)), $amount - 200);
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), 200 * $this->config->referral_rate);
 
         $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '0',
+            'set' => '1',
+            'value' => '1',
             'rate' => $this->config->rate,
-            'day' => today()->format("Y/m/d"),
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
             'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
 
@@ -240,6 +250,7 @@ class TwoDigitTest extends TestCase
 
         $this->assertEquals($user->getBalanceByPoint(Point::find(2)), 0);
         $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), $amount * $this->config->referral_rate);
+        $this->assertDatabaseCount('referral_rewards', 2);
     }
 
     public function test_2d_time()
@@ -302,6 +313,36 @@ class TwoDigitTest extends TestCase
                     $this->assertTrue(TwoDigit::checkDay($time));
                 } else $this->assertFalse(TwoDigit::checkDay($time));
             } else $this->assertTrue(TwoDigit::checkDay($time));
+        }
+    }
+
+    public function test_get_2d_effected_query()
+    {
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 60 * 60 * 24 * 365 * 100,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+        for ($i = 442380; $i < 60 * 60 * 24 * 365; $i++) {
+            $time = today()->startOfYear()->addSeconds($i);
+            if (TwoDigit::checkTime($time)) {
+                Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
+                $result = $this->user->twoDigits()->create([
+                    'number' => '00',
+                    'amount' => '100',
+                    'point_id' => '2',
+                    'created_at' => $time
+                ]);
+                // Log::channel('debug')->info($result);
+                $this->assertEquals(1, TwoDigit::getQueryBuilderOfEffectedNumbers($time)->count());
+                DB::table('two_digits')->truncate();
+                file_put_contents(storage_path('logs/debug.log'), '');
+            }
         }
     }
 }

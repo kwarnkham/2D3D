@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\ProcessResult;
 use App\Jobs\RenewTestPoint;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
@@ -21,8 +22,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            if (TwoDigitHit::checkDay())
-                TwoDigit::getResult();
+            for ($i = 0; $i < 60; $i += 5) {
+                ProcessResult::dispatch()->delay(now()->addSeconds($i));
+            }
         })->everyMinute();
 
         $schedule->call(function () {
