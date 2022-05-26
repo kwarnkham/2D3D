@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('jack_pot_rewards', function (Blueprint $table) {
+        Schema::create('jackpot_rewards', function (Blueprint $table) {
             $table->id();
             $table->double('amount');
             $table->double('shared_amount');
-            $table->foreignId('jack_pot_number_id')->constrained();
+            $table->foreignId('jackpot_number_id')->constrained();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jack_pot_rewards');
+        Schema::dropIfExists('jackpot_rewards');
     }
 };

@@ -42,7 +42,7 @@ class TwoDigitController extends Controller
 
                     if ($created) {
                         $referrer = $user->referrer;
-                        if ($referrer) $referrer->processReferrerReward($user, $totalAmount, $point);
+                        if ($referrer) $user->processReferrerReward($referrer, $totalAmount, $point);
                     }
                     return $created;
                 }

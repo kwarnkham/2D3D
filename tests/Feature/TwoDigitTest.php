@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\AppSetting;
+use App\Models\AppVersion;
 use App\Models\Jackpot;
 use App\Models\JackpotNumber;
 use App\Models\JackpotReward;
+use App\Models\Payment;
 use App\Models\Point;
 use App\Models\PointLog;
+use App\Models\Role;
 use App\Models\TopUp;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
@@ -29,68 +33,178 @@ class TwoDigitTest extends TestCase
      *
      * @return void
      */
-    public function test_create_two_digit()
+
+    private $user = null;
+    private $user2 = null;
+    private $admin = null;
+    private $config = null;
+
+    protected function setUp(): void
     {
-        $this->withoutExceptionHandling();
+        parent::setUp();
         Point::create(['name' => 'Lucky Hi']);
         Point::create(['name' => 'MMK']);
-        \App\Models\AppSetting::create([
+        AppSetting::create([
             'pool_amount' => '1000000', 'config' => [
                 'jackpot_rate' => '0.1',
-                'referral_rate' => '0.05'
+                'referral_rate' => '0.05',
+                'rate' => '85'
             ]
         ]);
-        \App\Models\Payment::create([
-            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => '09123123123', 'account_name' => 'moon'
+        Payment::create([
+            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => 'https://lunarblessing.sgp1.cdn.digitaloceanspaces.com/QR/KpayQR.PNG'
         ]);
-        $user = User::create(['name' => 'moon1', 'password' => '123123']);
-        $response = $this->actingAs($user)->postJson('api/top-up', [
+        Payment::create([
+            'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09792761207',
+        ]);
+        Payment::create([
+            'name' => 'WAVEPAY (Wave Money) 2', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09452538242',
+        ]);
+        Role::create(['name' => 'admin']);
+        JackpotNumber::create(['number' => 0]);
+        AppVersion::create(['version' => '1.0.0']);
+        $this->user = User::create(['name' => 'moon1', 'password' => '123123']);
+        Artisan::call('make:admin moon ninjamoon');
+        $this->admin = User::where('name', 'moon')->first();
+        $this->user2 = User::create(['name' => 'moon2', 'password' => '123123']);
+        $this->config = AppSetting::current()->config;
+    }
+
+    public function test_app_logic()
+    {
+        $this->withoutExceptionHandling();
+        $rate = $this->config->rate;
+        //top up payment 1
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
             'amount' => 10000,
             'payment_id' => 1,
             'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
         ]);
         $response->assertCreated();
-
-        \App\Models\Role::create(['name' => 'admin']);
-        \App\Models\JackpotNumber::create(['number' => 0]);
-        Artisan::call('make:admin moon ninjamoon');
-        $admin = User::where('name', 'moon')->first();
-        $response = $this->actingAs($admin)->postJson('api/top-up/approve/1', [
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
             'picture' => UploadedFile::fake()->image('avatar.jpg')
         ]);
         $response->assertOk();
-
-        $response = $this->actingAs($user)->postJson('api/two-digit', [
+        //top up payment 2
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 10000,
+            'payment_id' => 2,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/2', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+        //top up payment 3
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 10000,
+            'payment_id' => 3,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/3', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+        //bet 2d
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
             'numbers' => [
                 ['number' => 0, 'amount' => 100],
                 ['number' => 1, 'amount' => 150]
             ],
             'point_id' => 2
         ]);
-
         $response->assertStatus(201);
-
-        $response = $this->actingAs($admin)->postJson('api/two-digit-hit', [
+        //settle 99
+        $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '99',
-            'rate' => 10,
-            'day' => '2022/05/15',
-            'morning' => false
+            'rate' => $rate,
+            'day' => today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
-
         $response->assertStatus(201);
         assertTrue(Jackpot::getJackpot(false) == 25);
-        assertTrue(TwoDigitHit::find(1)->update(['day' => '2022/05/14']) == 1);
-        $user2 = User::create(['name' => 'moon2', 'password' => '123123']);
-        $response = $this->actingAs($user2)->postJson('api/top-up', [
+        //update settle
+        assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
+
+        //top up and approve user 2
+        $response = $this->actingAs($this->user2)->postJson('api/top-up', [
             'amount' => 10000,
             'payment_id' => 1,
             'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
         ]);
         $response->assertCreated();
-        $response = $this->actingAs($admin)->postJson('api/top-up/approve/2', [
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/4', [
             'picture' => UploadedFile::fake()->image('avatar.jpg')
         ]);
         $response->assertOk();
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 100],
+                ['number' => 1, 'amount' => 100]
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 100],
+                ['number' => 1, 'amount' => 100]
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
+            'number' => '0',
+            'rate' => $rate,
+            'day' => today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
+        ]);
+        $response->assertStatus(201);
+
+        assertTrue(JackpotReward::find(1)->shared_amount == floor(Jackpot::where('status', 2)->pluck('amount')->sum() / 2));
+        assertTrue(PointLog::where('user_id', $this->user->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
+        assertTrue(PointLog::where('user_id', $this->user2->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
+        assertTrue(JackpotNumber::whereNotNull('hit_at')->first()->number == 0);
+        assertTrue(Jackpot::where('status', 2)->count() == 2);
+        assertTrue(Jackpot::where('status', 2)->first()->jackpot_reward_id == 1);
+        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->jackpot_reward_id == 1);
+        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
+        assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
+        assertTrue(PointLog::where('note', '2d prize')->count() == 2);
+        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
+        assertTrue($this->user->getBalanceByPoint(Point::find(2)) == (30000 - 450 + (100 * $rate) + 12));
+        assertTrue($this->user2->getBalanceByPoint(Point::find(2)) == (10000 - 200 + (100 * $rate) + 12));
+    }
+
+
+    public function test_referral_code()
+    {
+        $this->withExceptionHandling();
+        $user = User::create([
+            'referrer_id' => $this->user->id,
+            'name' => 'test',
+            'password' => 'test'
+        ]);
+
+        $amount = 1000;
+
+        $this->actingAs($user)->postJson('api/top-up', [
+            'amount' => $amount,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+
+        $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+
+        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount);
+        $this->assertEquals($user->getReferableBalanceByPoint(Point::find(2)), $amount);
 
         $response = $this->actingAs($user)->postJson('api/two-digit', [
             'numbers' => [
@@ -100,38 +214,32 @@ class TwoDigitTest extends TestCase
             'point_id' => 2
         ]);
 
-        $response->assertStatus(201);
-        $response = $this->actingAs($user2)->postJson('api/two-digit', [
+        $response->assertCreated();
+
+        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200);
+        $this->assertEquals($user->getReferableBalanceByPoint(Point::find(2)), $amount - 200);
+
+        $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
+            'number' => '0',
+            'rate' => $this->config->rate,
+            'day' => today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
+        ]);
+
+        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200 + (100 * $this->config->rate));
+        assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
+
+        $response = $this->actingAs($user)->postJson('api/two-digit', [
             'numbers' => [
-                ['number' => 0, 'amount' => 100],
-                ['number' => 1, 'amount' => 100]
+                ['number' => 1, 'amount' => $amount - 200 + (100 * $this->config->rate)]
             ],
             'point_id' => 2
         ]);
 
-        $response->assertStatus(201);
+        $response->assertCreated();
 
-        $response = $this->actingAs($admin)->postJson('api/two-digit-hit', [
-            'number' => '0',
-            'rate' => 10,
-            'day' => '2022/05/15',
-            'morning' => false
-        ]);
-
-        $response->assertStatus(201);
-
-        assertTrue(JackpotReward::find(1)->shared_amount == floor(Jackpot::where('status', 2)->pluck('amount')->sum() / 2));
-        assertTrue(PointLog::where('user_id', $user->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
-        assertTrue(PointLog::where('user_id', $user2->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
-        assertTrue(JackpotNumber::whereNotNull('hit_at')->first()->number == 0);
-        assertTrue(Jackpot::where('status', 2)->count() == 2);
-        assertTrue(Jackpot::where('status', 2)->first()->jack_pot_reward_id == 1);
-
-        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->jack_pot_reward_id == 1);
-        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
-        assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
-        assertTrue(PointLog::where('note', '2d prize')->count() == 2);
-        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
+        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), 0);
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), $amount * $this->config->referral_rate);
     }
 
     public function test_2d_time()
@@ -195,10 +303,5 @@ class TwoDigitTest extends TestCase
                 } else $this->assertFalse(TwoDigit::checkDay($time));
             } else $this->assertTrue(TwoDigit::checkDay($time));
         }
-    }
-
-    public function test_foo()
-    {
-        $this->assertTrue(today()->isDayOfWeek(Carbon::SUNDAY));
     }
 }

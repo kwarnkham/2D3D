@@ -44,7 +44,7 @@ class TwoDigit extends AppModel implements PointLogable
         return $this->belongsTo(User::class);
     }
 
-    public function jackPotReward()
+    public function jackpotReward()
     {
         return $this->belongsTo(JackpotReward::class);
     }
@@ -54,7 +54,7 @@ class TwoDigit extends AppModel implements PointLogable
         return $this->morphOne(PointLog::class, 'point_loggable');
     }
 
-    public function jackPot()
+    public function jackpot()
     {
         return $this->hasOne(Jackpot::class);
     }
@@ -242,7 +242,7 @@ class TwoDigit extends AppModel implements PointLogable
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
 
         $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, '2d prize', $this);
-        if ($this->jack_pot_reward_id) $this->user->increasePoint(Point::find($this->point_id), $this->jackPotReward->shared_amount, 'jackpot prize', $this);
+        if ($this->jackpot_reward_id) $this->user->increasePoint(Point::find($this->point_id), $this->jackpotReward->shared_amount, 'jackpot prize', $this);
     }
 
 
@@ -301,13 +301,13 @@ class TwoDigit extends AppModel implements PointLogable
     public static function processJackpot(TwoDigitHit $twoDigitHit)
     {
         DB::transaction(function () use ($twoDigitHit) {
-            $query = TwoDigit::whereNull('jack_potted_at')->whereNull('two_digit_hit_id');
+            $query = TwoDigit::whereNull('jackpotted_at')->whereNull('two_digit_hit_id');
             foreach ($query->get() as $twoDigit) {
-                $twoDigit->jackPot()->create([
+                $twoDigit->jackpot()->create([
                     'amount' => $twoDigit->amount * AppSetting::current()->config->jackpot_rate
                 ]);
             }
-            $query->update(['jack_potted_at' => now()]);
+            $query->update(['jackpotted_at' => now()]);
             Cache::forget('twoDigitJackpot');
         });
     }

@@ -288,20 +288,20 @@ class User extends Authenticatable implements HasLocalePreference
         );
     }
 
-    public function processReferrerReward(User $referee, $spentAmount, Point $point)
+    public function processReferrerReward(User $referrer, $spentAmount, Point $point)
     {
-        if ($referee->decreaseReferrablePoint($point, $spentAmount)) {
+        $referrableAmount = $this->decreaseReferrablePoint($point, $spentAmount);
+        if ($referrableAmount) {
             $rate = AppSetting::current()->config->referral_rate;
-            $amount = $spentAmount * $rate;
-
+            $referrableAmount *= $rate;
             $refReward = ReferralReward::create([
-                'amount' => $amount,
+                'amount' => $referrableAmount,
                 'rate' => $rate,
-                'referrer_id' => $this->id,
-                'referee_id' => $referee->id,
+                'referrer_id' => $referrer->id,
+                'referee_id' => $this->id,
                 'point_id' => $point->id,
             ]);
-            $this->increasePoint(point: $point, amount: $amount, note: "referral reward", model: $refReward);
+            $referrer->increasePoint(point: $point, amount: $referrableAmount, note: "referral reward", model: $refReward);
         }
     }
 
@@ -309,10 +309,11 @@ class User extends Authenticatable implements HasLocalePreference
     {
         $referrableBalance = $this->getReferableBalanceByPoint($point);
         if ($referrableBalance <= 0) return;
-        return DB::transaction(function () use ($point, $amount, $referrableBalance) {
-            return $this->points()->updateExistingPivot($point->id, [
-                'referrable_balance' => $referrableBalance - $amount,
-            ]);
+        $referrableAmount = $amount <= $referrableBalance ? $amount : $referrableBalance;
+        return DB::transaction(function () use ($point, $referrableAmount, $referrableBalance) {
+            if ($this->points()->updateExistingPivot($point->id, [
+                'referrable_balance' => $referrableBalance - $referrableAmount,
+            ])) return $referrableAmount;
         });
     }
 

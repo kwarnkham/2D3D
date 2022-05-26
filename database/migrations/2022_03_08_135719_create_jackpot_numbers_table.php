@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('jack_pot_numbers', function (Blueprint $table) {
+        Schema::create('jackpot_numbers', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('number');
             $table->timestamp('hit_at')->nullable();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jack_pot_numbers');
+        Schema::dropIfExists('jackpot_numbers');
     }
 };

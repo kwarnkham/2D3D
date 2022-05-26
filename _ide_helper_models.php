@@ -103,10 +103,24 @@ namespace App\Models{
 /**
  * App\Models\Jackpot
  *
- * @property-read \App\Models\TwoDigit|null $twoDigit
+ * @property int $id
+ * @property int $two_digit_id
+ * @property float $amount
+ * @property int|null $jackpot_reward_id
+ * @property int $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\TwoDigit $twoDigit
  * @method static \Illuminate\Database\Eloquent\Builder|Jackpot newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Jackpot newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Jackpot query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereJackpotRewardId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereTwoDigitId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Jackpot whereUpdatedAt($value)
  */
 	class Jackpot extends \Eloquent {}
 }
@@ -115,9 +129,19 @@ namespace App\Models{
 /**
  * App\Models\JackpotNumber
  *
+ * @property int $id
+ * @property int $number
+ * @property string|null $hit_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber query()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber whereHitAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotNumber whereUpdatedAt($value)
  */
 	class JackpotNumber extends \Eloquent {}
 }
@@ -126,12 +150,24 @@ namespace App\Models{
 /**
  * App\Models\JackpotReward
  *
+ * @property int $id
+ * @property float $amount
+ * @property float $shared_amount
+ * @property int $jackpot_number_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\PointLog|null $point_log
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TwoDigit[] $twoDigits
  * @property-read int|null $two_digits_count
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward query()
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereJackpotNumberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereSharedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|JackpotReward whereUpdatedAt($value)
  */
 	class JackpotReward extends \Eloquent implements \App\Contracts\PointLogable {}
 }
@@ -368,13 +404,13 @@ namespace App\Models{
  * @property float $amount
  * @property int $point_id
  * @property int|null $two_digit_hit_id
- * @property int|null $jack_pot_reward_id
+ * @property int|null $jackpot_reward_id
  * @property string|null $settled_at
- * @property string|null $jack_potted_at
+ * @property string|null $jackpotted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Jackpot|null $jackPot
- * @property-read \App\Models\JackpotReward|null $jackPotReward
+ * @property-read \App\Models\Jackpot|null $jackpot
+ * @property-read \App\Models\JackpotReward|null $jackpotReward
  * @property-read \App\Models\Point $point
  * @property-read \App\Models\PointLog|null $point_log
  * @property-read \App\Models\TwoDigitHit|null $twoDigitHit
@@ -388,8 +424,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackPotRewardId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackPottedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackpotRewardId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereJackpottedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit wherePointId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TwoDigit whereSettledAt($value)

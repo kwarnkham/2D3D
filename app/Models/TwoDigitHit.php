@@ -38,6 +38,10 @@ class TwoDigitHit extends AppModel
             if ($this->morning) {
                 $morningStartTime = (new Carbon($this->day))->subDay()->addSeconds(TwoDigit::EVENING_DURATION + 3600 - 59);
                 $morningEndTime = (new Carbon($this->day))->addSeconds(TwoDigit::MORNING_DURATION);
+                // if (now()->greaterThan(today()->addHours(9)->addMinutes(31))) {
+                //     $morningStartTime->addDay();
+                //     $morningEndTime->addDay();
+                // }
                 $builder = TwoDigit::where('created_at', '>=', $morningStartTime)
                     ->where('created_at', '<=', $morningEndTime)
                     ->whereNull('settled_at');
@@ -49,27 +53,27 @@ class TwoDigitHit extends AppModel
                     ->whereNull('settled_at');
             }
             $twoDigitUpdateData = ['two_digit_hit_id' => $this->id];
-            $jackPotNumber = JackpotNumber::whereNull('hit_at')->orderBy('id', 'desc')->first();
+            $jackpotNumber = JackpotNumber::whereNull('hit_at')->orderBy('id', 'desc')->first();
 
             //hit jackpot
-            if ($jackPotNumber && $this->number == $jackPotNumber->number) {
+            if ($jackpotNumber && $this->number == $jackpotNumber->number) {
                 $shared = (clone $builder)->where('number', $this->number)->count();
                 if ($shared > 0) {
                     $amount = Jackpot::getJackpot(false);
                     $sharedAmount = floor($amount / $shared);
-                    $jackPotReward = JackpotReward::create([
+                    $jackpotReward = JackpotReward::create([
                         'amount' => $amount,
                         'shared_amount' => $sharedAmount,
-                        'jack_pot_number_id' => $jackPotNumber->id
+                        'jackpot_number_id' => $jackpotNumber->id
                     ]);
-                    $twoDigitUpdateData['jack_pot_reward_id'] = $jackPotReward->id;
-                    $jackPotNumber->hit_at = now();
-                    $jackPotNumber->save();
+                    $twoDigitUpdateData['jackpot_reward_id'] = $jackpotReward->id;
+                    $jackpotNumber->hit_at = now();
+                    $jackpotNumber->save();
                     JackpotNumber::create([
-                        'number' => $jackPotNumber->number == 99 ? 0 : $jackPotNumber->number + 1
+                        'number' => $jackpotNumber->number == 99 ? 0 : $jackpotNumber->number + 1
                     ]);
                     Jackpot::whereIn('id', Jackpot::effectiveQuery()->pluck('id')->toArray())
-                        ->update(['status' => 2, 'jack_pot_reward_id' => $jackPotReward->id]);
+                        ->update(['status' => 2, 'jackpot_reward_id' => $jackpotReward->id]);
                 }
             };
 
