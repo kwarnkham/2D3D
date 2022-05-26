@@ -81,3 +81,5 @@ GRANT ALL PRIVILEGES ON *.\_ TO 'moon'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 php artisan migrate --seed
 php artisan set:bot
+
+git config credential.helper store
