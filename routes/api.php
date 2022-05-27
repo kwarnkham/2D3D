@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JackpotController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\TwoDigitController;
 use App\Http\Controllers\TwoDigitHitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WithdrawController;
+use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -106,4 +108,8 @@ Route::controller(JackpotController::class)->group(function () {
 
 Route::controller(JackpotNumberController::class)->group(function () {
     Route::get('/jackpot-number', 'current');
+});
+
+Route::controller(AppSettingController::class)->group(function () {
+    Route::get('/app-setting', 'current');
 });

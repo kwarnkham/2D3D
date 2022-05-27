@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Point;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PointController extends Controller
 {
@@ -14,7 +15,9 @@ class PointController extends Controller
      */
     public function index()
     {
-        return response()->json(Point::all());
+        return response()->json(Cache::rememberForever('points', function () {
+            return Point::all();
+        }));
     }
 
     /**

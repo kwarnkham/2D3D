@@ -328,7 +328,7 @@ class TwoDigitTest extends TestCase
             'picture' => UploadedFile::fake()->image('avatar.jpg')
         ]);
         $response->assertOk();
-        for ($i = 442380; $i < 60 * 60 * 24 * 365; $i++) {
+        for ($i = 16268404; $i < 60 * 60 * 24 * 365; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             if (TwoDigit::checkTime($time)) {
                 Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));

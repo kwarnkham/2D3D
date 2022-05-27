@@ -11,7 +11,12 @@ class AppVersion extends AppModel
 {
     use HasFactory;
 
-
+    protected static function booted()
+    {
+        static::created(function ($appVersion) {
+            Cache::forget('appVersion');
+        });
+    }
     protected $appends = ['telegram_bot'];
     public function telegramBot(): Attribute
     {
@@ -26,5 +31,12 @@ class AppVersion extends AppModel
         $array = explode('.', $app->url);
         $array[3] .= $app->version;
         return implode(".", $array);
+    }
+
+    public static function current()
+    {
+        return Cache::rememberForever('appVersion', function () {
+            return AppVersion::orderBy('id', 'desc')->first();
+        });
     }
 }

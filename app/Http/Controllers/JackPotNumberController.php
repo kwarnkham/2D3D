@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class JackpotNumberController extends Controller
 {
-    public function current()
+    public static function current()
     {
-        return response()->json(JackpotNumber::orderBy('id', 'desc')->first());
+        return response()->json(JackpotNumber::current());
     }
 }
