@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ResponseStatus;
+use App\Models\AppSetting;
 use App\Models\PointLog;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
@@ -18,12 +19,12 @@ class TwoDigitHitController extends Controller
         Gate::authorize('admin');
         $data = $request->validate([
             'number' => ['required', 'numeric', 'digits_between:1,2'],
-            'rate' => ['required', 'numeric'],
             'day' => ['required', 'string', 'date'],
             'morning' => ['required', 'boolean'],
             'set' => ['required', 'numeric'],
             'value' => ['required', 'numeric'],
         ]);
+        $data['rate'] = AppSetting::current()->config->rate;
         if (TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) abort(ResponseStatus::BAD_REQUEST->value, "Already settled for " . $data['day'] . ($data['morning'] ? " morning" : " evening"));
         return response()->json(DB::transaction(function () use ($data) {
             return TwoDigitHit::create($data);
