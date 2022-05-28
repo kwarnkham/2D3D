@@ -17,7 +17,7 @@ class AuthController extends Controller
             'password' => ['required']
         ]);
         $user = User::where('name', $request->name)->first();
-        if (!$user) abort(ResponseStatus::UNAUTHORIZED->value, 'User not fount');
+        if (!$user) abort(ResponseStatus::UNAUTHORIZED->value, 'User not found');
         if (!Hash::check($request->password, $user->password)) abort(ResponseStatus::UNAUTHORIZED->value, 'Password is incorrect');
         $user->tokens()->delete();
         $token = $user->createToken("");

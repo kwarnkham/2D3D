@@ -112,4 +112,5 @@ Route::controller(JackpotNumberController::class)->group(function () {
 
 Route::controller(AppSettingController::class)->group(function () {
     Route::get('/app-setting', 'current');
+    Route::post('/app-setting', 'store');
 });

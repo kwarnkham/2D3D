@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
             $table->double('pool_amount');
-            $table->jsonb('config')->nullable();
+            $table->double('rate');
+            $table->double('referral_rate');
+            $table->double('jackpot_rate');
             $table->timestamps();
         });
     }

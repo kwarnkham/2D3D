@@ -22,13 +22,4 @@ class AppSetting extends AppModel
             return AppSetting::orderBy('id', 'desc')->first();
         });
     }
-
-    public function config(): Attribute
-    {
-
-        return new Attribute(
-            get: fn ($value) => json_decode($value),
-            set: fn ($value) => json_encode($value),
-        );
-    }
 }

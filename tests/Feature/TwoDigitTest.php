@@ -38,43 +38,22 @@ class TwoDigitTest extends TestCase
     private $user = null;
     private $user2 = null;
     private $admin = null;
-    private $config = null;
+    private $appSetting = null;
 
     protected function setUp(): void
     {
         parent::setUp();
-        Point::create(['name' => 'Lucky Hi']);
-        Point::create(['name' => 'MMK']);
-        AppSetting::create([
-            'pool_amount' => '1000000', 'config' => [
-                'jackpot_rate' => '0.131',
-                'referral_rate' => '0.0532',
-                'rate' => '50'
-            ]
-        ]);
-        Payment::create([
-            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => 'https://lunarblessing.sgp1.cdn.digitaloceanspaces.com/QR/KpayQR.PNG'
-        ]);
-        Payment::create([
-            'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09792761207',
-        ]);
-        Payment::create([
-            'name' => 'WAVEPAY (Wave Money) 2', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09452538242',
-        ]);
-        Role::create(['name' => 'admin']);
-        JackpotNumber::create(['number' => 0]);
-        AppVersion::create(['version' => '1.0.0']);
+        Artisan::call('init:database');
         $this->user = User::create(['name' => 'moon1', 'password' => '123123']);
-        Artisan::call('make:admin moon ninjamoon');
         $this->admin = User::where('name', 'moon')->first();
         $this->user2 = User::create(['name' => 'moon2', 'password' => '123123']);
-        $this->config = AppSetting::current()->config;
+        $this->appSetting = AppSetting::current();
     }
 
     public function test_app_logic()
     {
         $this->withoutExceptionHandling();
-        $rate = $this->config->rate;
+        $rate = $this->appSetting->rate;
         //top up payment 1
         $response = $this->actingAs($this->user)->postJson('api/top-up', [
             'amount' => 10000,
@@ -128,7 +107,7 @@ class TwoDigitTest extends TestCase
             'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
         $response->assertStatus(201);
-        $this->assertEquals(Jackpot::getJackpot(false), 250 * $this->config->jackpot_rate);
+        $this->assertEquals(Jackpot::getJackpot(false), 250 * $this->appSetting->jackpot_rate);
         //update settle
         assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
 
@@ -225,23 +204,23 @@ class TwoDigitTest extends TestCase
         $this->assertDatabaseCount('referral_rewards', 1);
         $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200);
         $this->assertEquals($user->getReferableBalanceByPoint(Point::find(2)), $amount - 200);
-        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), 200 * $this->config->referral_rate);
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), 200 * $this->appSetting->referral_rate);
 
         $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '0',
             'set' => '1',
             'value' => '1',
-            'rate' => $this->config->rate,
+            'rate' => $this->appSetting->rate,
             'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
             'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
         ]);
 
-        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200 + (100 * $this->config->rate));
+        $this->assertEquals($user->getBalanceByPoint(Point::find(2)), $amount - 200 + (100 * $this->appSetting->rate));
         assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
 
         $response = $this->actingAs($user)->postJson('api/two-digit', [
             'numbers' => [
-                ['number' => 1, 'amount' => $amount - 200 + (100 * $this->config->rate)]
+                ['number' => 1, 'amount' => $amount - 200 + (100 * $this->appSetting->rate)]
             ],
             'point_id' => 2
         ]);
@@ -249,7 +228,7 @@ class TwoDigitTest extends TestCase
         $response->assertCreated();
 
         $this->assertEquals($user->getBalanceByPoint(Point::find(2)), 0);
-        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), $amount * $this->config->referral_rate);
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), $amount * $this->appSetting->referral_rate);
         $this->assertDatabaseCount('referral_rewards', 2);
     }
 
