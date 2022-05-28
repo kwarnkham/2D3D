@@ -14,7 +14,7 @@ class AppVersionController extends Controller
      */
     public function index()
     {
-        return response()->json(AppVersion::orderBy('id', 'desc')->first());
+        return response()->json(AppVersion::current());
     }
 
     /**
