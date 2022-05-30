@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TwoDigitHit extends AppModel
 {
@@ -29,6 +31,20 @@ class TwoDigitHit extends AppModel
             return false;
         } else {
             return true;
+        }
+    }
+
+    public static function confirmResult(array $data)
+    {
+        if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) {
+            $data['day'] = new Carbon($data['day']);
+            $twoDigitHit = TwoDigitHit::create($data);
+            Log::channel('two-digit')->info(($data['morning'] ? "Morning" : "Evening") . " result is " . $data['number']);
+            TelegramService::sendAdminMessage('Finished settled for the following.');
+            TelegramService::sendAdminMessage(json_encode($twoDigitHit));
+        } else {
+            TelegramService::sendAdminMessage('Already settled for the following.');
+            TelegramService::sendAdminMessage(json_encode($data));
         }
     }
 

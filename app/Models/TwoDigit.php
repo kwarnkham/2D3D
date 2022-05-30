@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
+use App\Services\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -83,11 +84,11 @@ class TwoDigit extends AppModel implements PointLogable
         );
     }
 
-    public static function getResult(Carbon $time = null)
+    public static function getResult(Carbon $time = null, $notify = true)
     {
         if (!$time) $time = now();
         $isMorningTime = $time->lessThanOrEqualTo((clone $time)->startOfDay()->addHours(6)->addMinutes(30));
-        $isEveningTime = $time->greaterThan((clone $time)->startOfDay()->addHours(6)->addMinutes(30)) && $time->lessThanOrEqualTo((clone $time)->startOfDay()->addHours(10)->addMinutes(30));
+        // $isEveningTime = $time->greaterThan((clone $time)->startOfDay()->addHours(6)->addMinutes(30)) && $time->lessThanOrEqualTo((clone $time)->startOfDay()->addHours(10)->addMinutes(30));
         $resposne = Http::get('https://www.myanmar123.com/two-d');
         $str = trim(preg_replace("/\s+|\n+|\r/", ' ', $resposne->body()));
         if ($isMorningTime)
@@ -124,16 +125,8 @@ class TwoDigit extends AppModel implements PointLogable
             'set' => $set,
             'value' => $value
         ];
-
-        if ($isMorningTime) {
-            if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
-                TwoDigitHit::create($data);
-            Log::channel('two-digit')->info("Morning result is $number");
-        } else if ($isEveningTime) {
-            if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
-                TwoDigitHit::create($data);
-            Log::channel('two-digit')->info("Evening result is $number");
-        }
+        if ($notify)
+            TelegramService::sendAdminMessage(json_encode($data));
         return $number;
     }
 

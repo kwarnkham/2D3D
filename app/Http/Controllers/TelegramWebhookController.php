@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppVersion;
+use App\Models\TwoDigit;
+use App\Models\TwoDigitHit;
 use App\Models\User;
+use App\Services\TelegramService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -93,6 +97,33 @@ class TelegramWebhookController extends Controller
                 }
                 throw $th;
             }
+        }
+    }
+
+    public function handleAdmin(Request $request)
+    {
+        Log::channel('telegram')->info(json_encode($request->all()));
+        $data = $request->validate([
+            'message' => ['required'],
+            'message.from.id' => ['required', 'in:' . env('TELEGRAM_RECEIVER')],
+            'message.text' => ['required'],
+            'message.date' => ['required'],
+            'message.reply_to_message.chat.id' => ['in:' . env('TELEGRAM_RECEIVER')]
+        ]);
+
+        switch (strtolower($request->message['text'])) {
+            case "#1":
+                $temp = json_decode($request->message['reply_to_message']['text'], true);
+                $time = new Carbon($temp['day']);
+                if (!$temp['morning']) $time->addHours(10)->addMinutes(10);
+                $number = TwoDigit::getResult(time: $time, notify: false);
+                if ($temp['number'] == $number) TwoDigitHit::confirmResult($temp);
+                else {
+                    TelegramService::sendAdminMessage('Failed to confirm');
+                    TelegramService::sendAdminMessage($temp['number'] . " != " . $number);
+                }
+            default:
+                break;
         }
     }
 }
