@@ -52,7 +52,6 @@ class TwoDigitTest extends TestCase
 
     public function test_app_logic()
     {
-        $this->withoutExceptionHandling();
         $rate = $this->appSetting->rate;
         //top up payment 1
         $response = $this->actingAs($this->user)->postJson('api/top-up', [
@@ -169,7 +168,6 @@ class TwoDigitTest extends TestCase
 
     public function test_referral_code()
     {
-        $this->withExceptionHandling();
         $user = User::create([
             'referrer_id' => $this->user->id,
             'name' => 'test',
@@ -234,7 +232,7 @@ class TwoDigitTest extends TestCase
 
     public function test_2d_time()
     {
-        for ($i = 0; $i < 60 * 60 * 24 * 365; $i++) {
+        for ($i = 0; $i < 60 * 60 * 24; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
             $morningStart = (clone $time)->startOfDay()->addHours(10)->addMinutes(30);
@@ -259,7 +257,7 @@ class TwoDigitTest extends TestCase
 
     public function test_2d_day()
     {
-        for ($i = 0; $i < 60 * 60 * 24 * 365; $i++) {
+        for ($i = 0; $i < 60 * 60 * 24; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             $today = (clone $time)->startOfDay();
             // Log::channel('debug')->info($time->format("Y-m-d h:i:s A"));
@@ -307,7 +305,7 @@ class TwoDigitTest extends TestCase
             'picture' => UploadedFile::fake()->image('avatar.jpg')
         ]);
         $response->assertOk();
-        for ($i = 16268404; $i < 60 * 60 * 24 * 365; $i++) {
+        for ($i = 0; $i < 60 * 60 * 24; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             if (TwoDigit::checkTime($time)) {
                 Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
@@ -340,7 +338,7 @@ class TwoDigitTest extends TestCase
             today()->subDays(9),
         ];
         $results = [
-            ['07', null],
+            ['07', '11'],
             ['23', '50'],
             ['71', '30'],
             ['12', '85'],

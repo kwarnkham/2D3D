@@ -21,15 +21,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return response()->json([
-        'user' => User::find(2)->load(User::RS),
-        'app_verison' => AppVersion::current(),
-        'app_setting' => AppSetting::current(),
-        'jackpot_number' => JackpotNumber::current(),
-        'jackpot' => Jackpot::getJackpot(),
-        'points' => Cache::rememberForever('points', function () {
-            return Point::all();
-        })
-    ]);
+    // return response()->json([
+    //     'user' => User::find(2)->load(User::RS),
+    //     'app_verison' => AppVersion::current(),
+    //     'app_setting' => AppSetting::current(),
+    //     'jackpot_number' => JackpotNumber::current(),
+    //     'jackpot' => Jackpot::getJackpot(),
+    //     'points' => Cache::rememberForever('points', function () {
+    //         return Point::all();
+    //     })
+    // ]);
     return view('welcome');
 });
