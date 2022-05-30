@@ -115,7 +115,10 @@ class TwoDigit extends AppModel implements PointLogable
                 }
             }
         }
-        if (!$number) return;
+        if (!$number) {
+            if ($notify) TelegramService::sendAdminMessage("Failed to get result");
+            return;
+        };
 
         $data = [
             'number' => $number,
