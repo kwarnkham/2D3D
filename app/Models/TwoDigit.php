@@ -292,14 +292,18 @@ class TwoDigit extends AppModel implements PointLogable
         foreach ($numbers as $number) {
             $maxPrize = static::getMaxPrize($number['number']) + (int)collect($numbers)->filter(fn ($value) => $value['number'] != $number['number'])->reduce(fn ($carry, $value) => $value['amount'] + $carry, 0);
             $numberTotalAmount = static::getQueryBuilderOfEffectedNumbers()->where('number', $number['number'])->pluck('amount')->sum();
-            if ($maxPrize < (($number['amount'] + $numberTotalAmount) * 85)) return $number['number'];
+            if ($maxPrize < (($number['amount'] + $numberTotalAmount) * AppSetting::current()->rate)) {
+                // Log::channel('debug')->info((($number['amount'] + $numberTotalAmount) * AppSetting::current()->rate));
+                // Log::channel('debug')->info($maxPrize);
+                return $number['number'];
+            }
         }
         return "passed";
     }
 
-    public static function processJackpot(TwoDigitHit $twoDigitHit)
+    public static function processJackpot()
     {
-        DB::transaction(function () use ($twoDigitHit) {
+        DB::transaction(function () {
             $query = TwoDigit::whereNull('jackpotted_at')->whereNull('two_digit_hit_id');
             foreach ($query->get() as $twoDigit) {
                 $twoDigit->jackpot()->create([

@@ -371,4 +371,133 @@ class TwoDigitTest extends TestCase
             dump($time->format('Y-m-d D'));
         }
     }
+
+    public function test_max_prize()
+    {
+        $users = [];
+        for ($i = 0; $i < 11; $i++) {
+            $users[] = User::create(['name' => 'user' . $i, 'password' => '123123']);
+        }
+        $this->assertEquals(11, count($users));
+
+        foreach ($users as $key => $user) {
+            $response = $this->actingAs($user)->postJson('api/top-up', [
+                'amount' => 10000,
+                'payment_id' => 1,
+                'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+            ]);
+            $response->assertCreated();
+
+            $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/' . $key + 1, [
+                'picture' => UploadedFile::fake()->image('avatar.jpg')
+            ]);
+            $response->assertOk();
+
+            $response = $this->actingAs($user)->postJson('api/two-digit', [
+                'numbers' => [
+                    ['number' => 0, 'amount' => 1000],
+                ],
+                'point_id' => 2
+            ]);
+            $response->assertStatus(201);
+        }
+
+        $this->assertEquals(1000000 + 11000, TwoDigit::getMaxPrize(99));
+
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 100000,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/' . count($users) + 1, [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 1, 'amount' => 2000],
+                ['number' => 2, 'amount' => 2000],
+                ['number' => 3, 'amount' => 2000],
+                ['number' => 4, 'amount' => 2000],
+                ['number' => 5, 'amount' => 2000],
+                ['number' => 6, 'amount' => 2000],
+                ['number' => 7, 'amount' => 2000],
+                ['number' => 8, 'amount' => 2000],
+                ['number' => 9, 'amount' => 2000],
+                ['number' => 10, 'amount' => 2000],
+            ],
+            'point_id' => 2
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertEquals(1000000 + 11000 + 20000, TwoDigit::getMaxPrize(99));
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 1000],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+
+
+        // $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
+        //     'numbers' => [
+        //         ['number' => 0, 'amount' => 100],
+        //     ],
+        //     'point_id' => 2
+        // ]);
+
+        // $response->assertStatus(400);
+
+        $this->assertEquals(1000000 + 11000 + 20000 + 1000, TwoDigit::getMaxPrize(99));
+        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(1));
+        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(10));
+        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 12000, TwoDigit::getMaxPrize(0));
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 1, 'amount' => 2000],
+                ['number' => 2, 'amount' => 2000],
+                ['number' => 3, 'amount' => 2000],
+                ['number' => 4, 'amount' => 2000],
+                ['number' => 5, 'amount' => 2000],
+            ],
+            'point_id' => 2
+        ]);
+
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 117.64705],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        // $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+        //     'numbers' => [
+        //         ['number' => 1, 'amount' => 2000],
+        //         ['number' => 2, 'amount' => 2000],
+        //         ['number' => 2, 'amount' => 2000],
+        //         ['number' => 3, 'amount' => 1000],
+        //     ],
+        //     'point_id' => 2
+        // ]);
+
+        // $response->assertStatus(201);
+
+        // $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+        //     'numbers' => [
+        //         ['number' => 0, 'amount' => 100],
+        //     ],
+        //     'point_id' => 2
+        // ]);
+        // $response->assertStatus(201);
+    }
 }
