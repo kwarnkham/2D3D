@@ -354,8 +354,8 @@ class TwoDigitTest extends TestCase
             // dump($results[$key][0]);
             // dump(TwoDigit::getResult((clone $value)->addHours(10)->addMinutes(10)));
             // dump($results[$key][1]);
-            $this->assertEquals($results[$key][0], TwoDigit::getResult((clone $value)->addHours(5)->addMinutes(40)));
-            $this->assertEquals($results[$key][1], TwoDigit::getResult((clone $value)->addHours(10)->addMinutes(10)));
+            $this->assertEquals($results[$key][0], TwoDigit::getResult((clone $value)->addHours(5)->addMinutes(40), false));
+            $this->assertEquals($results[$key][1], TwoDigit::getResult((clone $value)->addHours(10)->addMinutes(10), false));
         }
     }
 

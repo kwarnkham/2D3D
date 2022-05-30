@@ -22,6 +22,7 @@ class ApprovedTopUp extends AppModel
 
     public function savePicture($picture)
     {
+        if (env("APP_ENV") == "testing") return;
         $saved = new Picture(['name' => basename(Storage::disk('s3')->putFile(env('APP_NAME') . "/topup", $picture, 'public'))]);
         $this->picture()->save($saved);
     }

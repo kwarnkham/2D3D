@@ -42,6 +42,7 @@ class TopUp extends AppModel implements PointLogable
     {
         $pictures = array();
         foreach ($files as $picture) {
+            if (env("APP_ENV") == "testing") break;
             $pictures[] = new Picture(['name' => basename(Storage::disk('s3')->putFile(env('APP_NAME') . "/topup", $picture, 'public'))]);
         }
         $this->pictures()->saveMany($pictures);
