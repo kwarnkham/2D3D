@@ -24,7 +24,7 @@ class TwoDigitHitController extends Controller
             'set' => ['required', 'numeric'],
             'value' => ['required', 'numeric'],
         ]);
-        $data['rate'] = AppSetting::current()->config->rate;
+        $data['rate'] = AppSetting::current()->rate;
         if (TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) abort(ResponseStatus::BAD_REQUEST->value, "Already settled for " . $data['day'] . ($data['morning'] ? " morning" : " evening"));
         return response()->json(DB::transaction(function () use ($data) {
             return TwoDigitHit::create($data);

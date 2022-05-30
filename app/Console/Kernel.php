@@ -22,10 +22,14 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            for ($i = 0; $i < 60; $i += 5) {
-                ProcessResult::dispatch()->delay(now()->addSeconds($i));
-            }
-        })->everyMinute();
+            if (TwoDigitHit::checkDay())
+                TwoDigit::getResult();
+        })->cron("10 12 * * *");
+
+        $schedule->call(function () {
+            if (TwoDigitHit::checkDay())
+                TwoDigit::getResult();
+        })->cron("40 16 * * *");
 
         $schedule->call(function () {
             foreach (User::whereIn('id', DB::table('point_user')->where('point_id', 1)->where('balance', '<', 100)->pluck('user_id')->toArray())->get() as $user) {

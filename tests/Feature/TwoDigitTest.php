@@ -324,4 +324,53 @@ class TwoDigitTest extends TestCase
             }
         }
     }
+
+    public function test_get_2d_result()
+    {
+        $dates = [
+            today(),
+            today()->subDays(1),
+            today()->subDays(2),
+            today()->subDays(3),
+            today()->subDays(4),
+            today()->subDays(5),
+            today()->subDays(6),
+            today()->subDays(7),
+            today()->subDays(8),
+            today()->subDays(9),
+        ];
+        $results = [
+            ['07', null],
+            ['23', '50'],
+            ['71', '30'],
+            ['12', '85'],
+            ['73', '33'],
+            ['84', '84'],
+        ];
+        $dates = array_filter($dates, fn ($value) => !($value->isDayOfWeek(Carbon::SUNDAY) || $value->isDayOfWeek(Carbon::SATURDAY)));
+        $dates = array_values(array_filter($dates, fn ($value) => !in_array($value, array_map(fn ($val) => new Carbon($val), TwoDigit::CLOSED_DAYS))));
+        foreach ($dates as $key => $value) {
+            // dump($value->format("D d-m-Y"));
+            // dump($key);
+            // dump(TwoDigit::getResult((clone $value)->addHours(5)->addMinutes(40)));
+            // dump($results[$key][0]);
+            // dump(TwoDigit::getResult((clone $value)->addHours(10)->addMinutes(10)));
+            // dump($results[$key][1]);
+            $this->assertEquals($results[$key][0], TwoDigit::getResult((clone $value)->addHours(5)->addMinutes(40)));
+            $this->assertEquals($results[$key][1], TwoDigit::getResult((clone $value)->addHours(10)->addMinutes(10)));
+        }
+    }
+
+    public function test_settle_day()
+    {
+        for ($i = 0; $i < 400; $i++) {
+            $time = today()->startOfYear()->addDays($i);
+            if (in_array($time, array_map(fn ($value) => new Carbon($value), TwoDigit::CLOSED_DAYS))) {
+                $this->assertFalse(TwoDigitHit::checkDay($time));
+            } else if ($time->isDayOfWeek(Carbon::SATURDAY) || $time->isDayOfWeek(Carbon::SUNDAY)) {
+                $this->assertFalse(TwoDigit::checkDay($time));
+            } else $this->assertTrue(TwoDigitHit::checkDay($time));
+            dump($time->format('Y-m-d D'));
+        }
+    }
 }

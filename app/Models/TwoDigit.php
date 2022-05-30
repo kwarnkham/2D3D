@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Contracts\PointLogable;
-use App\Jobs\ProcessResult;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -84,44 +83,43 @@ class TwoDigit extends AppModel implements PointLogable
         );
     }
 
-    public static function getResult()
+    public static function getResult(Carbon $time = null)
     {
-        $r = Http::get("https://wwwa1.settrade.com/C13_MarketSummary.jsp");
-        $str = trim(preg_replace("/\s+|\n+|\r/", ' ', $r->body()));
-
-        $first = "\width='34%'\>";
-        $second = "\<\/td\>";
-        $firstDigit = null;
-        $secondDigit = null;
+        if (!$time) $time = now();
+        $isMorningTime = $time->lessThanOrEqualTo((clone $time)->startOfDay()->addHours(6)->addMinutes(30));
+        $isEveningTime = $time->greaterThan((clone $time)->startOfDay()->addHours(6)->addMinutes(30)) && $time->lessThanOrEqualTo((clone $time)->startOfDay()->addHours(10)->addMinutes(30));
+        $resposne = Http::get('https://www.myanmar123.com/two-d');
+        $str = trim(preg_replace("/\s+|\n+|\r/", ' ', $resposne->body()));
+        if ($isMorningTime)
+            $first = '\<tr\> \<td\>' . str_replace('/', '\/', $time->format("d/m/Y")) . '\<\/td\> \<td class="text-center"\>12\:01\:00 PM\<\/td\> ';
+        else $first = '\<tr\> \<td\>' . str_replace('/', '\/', $time->format("d/m/Y")) . '\<\/td\> \<td class="text-center"\>04\:31\:00 PM\<\/td\> ';
+        $second = '\<\/tr\>';
+        $number = null;
         $set = null;
         $value = null;
         if (preg_match("/$first(.*?)$second/", $str, $match)) {
-            Log::channel('two-digit')->info("Set is " . str_replace(',', '', $match[1]));
-            $firstDigit = substr($match[1], -1);
-            $set = $match[1];
-        } else {
-            Log::channel('debug')->info('set not found');
-            Log::channel('debug')->info($str);
+            $first = '"\>';
+            $second = '\<\/td\>';
+            if (preg_match_all("/$first(.*?)$second/", $match[1], $found)) {
+                $found[1] = array_map(fn ($value) => str_replace(',', '', $value), $found[1]);
+                if (is_numeric($found[1][0]) && is_numeric($found[1][1]) && is_numeric($found[1][2])) {
+                    $number = $found[1][0];
+                    $set = $found[1][1];
+                    $value = $found[1][2];
+                    // echo $set;
+                    // echo PHP_EOL;
+                    // echo $value;
+                    // echo PHP_EOL;
+                    // echo $number;
+                }
+            }
         }
+        if (!$number) return;
 
-        $first = "\<td class='mktD' width='22%'\>";
-        if (preg_match("/$first(.*?)$second/", $str, $match)) {
-            Log::channel('two-digit')->info("Value is " . str_replace(',', '', $match[1]));
-            $secondDigit = substr(explode('.', $match[1])[0], -1);
-            $value = $match[1];
-        } else {
-            Log::channel('debug')->info('value not found');
-            Log::channel('debug')->info($str);
-        }
-        if (is_null($firstDigit) || is_null($secondDigit)) return;
-        $result = $firstDigit . $secondDigit;
-        $runTime = now();
-        $isMorningTime = ((today()->addHours(5)->addMinutes(30))->addSeconds(20) < $runTime) && ($runTime < (today()->addHours(5)->addMinutes(30)->addSeconds(50)));
-        $isEveningTime = ((today()->addHours(12)->addSeconds(20)) < $runTime) && ($runTime < (today()->addHours(12)->addSeconds(50)));
         $data = [
-            'number' => $result,
-            'rate' => AppSetting::current()->config->rate,
-            'day' => today(),
+            'number' => $number,
+            'rate' => AppSetting::current()->rate,
+            'day' => (clone $time)->startOfDay(),
             'morning' => $isMorningTime,
             'set' => $set,
             'value' => $value
@@ -130,13 +128,13 @@ class TwoDigit extends AppModel implements PointLogable
         if ($isMorningTime) {
             if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
                 TwoDigitHit::create($data);
-            Log::channel('two-digit')->info("Morning result is $result");
+            Log::channel('two-digit')->info("Morning result is $number");
         } else if ($isEveningTime) {
             if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists())
                 TwoDigitHit::create($data);
-            Log::channel('two-digit')->info("Evening result is $result");
+            Log::channel('two-digit')->info("Evening result is $number");
         }
-        return $result;
+        return $number;
     }
 
     public static function isMorningCheck(int $time)

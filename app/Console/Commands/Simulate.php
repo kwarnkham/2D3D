@@ -43,11 +43,33 @@ class Simulate extends Command
      */
     public function handle()
     {
-        for ($i = 0; $i < 60 * 60 * 24; $i++) {
-            $day = today()->addDay()->addSeconds($i);
-            Log::channel('debug')->info($day->format("Y-m-d h:i:s A") . " " . json_encode(TwoDigit::checkTime($day)));
-        }
+        $resposne = Http::get('https://www.myanmar123.com/two-d');
+        $str = trim(preg_replace("/\s+|\n+|\r/", ' ', $resposne->body()));
 
+        $first = '\<tr\> \<td\>' . str_replace('/', '\/', today()->subDays(3)->format("d/m/Y")) . '\<\/td\> \<td class="text-center"\>12\:01\:00 PM\<\/td\> ';
+
+        // $first = '\<tr\> \<td\>' . str_replace('/', '\/', today()->subDays(3)->format("d/m/Y")) . '\<\/td\> \<td class="text-center"\>04\:31\:00 PM\<\/td\> ';
+        $second = '\<\/tr\>';
+        $number = null;
+        $set = null;
+        $value = null;
+        if (preg_match("/$first(.*?)$second/", $str, $match)) {
+            $first = '"\>';
+            $second = '\<\/td\>';
+            if (preg_match_all("/$first(.*?)$second/", $match[1], $found)) {
+                $found[1] = array_map(fn ($value) => str_replace(',', '', $value), $found[1]);
+                if (is_numeric($found[1][0]) && is_numeric($found[1][1]) && is_numeric($found[1][2])) {
+                    $number = $found[1][0];
+                    $set = $found[1][1];
+                    $value = $found[1][2];
+                    echo $set;
+                    echo PHP_EOL;
+                    echo $value;
+                    echo PHP_EOL;
+                    echo $number;
+                }
+            }
+        }
         echo 'done';
     }
 }
