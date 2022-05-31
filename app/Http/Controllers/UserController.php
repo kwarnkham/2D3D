@@ -136,4 +136,9 @@ class UserController extends Controller
     {
         return response()->json($request->user()->load(User::RS));
     }
+
+    public function getReferees(Request $request)
+    {
+        return response()->json(User::where('referrer_id', $request->user()->id)->paginate());
+    }
 }

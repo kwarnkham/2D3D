@@ -20,6 +20,7 @@ class AppSettingController extends Controller
             'jackpot_rate' => ['required', 'numeric'],
             'referral_rate' => ['required', 'numeric'],
             'rate' => ['required', 'numeric'],
+            'max_bet' => ['required', 'numeric'],
         ]);
         $current = AppSetting::current();
         $same = true;

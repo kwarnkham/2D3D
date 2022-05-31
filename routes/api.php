@@ -71,6 +71,7 @@ Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(fu
     Route::post('/user/un-ban/{user}', 'unBan');
     Route::post('/user/set-locale', 'setLocale');
     Route::post('/user/{user}', 'update');
+    Route::get('/referees', 'getReferees');
 });
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {

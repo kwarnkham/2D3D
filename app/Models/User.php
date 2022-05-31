@@ -13,13 +13,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use App\Contracts\PointLogable;
+use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Support\Facades\App;
 
 class User extends Authenticatable implements HasLocalePreference
 {
     use HasApiTokens, HasFactory, Notifiable;
-    const RS = ['points', 'roles'];
+    const RS = ['points', 'roles', 'referrer'];
     protected $guarded = ['id'];
     /**
      * The attributes that should be hidden for serialization.
@@ -30,6 +32,19 @@ class User extends Authenticatable implements HasLocalePreference
         'password',
         'remember_token',
     ];
+
+
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return (new Carbon($date))->diffForHumans();
+    }
+
+    public function createdTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->timestamp,
+        );
+    }
 
     /**
      * Get the user's preferred locale.
