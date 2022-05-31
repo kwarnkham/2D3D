@@ -28,5 +28,6 @@ return [
     "maxPrice" => "Number : ':number' amount is too much, please reduce the amount and try again",
     "please message to get help" => "Please message <a href='https://t.me/luckyhi2d'>me</a> to get help",
     "Congratulations! You have won the lottery." => "Congratulations! You have won the lottery. Prize amount is :amount MMK",
-    "Congratulations! You have won the jackpot." => "Congratulations! You have won the jackpot. Prize amount is :amount MMK"
+    "Congratulations! You have won the jackpot." => "Congratulations! You have won the jackpot. Prize amount is :amount MMK",
+    "Someone used your code to register. Thank you." => "Someone used your code to register. Thank you."
 ];

@@ -24,6 +24,8 @@ class UserObserver
     {
         if (in_array('admin', $user->roles()->pluck('name')->toArray())) return;
         $user->increasePoint(Point::find(1), 10000, 'points given on account created for testing', referrable: true);
+        $referrer = $user->referrer;
+        if ($referrer) $referrer->notify(__("messages.Someone used your code to register. Thank you.", locale: $referrer->preferredLocale()));
     }
 
     /**

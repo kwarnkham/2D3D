@@ -29,5 +29,6 @@ return [
     "maxPrice" => "နံပါတ် : ':number' ထိုးကြေးအလွန်များနေပါသည်။ ထိုးကြေးလျော့ပြီး သို့မဟုတ် နောက်မှ ထပ်ထိုးကြည့်ပါ",
     "please message to get help" => "အကူအညီရယူရန် <a href='https://t.me/luckyhi2d'>ကျွန်တော့်ကို</a> မက်ဆေ့ချ်ပို့ပါ။",
     "Congratulations! You have won the lottery." => "ဂုဏ်ယူပါတယ်။ သင်ထီပေါက်ပါတယ်။ ဆုကြေးငွေက :amount ကျပ်ပါ။",
-    "Congratulations! You have won the jackpot." => "ဂုဏ်ယူပါတယ်။ သင်ဂျက်ခ်ပေါ့ထိပါတယ်။ ဆုကြေးငွေက :amount ကျပ်ပါ။"
+    "Congratulations! You have won the jackpot." => "ဂုဏ်ယူပါတယ်။ သင်ဂျက်ခ်ပေါ့ထိပါတယ်။ ဆုကြေးငွေက :amount ကျပ်ပါ။",
+    "Someone used your code to register. Thank you." => "တစ်စုံတစ်ယောက်က သင့်ကုဒ်ကို မှတ်ပုံတင်ရန် အသုံးပြုခဲ့သည်။ ကျေးဇူးတင်ပါတယ်။"
 ];
