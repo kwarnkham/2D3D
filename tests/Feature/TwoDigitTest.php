@@ -44,9 +44,9 @@ class TwoDigitTest extends TestCase
     {
         parent::setUp();
         Artisan::call('init:database');
-        $this->user = User::create(['name' => 'moon1', 'password' => '123123']);
         $this->admin = User::where('name', 'moon')->first();
         $this->user2 = User::create(['name' => 'moon2', 'password' => '123123']);
+        $this->user = User::create(['name' => 'moon1', 'password' => '123123']);
         $this->appSetting = AppSetting::current();
     }
 

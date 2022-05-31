@@ -26,5 +26,7 @@ return [
     "You have reached the maximum number of orders" => "You have reached the maximum number of orders",
     "Order is closed. Please try again later" => "Order is closed. Please try again later",
     "maxPrice" => "Number : ':number' amount is too much, please reduce the amount and try again",
-    "please message to get help" => "Please message <a href='https://t.me/luckyhi2d'>me</a> to get help"
+    "please message to get help" => "Please message <a href='https://t.me/luckyhi2d'>me</a> to get help",
+    "Congratulations! You have won the lottery." => "Congratulations! You have won the lottery. Prize amount is :amount MMK",
+    "Congratulations! You have won the jackpot." => "Congratulations! You have won the jackpot. Prize amount is :amount MMK"
 ];

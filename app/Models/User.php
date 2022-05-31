@@ -377,7 +377,14 @@ class User extends Authenticatable implements HasLocalePreference
             ];
             if (!$model) PointLog::create($data);
             else $model->point_log()->create($data);
-            if ($point->id == 2 && $model instanceof TwoDigit) AppSetting::reducePoolAmount($amount);
+            if ($point->id == 2 && $model instanceof TwoDigit) {
+                if ($note == '2d prize') {
+                    AppSetting::reducePoolAmount($amount);
+                    $this->notify(__("messages.Congratulations! You have won the lottery.", ['amount' => $amount], $this->preferredLocale()));
+                } else if ($note == 'jackpot prize') {
+                    $this->notify(__("messages.Congratulations! You have won the jackpot.", ['amount' => $amount], $this->preferredLocale()));
+                }
+            }
         });
     }
 
