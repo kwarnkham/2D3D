@@ -225,9 +225,12 @@ class User extends Authenticatable implements HasLocalePreference
         return $userPoint->pivot->balance;
     }
 
-    public function check2DCount(int $limit)
+    public function check2DCount(array $betData)
     {
-        return $this->twoDigits()->where('point_id', 2)->whereNull('settled_at')->whereDay('created_at', now())->distinct('number')->count() < $limit;
+        $existed = $this->twoDigits()->where('point_id', 2)->whereNull('settled_at')->whereDay('created_at', now())->distinct('number')->pluck('number');
+
+        $betCount = $existed->count() + collect($betData)->filter(fn ($value) => !in_array($value['number'], $existed->toArray()))->count();
+        return $betCount <= AppSetting::current()->max_bet;
     }
 
     public function getReferableBalanceByPoint(Point $point)

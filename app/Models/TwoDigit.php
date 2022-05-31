@@ -283,8 +283,8 @@ class TwoDigit extends AppModel implements PointLogable
         $income = static::getQueryBuilderOfEffectedNumbers()
             ->where('number', '!=', $number)
             ->where('point_id', 2)->pluck('amount')->sum();
-        $capital = 1000000;
-        return $income + $capital;
+        $poolAmount = AppSetting::current()->pool_amount;
+        return $income + $poolAmount;
     }
 
     public static function checkMaxPrize(array $numbers)

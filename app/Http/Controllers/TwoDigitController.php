@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ResponseStatus;
+use App\Models\AppSetting;
 use App\Models\Point;
 use App\Models\TwoDigit;
 use App\Models\User;
@@ -22,7 +23,7 @@ class TwoDigitController extends Controller
         abort_unless(TwoDigit::checkTime(), ResponseStatus::BAD_REQUEST->value, __("messages.Order is closed. Please try again later."));
         $maxCheck = TwoDigit::checkMaxPrize($data['numbers']);
         abort_unless($maxCheck == 'passed', ResponseStatus::BAD_REQUEST->value, __("messages.maxPrice", ['number' => $maxCheck]));
-        abort_unless($request->user()->check2DCount(55), ResponseStatus::BAD_REQUEST->value, __("messages.You have reached the maximum number of orders"));
+        abort_unless($request->user()->check2DCount($data['numbers']), ResponseStatus::BAD_REQUEST->value, __("messages.You have reached the maximum number of orders"));
 
         $user = $request->user();
         $point = Point::find($data['point_id']);

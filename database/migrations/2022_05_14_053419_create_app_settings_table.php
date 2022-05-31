@@ -19,6 +19,7 @@ return new class extends Migration
             $table->double('rate');
             $table->double('referral_rate');
             $table->double('jackpot_rate');
+            $table->tinyInteger('max_bet');
             $table->timestamps();
         });
     }

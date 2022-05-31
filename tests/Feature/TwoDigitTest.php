@@ -50,9 +50,40 @@ class TwoDigitTest extends TestCase
         $this->appSetting = AppSetting::current();
     }
 
+    public function test_max_bet()
+    {
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 100000,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+
+        $betData = [];
+        for ($i = 0; $i < $this->appSetting->max_bet; $i++) {
+            $betData[] = ['number' => $i, 'amount' => 100];
+        }
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => $betData,
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 99, 'amount' => 100]
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(400);
+    }
+
     public function test_app_logic()
     {
-        $rate = $this->appSetting->rate;
         //top up payment 1
         $response = $this->actingAs($this->user)->postJson('api/top-up', [
             'amount' => 10000,
@@ -99,7 +130,7 @@ class TwoDigitTest extends TestCase
 
         $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '99',
-            'rate' => $rate,
+            'rate' => $this->appSetting->rate,
             'set' => '1',
             'value' => '1',
             'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
@@ -142,7 +173,7 @@ class TwoDigitTest extends TestCase
 
         $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
             'number' => '0',
-            'rate' => $rate,
+            'rate' => $this->appSetting->rate,
             'set' => '1',
             'value' => '1',
             'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
@@ -161,8 +192,8 @@ class TwoDigitTest extends TestCase
         assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
         assertTrue(PointLog::where('note', '2d prize')->count() == 2);
         assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
-        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (30000 - 450 + (100 * $rate) + JackpotReward::find(1)->shared_amount));
-        $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 + (100 * $rate) + JackpotReward::find(1)->shared_amount));
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (30000 - 450 + (100 * $this->appSetting->rate) + JackpotReward::find(1)->shared_amount));
+        $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 + (100 * $this->appSetting->rate) + JackpotReward::find(1)->shared_amount));
     }
 
 
@@ -325,6 +356,7 @@ class TwoDigitTest extends TestCase
 
     public function test_get_2d_result()
     {
+        return;
         $dates = [
             today(),
             today()->subDays(1),
@@ -338,6 +370,7 @@ class TwoDigitTest extends TestCase
             today()->subDays(9),
         ];
         $results = [
+            ['53', null],
             ['07', '11'],
             ['23', '50'],
             ['71', '30'],
@@ -368,7 +401,7 @@ class TwoDigitTest extends TestCase
             } else if ($time->isDayOfWeek(Carbon::SATURDAY) || $time->isDayOfWeek(Carbon::SUNDAY)) {
                 $this->assertFalse(TwoDigit::checkDay($time));
             } else $this->assertTrue(TwoDigitHit::checkDay($time));
-            dump($time->format('Y-m-d D'));
+            // dump($time->format('Y-m-d D'));
         }
     }
 
@@ -402,7 +435,7 @@ class TwoDigitTest extends TestCase
             $response->assertStatus(201);
         }
 
-        $this->assertEquals(1000000 + 11000, TwoDigit::getMaxPrize(99));
+        $this->assertEquals($this->appSetting->pool_amount + 11000, TwoDigit::getMaxPrize(99));
 
         $response = $this->actingAs($this->user)->postJson('api/top-up', [
             'amount' => 100000,
@@ -433,7 +466,7 @@ class TwoDigitTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $this->assertEquals(1000000 + 11000 + 20000, TwoDigit::getMaxPrize(99));
+        $this->assertEquals($this->appSetting->pool_amount + 11000 + 20000, TwoDigit::getMaxPrize(99));
 
         $response = $this->actingAs($this->user)->postJson('api/two-digit', [
             'numbers' => [
@@ -454,10 +487,10 @@ class TwoDigitTest extends TestCase
 
         // $response->assertStatus(400);
 
-        $this->assertEquals(1000000 + 11000 + 20000 + 1000, TwoDigit::getMaxPrize(99));
-        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(1));
-        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(10));
-        $this->assertEquals(1000000 + 11000 + 20000 + 1000 - 12000, TwoDigit::getMaxPrize(0));
+        $this->assertEquals($this->appSetting->pool_amount + 11000 + 20000 + 1000, TwoDigit::getMaxPrize(99));
+        $this->assertEquals($this->appSetting->pool_amount + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(1));
+        $this->assertEquals($this->appSetting->pool_amount + 11000 + 20000 + 1000 - 2000, TwoDigit::getMaxPrize(10));
+        $this->assertEquals($this->appSetting->pool_amount + 11000 + 20000 + 1000 - 12000, TwoDigit::getMaxPrize(0));
 
         $response = $this->actingAs($this->user)->postJson('api/two-digit', [
             'numbers' => [

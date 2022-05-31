@@ -43,7 +43,8 @@ class InitDatabase extends Command
             'pool_amount' => '1000000',
             'jackpot_rate' => '0.1',
             'referral_rate' => '0.05',
-            'rate' => '85'
+            'rate' => '85',
+            'max_bet' => '40'
         ]);
         \App\Models\Payment::create([
             'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => 'https://lunarblessing.sgp1.cdn.digitaloceanspaces.com/QR/KpayQR.PNG'
