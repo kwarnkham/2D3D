@@ -22,4 +22,11 @@ class AppSetting extends AppModel
             return AppSetting::orderBy('id', 'desc')->first();
         });
     }
+
+    public static function reducePoolAmount(int $amount)
+    {
+        $appSetting = static::current();
+        $appSetting->pool_amount -= $amount;
+        $appSetting->save();
+    }
 }

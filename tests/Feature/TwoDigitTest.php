@@ -50,6 +50,44 @@ class TwoDigitTest extends TestCase
         $this->appSetting = AppSetting::current();
     }
 
+    public function test_pool_amount_reduced()
+    {
+
+        $prev = $this->appSetting->pool_amount;
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 100000,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 99, 'amount' => 100]
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertCreated();
+        $this->assertEquals(100000 - 100, $this->user->getBalanceByPoint(Point::find(2)));
+
+        $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
+            'number' => '99',
+            'rate' => $this->appSetting->rate,
+            'set' => '1',
+            'value' => '1',
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
+        ]);
+        $response->assertStatus(201);
+
+        $this->assertEquals(100000 - 100 + (100 * $this->appSetting->rate), $this->user->getBalanceByPoint(Point::find(2)));
+        $this->assertEquals($prev - (100 * $this->appSetting->rate), $this->appSetting->pool_amount);
+    }
+
     public function test_max_bet()
     {
         $response = $this->actingAs($this->user)->postJson('api/top-up', [

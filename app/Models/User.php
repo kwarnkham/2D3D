@@ -356,6 +356,7 @@ class User extends Authenticatable implements HasLocalePreference
 
     public function increasePoint(Point $point, $amount, $note = null, PointLogable $model = null, $referrable = false)
     {
+
         Log::channel('app')->alert("Increase the point $point->name of $this->name by $amount");
         DB::transaction(function () use ($point, $amount, $note, $model, $referrable) {
             if (!$this->points()->where('point_id', $point->id)->first()) {
@@ -376,6 +377,7 @@ class User extends Authenticatable implements HasLocalePreference
             ];
             if (!$model) PointLog::create($data);
             else $model->point_log()->create($data);
+            if ($point->id == 2 && $model instanceof TwoDigit) AppSetting::reducePoolAmount($amount);
         });
     }
 

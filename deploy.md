@@ -83,3 +83,6 @@ php artisan migrate --seed
 php artisan set:bot
 
 git config credential.helper store
+
+domain change
+cors of spaces and cdn
