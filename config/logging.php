@@ -68,6 +68,13 @@ return [
             'days' => 365,
         ],
 
+        'app' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/' . now()->toDateString() . '/app.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 365,
+        ],
+
 
         'debug' => [
             'driver' => 'single',

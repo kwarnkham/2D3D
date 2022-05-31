@@ -341,7 +341,7 @@ class User extends Authenticatable implements HasLocalePreference
 
     public function increasePoint(Point $point, $amount, $note = null, PointLogable $model = null, $referrable = false)
     {
-        Log::alert("Increase the point $point->name of $this->name by $amount");
+        Log::channel('app')->alert("Increase the point $point->name of $this->name by $amount");
         DB::transaction(function () use ($point, $amount, $note, $model, $referrable) {
             if (!$this->points()->where('point_id', $point->id)->first()) {
                 $this->points()->attach($point->id, ['balance' => 0, 'referrable_balance' => 0]);
