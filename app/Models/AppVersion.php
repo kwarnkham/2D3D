@@ -17,7 +17,8 @@ class AppVersion extends AppModel
             Cache::forget('appVersion');
         });
     }
-    protected $appends = ['telegram_bot'];
+
+    protected $appends = ['telegram_bot', 'apk_url'];
     public function telegramBot(): Attribute
     {
         return new Attribute(
@@ -25,12 +26,14 @@ class AppVersion extends AppModel
         );
     }
 
-    public static function apkUrl()
+    public function apkUrl(): Attribute
     {
         $app = static::orderBy('id', 'desc')->first();
         $array = explode('.', $app->url);
         $array[3] .= $app->version;
-        return implode(".", $array);
+        return new Attribute(
+            get: fn () => implode(".", $array),
+        );
     }
 
     public static function current()

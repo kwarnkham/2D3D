@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('app_versions', function (Blueprint $table) {
             $table->id();
-            $table->string('version');
+            $table->string('version')->unique();
             $table->text('note')->nullable();
             $table->boolean('optional')->default(false);
             $table->string('url')->default('https://lunarblessing.sgp1.digitaloceanspaces.com/Apk/LuckyHi/LuckyHi.apk');
