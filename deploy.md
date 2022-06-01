@@ -89,3 +89,4 @@ git config credential.helper store
 domain change notice
 laravel .env
 cors of spaces and cdn
+app version and payment from db

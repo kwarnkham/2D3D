@@ -47,7 +47,7 @@ class InitDatabase extends Command
             'max_bet' => '40'
         ]);
         \App\Models\Payment::create([
-            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => 'https://lunarblessing.sgp1.cdn.digitaloceanspaces.com/QR/KpayQR.PNG'
+            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => env('AWS_URL') . '/QR/KpayQR.PNG'
         ]);
         \App\Models\Payment::create([
             'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09792761207',

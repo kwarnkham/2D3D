@@ -30,7 +30,7 @@ class AppVersion extends AppModel
     {
         $app = static::orderBy('id', 'desc')->first();
         $array = explode('.', $app->url);
-        $array[3] .= $app->version;
+        $array[2] .= $app->version;
         return new Attribute(
             get: fn () => implode(".", $array),
         );
