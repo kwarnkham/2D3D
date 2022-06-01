@@ -1,8 +1,8 @@
 server {
 listen 80;
 listen [::]:80;
-server_name 2d3d.itismoon.fun;
-root /var/www/2d3d.itismoon.fun/2D3D/public;
+server_name 2d3d.madewithheart.tech;
+root /var/www/2D3D/public;
 
 add_header X-Frame-Options "SAMEORIGIN";
 add_header X-Content-Type-Options "nosniff";
@@ -33,9 +33,9 @@ deny all;
 
 server {
 listen 80;
-server_name lucky-hi.itismoon.fun;
+server_name lucky-hi.madewithheart.tech;
 
-root /var/www/lucky-hi.itismoon.fun;
+root /var/www/online_T;
 
 add_header X-Frame-Options "SAMEORIGIN";
 add_header X-XSS-Protection "1; mode=block";
@@ -52,7 +52,7 @@ try_files $uri $uri/ /index.html;
 location = /robots.txt { access_log off; log_not_found off; }
 
 access_log off;
-error_log /var/log/nginx/lucky-hi.itismoon.fun-error.log error;
+error_log /var/log/nginx/lucky-hi.madewithheart.tech-error.log error;
 
 location ~ /\.(?!well-known).* {
 deny all;

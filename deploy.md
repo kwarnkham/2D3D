@@ -10,17 +10,17 @@ sudo apt install php8.1-mysql
 sudo apt install nginx
 curl -4 icanhazip.com
 
-sudo mkdir -p /var/www/2d3d.itismoon.fun && cd /var/www/2d3d.itismoon.fun
+sudo mkdir -p /var/www/2D3D && cd /var/www/2D3D
 git clone https://github.com/kwarnkham/2D3D.git
 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
 apt install composer
 composer install --optimize-autoloader --no-dev
 
-sudo chown -R www-data:www-data /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
-sudo chmod -R 755 /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
-sudo chgrp -R www-data /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
-sudo chmod -R ug+rwx /var/www/2d3d.itismoon.fun/2D3D/storage /var/www/2d3d.itismoon.fun/2D3D/bootstrap/cache
+sudo chgrp -R www-data /var/www/D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
 php artisan optimize:clear
 php artisan config:cache
@@ -36,8 +36,8 @@ php artisan queue:restart
 sudo chgrp -R www-data storage bootstrap/cache
 sudo chmod -R ug+rwx storage bootstrap/cache
 
-sudo nano /etc/nginx/sites-available/2d3d.itismoon.fun
-sudo ln -s /etc/nginx/sites-available/2d3d.itismoon.fun /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/sites-available/2d3d.madewithheart.tech
+sudo ln -s /etc/nginx/sites-available/2d3d.madewithheart.tech /etc/nginx/sites-enabled/
 sudo nano /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl restart nginx
@@ -53,10 +53,10 @@ sudo certbot --nginx
 sudo systemctl status certbot.timer
 sudo certbot renew --dry-run
 
-sudo mkdir -p /var/www/lucky-hi.itismoon.fun && cd /var/www/lucky-hi.itismoon.fun
+sudo mkdir -p /var/www/online_T && cd /var/www/online_T
 
 ```
-scp spa.zip root@2d3d.itismoon.fun:/root/
+scp spa.zip root@2d3d.madewithheart.tech:/root/
 rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 systemctl restart nginx
@@ -64,13 +64,13 @@ php artisan tinker
 AppVersion::create(['version'=>'1.0.4'])
 ```
 
-sudo chown -R www-data:www-data /var/www/lucky-hi.itismoon.fun
-sudo chmod -R 755 /var/www/lucky-hi.itismoon.fun
-nano /etc/nginx/sites-available/lucky-hi.itismoon.fun
-sudo ln -s /etc/nginx/sites-available/lucky-hi.itismoon.fun /etc/nginx/sites-enabled/
+sudo chown -R www-data:www-data /var/www/online_T
+sudo chmod -R 755 /var/www/online_T
+nano /etc/nginx/sites-available/lucky-hi.madewithheart.tech
+sudo ln -s /etc/nginx/sites-available/lucky-hi.madewithheart.tech /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
-sudo certbot --nginx -d lucky-hi.itismoon.fun
+sudo certbot --nginx
 
 sudo ufw delete allow 'Nginx HTTP'
 
