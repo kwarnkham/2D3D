@@ -26,7 +26,10 @@ class WithdrawObserver
      */
     public function updated(Withdraw $withdraw)
     {
-        if ($withdraw->status == 2) $withdraw->user->decreaseReferrablePoint($withdraw->point, $withdraw->amount);
+        if ($withdraw->status == 2) {
+            $withdraw->user->decreaseReferrablePoint($withdraw->point, $withdraw->amount);
+            $withdraw->user->notify(__("messages.Withdraw has been approved"));
+        }
         if ($withdraw->status == 3) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw rejected', $withdraw);
         if ($withdraw->status == 5) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw canceled', $withdraw);
     }
