@@ -91,3 +91,4 @@ laravel .env
 cors of spaces and cdn
 app version and payment from db
 modify crontab
+modify queue supervis conf

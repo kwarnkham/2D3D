@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Jobs\ProcessResult;
 use App\Jobs\RenewTestPoint;
 use App\Models\TwoDigit;
 use App\Models\TwoDigitHit;
