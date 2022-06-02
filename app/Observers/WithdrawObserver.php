@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Point;
 use App\Models\Withdraw;
+use App\Services\TelegramService;
 
 class WithdrawObserver
 {
@@ -15,6 +16,7 @@ class WithdrawObserver
      */
     public function created(Withdraw $withdraw)
     {
+        TelegramService::sendAdminMessage("Received a new withdraw from user id of " . $withdraw->user->id . " <a href='" . $withdraw->getApproveLink() . "'>here</a>");
         $withdraw->user->decreasePoint($withdraw->point, $withdraw->amount, 'submit withdraw', $withdraw);
     }
 

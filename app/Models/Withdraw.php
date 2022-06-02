@@ -71,4 +71,9 @@ class Withdraw extends AppModel implements PointLogable
     {
         $query->where('user_id', $user->id);
     }
+
+    public function getApproveLink()
+    {
+        return env('APP_CLIENT_URL') . '/admin/approve-withdraw/' . $this->id;
+    }
 }
