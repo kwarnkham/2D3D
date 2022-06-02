@@ -56,12 +56,14 @@ sudo certbot renew --dry-run
 sudo mkdir -p /var/www/online_T && cd /var/www/online_T
 
 ```
+//upload the apk
 scp spa.zip root@2d3d.madewithheart.tech:/root/
 rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 systemctl restart nginx
 php artisan tinker
-AppVersion::create(['version'=>'1.0.4'])
+AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.4'])
+
 ```
 
 sudo chown -R www-data:www-data /var/www/online_T
