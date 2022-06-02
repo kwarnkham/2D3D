@@ -19,7 +19,7 @@ composer install --optimize-autoloader --no-dev
 sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
-sudo chgrp -R www-data /var/www/D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chgrp -R www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
 php artisan optimize:clear
@@ -90,3 +90,4 @@ domain change notice
 laravel .env
 cors of spaces and cdn
 app version and payment from db
+modify crontab
