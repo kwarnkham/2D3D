@@ -92,7 +92,7 @@ Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->grou
     Route::post('/withdraw/approve/{withdraw}', 'approve');
     Route::post('/withdraw/draft/{withdraw}', 'draft');
     Route::post('/withdraw/deny/{withdraw}', 'deny');
-    Route::post('/withdraw/cancel/{withdraw}', 'cancel');
+    // Route::post('/withdraw/cancel/{withdraw}', 'cancel');
     Route::get('/withdraw/{withdraw}', 'find');
 });
 

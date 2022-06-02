@@ -37,8 +37,8 @@ class AuthServiceProvider extends ServiceProvider
             return $user->id == $topUp->user->id;
         });
 
-        Gate::define('cancel-withdraw', function (User $user, Withdraw $withdraw) {
-            return $user->id == $withdraw->user->id;
-        });
+        // Gate::define('cancel-withdraw', function (User $user, Withdraw $withdraw) {
+        //     return $user->id == $withdraw->user->id;
+        // });
     }
 }
