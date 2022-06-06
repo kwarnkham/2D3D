@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertGreaterThan;
+use function PHPUnit\Framework\assertNotEquals;
 use function PHPUnit\Framework\assertTrue;
 
 class TwoDigitTest extends TestCase
@@ -118,6 +121,113 @@ class TwoDigitTest extends TestCase
             'point_id' => 2
         ]);
         $response->assertStatus(400);
+    }
+
+    public function test_jackpot_distribution()
+    {
+        $response = $this->actingAs($this->user)->postJson('api/top-up', [
+            'amount' => 10000,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/1', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+
+        $response = $this->actingAs($this->user2)->postJson('api/top-up', [
+            'amount' => 10000,
+            'payment_id' => 1,
+            'pictures' => [UploadedFile::fake()->image('avatar.jpg')]
+        ]);
+        $response->assertCreated();
+        $response = $this->actingAs($this->admin)->postJson('api/top-up/approve/2', [
+            'picture' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertOk();
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 100],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 200],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
+            'number' => '99',
+            'rate' => $this->appSetting->rate,
+            'set' => '1',
+            'value' => '1',
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
+        ]);
+        $response->assertStatus(201);
+        $jackpotAmount = Jackpot::getJackpot(false);
+        $this->assertEquals($jackpotAmount, 300 * $this->appSetting->jackpot_rate);
+        //update settle
+        assertTrue(TwoDigitHit::find(1)->update(['day' => today()->subDay()->format("Y/m/d")]) == 1);
+
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 123],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+
+        $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 456],
+            ],
+            'point_id' => 2
+        ]);
+        $response->assertStatus(201);
+        $response = $this->actingAs($this->admin)->postJson('api/two-digit-hit', [
+            'number' => '00',
+            'rate' => $this->appSetting->rate,
+            'set' => '1',
+            'value' => '1',
+            'day' => now()->greaterThan(today()->addHours(9)->addMinutes(31)) ? today()->addDay()->format("Y/m/d") : today()->format("Y/m/d"),
+            'morning' => now()->lessThan(today()->addHours(5)->addMinute()) || now()->greaterThan(today()->addHours(9)->addMinutes(30)->addSeconds(59))
+        ]);
+        $response->assertStatus(201);
+
+        $userJackpot = JackpotReward::find(1)->users()->where('user_id', $this->user->id)->first()->pivot->reward;
+        $user2Jackpot = JackpotReward::find(1)->users()->where('user_id', $this->user2->id)->first()->pivot->reward;
+
+        assertNotEquals($userJackpot, floor(Jackpot::where('status', 2)->pluck('amount')->sum() / 2));
+
+        assertEquals(PointLog::where('user_id', $this->user->id)->orderBy('id', 'desc')->first()->amount, $userJackpot);
+
+        assertEquals(PointLog::where('user_id', $this->user2->id)->orderBy('id', 'desc')->first()->amount, $user2Jackpot);
+
+        assertGreaterThan($userJackpot, $user2Jackpot);
+
+        assertEquals(floor($jackpotAmount * (123 / (123 + 456) * 100) / 100), $userJackpot);
+
+        assertEquals(floor($jackpotAmount * (456 / (123 + 456) * 100) / 100), $user2Jackpot);
+
+        assertTrue(JackpotNumber::whereNotNull('hit_at')->first()->number == 0);
+        assertTrue(Jackpot::where('status', 2)->count() == 2);
+        assertTrue(Jackpot::where('status', 2)->first()->jackpot_reward_id == 1);
+        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->jackpot_reward_id == 1);
+        assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
+        assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
+        assertTrue(PointLog::where('note', '2d prize')->count() == 2);
+        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
+
+        $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (10000 - 100 - 123 + (123 * $this->appSetting->rate) + $userJackpot));
+        $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 - 456 + (456 * $this->appSetting->rate) + $user2Jackpot));
     }
 
     public function test_app_logic()
@@ -220,7 +330,8 @@ class TwoDigitTest extends TestCase
         $response->assertStatus(201);
 
         assertTrue(JackpotReward::find(1)->shared_amount == floor(Jackpot::where('status', 2)->pluck('amount')->sum() / 2));
-        assertTrue(PointLog::where('user_id', $this->user->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
+
+        assertEquals(PointLog::where('user_id', $this->user->id)->orderBy('id', 'desc')->first()->amount, JackpotReward::find(1)->shared_amount);
         assertTrue(PointLog::where('user_id', $this->user2->id)->orderBy('id', 'desc')->first()->amount == JackpotReward::find(1)->shared_amount);
         assertTrue(JackpotNumber::whereNotNull('hit_at')->first()->number == 0);
         assertTrue(Jackpot::where('status', 2)->count() == 2);

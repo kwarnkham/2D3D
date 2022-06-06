@@ -241,7 +241,12 @@ class TwoDigit extends AppModel implements PointLogable
         if (!$this->two_digit_hit_id || !$this->settled_at) return;
 
         $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, '2d prize', $this);
-        if ($this->jackpot_reward_id) $this->user->increasePoint(Point::find($this->point_id), $this->jackpotReward->shared_amount, 'jackpot prize', $this);
+        // if ($this->jackpot_reward_id) $this->user->increasePoint(Point::find($this->point_id), $this->jackpotReward->shared_amount, 'jackpot prize', $this);
+
+        if ($this->jackpot_reward_id) {
+            $amount = $this->user->jackpotRewards()->where('jackpot_reward_id', $this->jackpot_reward_id)->first()->pivot->reward;
+            $this->user->increasePoint(Point::find($this->point_id), $amount, 'jackpot prize', $this);
+        }
     }
 
 

@@ -70,14 +70,39 @@ class TwoDigitHit extends AppModel
             //hit jackpot
             if ($jackpotNumber && $this->number == $jackpotNumber->number) {
                 $shared = (clone $builder)->where('number', $this->number)->count();
+
                 if ($shared > 0) {
+                    $totalBet = (clone $builder)->where('number', $this->number)->sum('amount');
+                    $dupeKeysData = (clone $builder)->where('number', $this->number)->with('user')->get()->map(
+                        function ($val) use ($totalBet) {
+                            return [
+                                'user_id' => $val->user->id,
+                                'shared_percentage' => ($val->amount / $totalBet) * 100
+                            ];
+                        }
+                    );
+                    $uniqueKeysData = array();
+                    foreach ($dupeKeysData as $value) {
+                        if (isset($uniqueKeysData[$value['user_id']])) {
+                            $uniqueKeysData[$value['user_id']] += $value['shared_percentage'];
+                        } else {
+                            $uniqueKeysData[$value['user_id']] = $value['shared_percentage'];
+                        }
+                    }
                     $amount = Jackpot::getJackpot(false);
+                    $uniqueKeysData = collect($uniqueKeysData)->map(
+                        function ($item) use ($amount) {
+                            return ['reward' => floor(($item * $amount) / 100)];
+                        }
+                    )->toArray();
+
                     $sharedAmount = floor($amount / $shared);
                     $jackpotReward = JackpotReward::create([
                         'amount' => $amount,
                         'shared_amount' => $sharedAmount,
                         'jackpot_number_id' => $jackpotNumber->id
                     ]);
+                    $jackpotReward->users()->attach($uniqueKeysData);
                     $twoDigitUpdateData['jackpot_reward_id'] = $jackpotReward->id;
                     $jackpotNumber->hit_at = now();
                     $jackpotNumber->save();

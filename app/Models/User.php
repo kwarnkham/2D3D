@@ -56,6 +56,11 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->locale;
     }
 
+    public function jackpotRewards()
+    {
+        return $this->belongsToMany(JackpotReward::class)->withPivot(['reward']);
+    }
+
     public function referrer()
     {
         return $this->belongsTo(User::class, 'referrer_id', 'id');

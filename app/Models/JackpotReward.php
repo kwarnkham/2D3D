@@ -19,4 +19,9 @@ class JackpotReward extends AppModel implements PointLogable
     {
         return $this->morphOne(PointLog::class, 'point_loggable');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot(['reward']);
+    }
 }
