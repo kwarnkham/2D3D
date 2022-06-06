@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'default message' => "':appName' မှကြိုဆိုပါသည်။ <a href=':apkUrl'>ဆော့ဝဲ android</a> ဒေါင်းရန်။ <a href=':appClient'>တိုက်ရိုက်</a> သုံးရန်။ ",
-    'The followings are username and password.' => "Username နှင့် password သည်  အောက်ပါအတိုင်းဖြစ်သည်။ ",
+    'default message' => "ဟိုင်းဟိုင်း':appName' မှကြိုဆိုပါတယ်နော်။ တိုက်ရိုက်သုံးဖို့ 👉🏼👉🏼 <a href=':appClient'>🍀🍀</a> ကိုနှိပ်ပေးပါ။ ဆော့ဝဲထည့်ဖို့ 👉🏼👉🏼<a href=':appClient'>📲📲</a> ကိုနှိပ်ပေးပါ။",
+    'The followings are username and password.' => "Username နဲ့ password ပို့ပေးလိုက်မယ်နော်။",
     "is your username" => ":username ကသင့် username ဖြစ်သည်။ ",
     "forgot password" => "Password မေ့သွားသည်",
     "help" => "အကူအညီရယူရန်",
