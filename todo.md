@@ -1,4 +1,6 @@
 content for help and promotion and testing
 
 fill up data
-fix jackpot sharing
+
+auto settle
+jackpot increased by double same number

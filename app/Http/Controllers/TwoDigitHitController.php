@@ -34,15 +34,22 @@ class TwoDigitHitController extends Controller
     public function find(Request $request, TwoDigitHit $twoDigitHit, PointLog $pointLog)
     {
         return [$twoDigitHit, $pointLog];
-        $twoDigit = $twoDigitHit->twoDigits()->where('id', explode(",", $pointLog->note)[0])->first();
-        $twoDigitHit->twoDigit = $twoDigit->load(['point']);
-        return response()->json($twoDigitHit);
+        // $twoDigit = $twoDigitHit->twoDigits()->where('id', explode(",", $pointLog->note)[0])->first();
+        // $twoDigitHit->twoDigit = $twoDigit->load(['point']);
+        // return response()->json($twoDigitHit);
     }
 
     public function index(Request $request)
     {
         return response()->json(Cache::rememberForever('twoDigitHits', function () {
             return TwoDigitHit::all();
+        }));
+    }
+
+    public function latest()
+    {
+        return response()->json(Cache::rememberForever('latestTwoDigitHit', function () {
+            return TwoDigitHit::orderBy('id', 'desc')->first();
         }));
     }
 }

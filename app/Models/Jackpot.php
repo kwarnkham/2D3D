@@ -22,14 +22,15 @@ class Jackpot extends AppModel
     public static function getJackpot($fromCache = true)
     {
         if ($fromCache)
-            return Cache::rememberForever('twoDigitJackpot', function () {
+            $jackpot = Cache::rememberForever('twoDigitJackpot', function () {
                 return static::effectiveQuery()
                     ->pluck('amount')->sum();
             });
         else {
-            Cache::forget('twoDigitJackpot');
+            $jackpot = Cache::forget('twoDigitJackpot');
             return static::effectiveQuery()
                 ->pluck('amount')->sum();
         }
+        return floor($jackpot);
     }
 }

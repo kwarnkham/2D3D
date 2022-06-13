@@ -12,6 +12,7 @@ class TwoDigitHit extends AppModel
 {
     use HasFactory;
 
+    protected $appends = ['created_time'];
 
     public function twoDigits()
     {

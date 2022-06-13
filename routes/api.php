@@ -15,7 +15,6 @@ use App\Http\Controllers\TwoDigitController;
 use App\Http\Controllers\TwoDigitHitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WithdrawController;
-use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -84,6 +83,7 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->g
     Route::post('/two-digit-hit', 'store');
     Route::get('/two-digit-hit/{twoDigitHit}/point-log/{pointLog}', 'find');
     Route::get('/two-digit-hit', 'index');
+    Route::get('/two-digit-hit/latest', 'latest');
 });
 
 Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->group(function () {
