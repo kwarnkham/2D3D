@@ -128,8 +128,9 @@ class TwoDigit extends AppModel implements PointLogable
             'set' => $set,
             'value' => $value
         ];
-        if ($notify)
-            TelegramService::sendAdminMessage(json_encode($data));
+        // if ($notify)
+        //     TelegramService::sendAdminMessage(json_encode($data));
+        TwoDigitHit::confirmResult($data);
         return $number;
     }
 

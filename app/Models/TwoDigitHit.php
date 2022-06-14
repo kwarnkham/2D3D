@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -37,6 +38,7 @@ class TwoDigitHit extends AppModel
 
     public static function confirmResult(array $data)
     {
+        if (!App::isLocale('en')) App::setLocale('en');
         if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) {
             $data['day'] = new Carbon($data['day']);
             $twoDigitHit = TwoDigitHit::create($data);
