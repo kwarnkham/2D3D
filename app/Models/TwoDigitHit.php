@@ -110,7 +110,7 @@ class TwoDigitHit extends AppModel
                     $jackpotNumber->hit_at = now();
                     $jackpotNumber->save();
                     JackpotNumber::create([
-                        'number' => $jackpotNumber->number == 99 ? 0 : $jackpotNumber->number + 1
+                        'number' => $jackpotNumber->number == 99 ? 0 : $jackpotNumber->number + 11
                     ]);
                     Jackpot::whereIn('id', Jackpot::effectiveQuery()->pluck('id')->toArray())
                         ->update(['status' => 2, 'jackpot_reward_id' => $jackpotReward->id]);
