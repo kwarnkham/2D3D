@@ -23,12 +23,12 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             if (TwoDigitHit::checkDay())
                 TwoDigit::getResult();
-        })->cron("40 05 * * *");
+        })->cron("32 05 * * *");
 
         $schedule->call(function () {
             if (TwoDigitHit::checkDay())
                 TwoDigit::getResult();
-        })->cron("10 10 * * *");
+        })->cron("02 10 * * *");
 
         $schedule->call(function () {
             foreach (User::whereIn('id', DB::table('point_user')->where('point_id', 1)->where('balance', '<', 100)->pluck('user_id')->toArray())->get() as $user) {

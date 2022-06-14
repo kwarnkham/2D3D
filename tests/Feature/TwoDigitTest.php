@@ -224,7 +224,7 @@ class TwoDigitTest extends TestCase
         assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
         assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
         assertTrue(PointLog::where('note', '2d prize')->count() == 2);
-        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
+        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 11);
 
         $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (10000 - 100 - 123 + (123 * $this->appSetting->rate) + $userJackpot));
         $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 - 456 + (456 * $this->appSetting->rate) + $user2Jackpot));
@@ -340,7 +340,7 @@ class TwoDigitTest extends TestCase
         assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
         assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
         assertTrue(PointLog::where('note', '2d prize')->count() == 2);
-        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 1);
+        assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 11);
         $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (30000 - 450 + (100 * $this->appSetting->rate) + JackpotReward::find(1)->shared_amount));
         $this->assertEquals($this->user2->getBalanceByPoint(Point::find(2)), (10000 - 200 + (100 * $this->appSetting->rate) + JackpotReward::find(1)->shared_amount));
     }
