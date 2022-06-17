@@ -32,4 +32,5 @@ return [
     "Congratulations! You have won the jackpot." => "ဝမ်းသာပါတယ်။ သင်ဂျက်ခ်ပေါ့ပေါက်ပါတယ်။ ဆုကြေးငွေကတော့ :amount ကျပ်ဖြစ်ပါတယ်။",
     "Someone used your code to register. Thank you." => "တစ်စုံတစ်ယောက်က သင့်ကုဒ်ကို မှတ်ပုံတင်ရန် အသုံးပြုခဲ့သည်။ ကျေးဇူးတင်ပါတယ်။",
     "Withdraw has been approved" => "ငွေထုတ်ယူခြင်းကို အတည်ပြုပြီးပါပြီ",
+    "Balance is not enough" => "ပိုက်ဆံမလောက်ဘူး"
 ];

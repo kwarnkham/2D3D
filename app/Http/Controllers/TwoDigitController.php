@@ -29,7 +29,7 @@ class TwoDigitController extends Controller
         $point = Point::find($data['point_id']);
         $totalAmount = intval(collect($data['numbers'])->reduce(fn ($carry, $value) => $carry + $value['amount'], 0));
         $remainingBalance = $user->getBalanceByPoint($point) - $totalAmount;
-        if ($remainingBalance < 0) abort(ResponseStatus::BAD_REQUEST->value, 'Balance is not enough');
+        if ($remainingBalance < 0) abort(ResponseStatus::BAD_REQUEST->value, __("messages.Balance is not enough"));
         $twoDigits = collect($data['numbers'])->map(fn ($value) => [
             'number' => $value['number'],
             'amount' => $value['amount'],
@@ -50,6 +50,11 @@ class TwoDigitController extends Controller
             ),
             'user' => $user->load(User::RS)
         ], ResponseStatus::CREATED->value);
+    }
+
+    public function isClosedTime()
+    {
+        return response()->json(!TwoDigit::checkTime());
     }
 
     public function index(Request $request)

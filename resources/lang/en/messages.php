@@ -31,4 +31,5 @@ return [
     "Congratulations! You have won the jackpot." => "Congratulations! You have won the jackpot. Prize amount is :amount MMK",
     "Someone used your code to register. Thank you." => "Someone used your code to register. Thank you.",
     "Withdraw has been approved" => "Withdraw has been approved",
+    "Balance is not enough" => "Balance is not enough"
 ];

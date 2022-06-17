@@ -199,7 +199,7 @@ class TwoDigit extends AppModel implements PointLogable
 
     public static function checkTime(Carbon $runTime = null)
     {
-        if (!static::checkDay($runTime)) return;
+        if (!static::checkDay($runTime)) return false;
         if (!$runTime) $runTime = now();
         $today = (clone $runTime)->startOfDay();
         $time = $runTime->diffInSeconds($today);

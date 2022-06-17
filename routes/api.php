@@ -76,13 +76,20 @@ Route::middleware(['auth:sanctum'])->controller(UserController::class)->group(fu
 Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->group(function () {
     Route::post('/two-digit', 'store')->middleware(['disallowBanned']);
     Route::get('/two-digit', 'index');
-    Route::get('/two-digit/{twoDigit}', 'find');
+    Route::get('/two-digit/{twoDigit}', 'find')->whereNumber('twoDigit');
+});
+
+Route::controller(TwoDigitController::class)->group(function () {
+    Route::get('/two-digit/is-closed-time', 'isClosedTime');
 });
 
 Route::middleware(['auth:sanctum'])->controller(TwoDigitHitController::class)->group(function () {
     Route::post('/two-digit-hit', 'store');
     Route::get('/two-digit-hit/{twoDigitHit}/point-log/{pointLog}', 'find');
     Route::get('/two-digit-hit', 'index');
+});
+
+Route::controller(TwoDigitHitController::class)->group(function () {
     Route::get('/two-digit-hit/latest', 'latest');
 });
 
