@@ -100,8 +100,14 @@ Route::middleware(['auth:sanctum'])->controller(WithdrawController::class)->grou
     Route::post('/withdraw/draft/{withdraw}', 'draft');
     Route::post('/withdraw/deny/{withdraw}', 'deny');
     // Route::post('/withdraw/cancel/{withdraw}', 'cancel');
-    Route::get('/withdraw/{withdraw}', 'find');
+    Route::get('/withdraw/{withdraw}', 'find')->whereNumber('withdraw');
 });
+
+
+Route::controller(WithdrawController::class)->group(function () {
+    Route::get('/withdraw/list', 'list');
+});
+
 
 Route::middleware(['auth:sanctum'])->controller(PointLogController::class)->group(function () {
     Route::get('/point-log', 'index');

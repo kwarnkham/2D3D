@@ -47,6 +47,13 @@ class WithdrawController extends Controller
         );
     }
 
+    public function list()
+    {
+        return response()->json(
+            Withdraw::with(Withdraw::RS)->where('status', 2)->orderBy('id', 'desc')->limit(20)->get()
+        );
+    }
+
     public function find(Request $request, Withdraw $withdraw)
     {
         $user = $request->user();
