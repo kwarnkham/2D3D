@@ -19,11 +19,10 @@ composer install --optimize-autoloader --no-dev
 sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
-sudo chgrp -R www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
-sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+<!-- sudo chgrp -R www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache -->
 
 php artisan optimize:clear
-php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
@@ -32,9 +31,6 @@ supervisorctl update
 supervisorctl start laravel-worker:\*
 supervisorctl status
 php artisan queue:restart
-
-sudo chgrp -R www-data storage bootstrap/cache
-sudo chmod -R ug+rwx storage bootstrap/cache
 
 sudo nano /etc/nginx/sites-available/2d3d.madewithheart.tech
 sudo ln -s /etc/nginx/sites-available/2d3d.madewithheart.tech /etc/nginx/sites-enabled/
@@ -64,8 +60,19 @@ php artisan down
 php artisan tinker
 AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.4'])
 systemctl restart nginx
+
 php artisan optimize:clear
+php artisan route:cache
+php artisan view:cache
+
+supervisorctl reread
+supervisorctl update
+supervisorctl start laravel-worker:\*
+supervisorctl status
 php artisan queue:restart
+sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+
 php artisan up
 
 ```
