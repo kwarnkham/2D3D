@@ -3,6 +3,7 @@
 return [
     'default message' => "ဟိုင်းဟိုင်း':appName' မှကြိုဆိုပါတယ်နော်။ တိုက်ရိုက်သုံးဖို့ 👉🏼👉🏼 <a href=':appClient'>🍀🍀</a> ကိုနှိပ်ပေးပါ။ ဆော့ဝဲထည့်ဖို့ 👉🏼👉🏼<a href=':appClient'>📲📲</a> ကိုနှိပ်ပေးပါ။",
     'The followings are username and password.' => "Username နဲ့ password ပို့ပေးလိုက်မယ်နော်။",
+    'The following is your username' => "Username ပို့ပေးလိုက်မယ်နော်။",
     "is your username" => ":username က မိတ်ဆွေရဲ့ username ပါ။",
     "forgot password" => "Password မေ့နေတယ်",
     "help" => "ကူညီပါအုန်း",

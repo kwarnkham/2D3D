@@ -2,7 +2,8 @@
 
 return [
     'default message' => "Welcome to ':appName'. Download <a href=':apkUrl'>Android App</a>. Use <a href=':appClient'>Web Application</a>. ",
-    'The followings are username and password.' => "The followings are username and password. ",
+    'The followings are username and password.' => "The followings are username and password.",
+    'The following is your username' => "The following is your username",
     "is your username" => ":username is your username. ",
     "forgot password" => "Forgot Password",
     "help" => "Help",
@@ -31,5 +32,5 @@ return [
     "Congratulations! You have won the jackpot." => "Congratulations! You have won the jackpot. Prize amount is :amount MMK",
     "Someone used your code to register. Thank you." => "Someone used your code to register. Thank you.",
     "Withdraw has been approved" => "Withdraw has been approved",
-    "Balance is not enough" => "Balance is not enough"
+    "Balance is not enough" => "Balance is not enough",
 ];

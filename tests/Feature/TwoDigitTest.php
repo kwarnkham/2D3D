@@ -437,8 +437,8 @@ class TwoDigitTest extends TestCase
 
     public function test_2d_day()
     {
-        $start = 60 * 60 * 24 * 30 * 3;
-        $end = 60 * 60 * 24 * 30 * 4;
+        $start = 60 * 60 * 24 * 30 * 4;
+        $end = 60 * 60 * 24 * 30 * 5;
         for ($i = $start; $i < $end; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             $today = (clone $time)->startOfDay();

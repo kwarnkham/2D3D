@@ -47,7 +47,6 @@ class TelegramWebhookController extends Controller
         switch (strtolower($request->message['text'])) {
             case 'application':
             case 'အပလီကေးရှင်း':
-
                 $message = __("messages.get application", compact('apkUrl'));
                 break;
             case 'hi':
@@ -56,7 +55,7 @@ class TelegramWebhookController extends Controller
             case 'english':
             case 'မြန်မာ':
                 if ($password) $message = $starterMessage;
-                else $message = $message . __("messages.is your username", compact('username'));
+                else $message = [$message . " " . __("messages.The following is your username"), $username];
                 break;
             case strtolower(__("messages.forgot password")):
                 if ($password) {
