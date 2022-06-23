@@ -58,8 +58,8 @@ rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 php artisan down
 php artisan tinker
-AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.4'])
-systemctl restart nginx
+AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.9'])
+
 
 php artisan optimize:clear
 php artisan route:cache
@@ -70,9 +70,11 @@ supervisorctl update
 supervisorctl start laravel-worker:\*
 supervisorctl status
 php artisan queue:restart
+
 sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 
+systemctl restart nginx
 php artisan up
 
 ```
