@@ -42,7 +42,7 @@ class TwoDigitHitController extends Controller
     public function index(Request $request)
     {
         return response()->json(Cache::rememberForever('twoDigitHits', function () {
-            return TwoDigitHit::all();
+            return TwoDigitHit::limit(100)->orderBy('id', 'desc')->get();
         }));
     }
 
