@@ -57,8 +57,9 @@ scp spa.zip root@2d3d.madewithheart.tech:/root/
 rm -r backup/* && mv ./* backup
 mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -r spa
 php artisan down
+git pull
 php artisan tinker
-AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.9'])
+AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.11'])
 
 
 php artisan optimize:clear
