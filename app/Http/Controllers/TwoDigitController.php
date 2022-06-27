@@ -75,4 +75,9 @@ class TwoDigitController extends Controller
         if ($twoDigit->user->id != $user->id && !$user->isAdmin()) abort(ResponseStatus::NOT_FOUND->value);
         return response()->json($twoDigit->load(TwoDigit::RS));
     }
+
+    public function closedDays()
+    {
+        return response()->json(TwoDigit::CLOSED_DAYS);
+    }
 }

@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class TwoDigit extends AppModel implements PointLogable
 {
@@ -75,12 +74,20 @@ class TwoDigit extends AppModel implements PointLogable
      *
      * @var array
      */
-    protected $appends = ['created_day', 'created_time'];
+    protected $appends = ['created_day', 'created_time', 'morning'];
 
     public function createdDay(): Attribute
     {
         return new Attribute(
             get: fn () => $this->created_at->format('d/m/Y'),
+        );
+    }
+
+    public function morning(): Attribute
+    {
+
+        return new Attribute(
+            get: fn () => static::isEveningCheck((clone $this->created_at)->startOfDay()->diffInSeconds($this->created_at)),
         );
     }
 
@@ -244,7 +251,7 @@ class TwoDigit extends AppModel implements PointLogable
         $this->user->increasePoint(Point::find($this->point_id), $this->amount * $this->twoDigitHit->rate, '2d prize', $this);
         // if ($this->jackpot_reward_id) $this->user->increasePoint(Point::find($this->point_id), $this->jackpotReward->shared_amount, 'jackpot prize', $this);
 
-        if ($this->jackpot_reward_id) {
+        if ($this->jackpot_reward_id && $this->point_id == 2) {
             $amount = $this->user->jackpotRewards()->where('jackpot_reward_id', $this->jackpot_reward_id)->first()->pivot->reward;
             $this->user->increasePoint(Point::find($this->point_id), $amount, 'jackpot prize', $this);
         }
@@ -310,7 +317,8 @@ class TwoDigit extends AppModel implements PointLogable
     public static function processJackpot()
     {
         DB::transaction(function () {
-            $query = TwoDigit::whereNull('jackpotted_at')->whereNull('two_digit_hit_id');
+            $query = TwoDigit::whereNull('jackpotted_at')
+                ->whereNull('two_digit_hit_id')->where('point_id', 2);
             foreach ($query->get() as $twoDigit) {
                 $twoDigit->jackpot()->create([
                     'amount' => $twoDigit->amount * AppSetting::current()->jackpot_rate

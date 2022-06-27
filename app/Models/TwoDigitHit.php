@@ -72,11 +72,11 @@ class TwoDigitHit extends AppModel
 
             //hit jackpot
             if ($jackpotNumber && $this->number == $jackpotNumber->number) {
-                $shared = (clone $builder)->where('number', $this->number)->count();
+                $shared = (clone $builder)->where('number', $this->number)->where('point_id', 2)->count();
 
                 if ($shared > 0) {
-                    $totalBet = (clone $builder)->where('number', $this->number)->sum('amount');
-                    $dupeKeysData = (clone $builder)->where('number', $this->number)->with('user')->get()->map(
+                    $totalBet = (clone $builder)->where('number', $this->number)->where('point_id', 2)->sum('amount');
+                    $dupeKeysData = (clone $builder)->where('number', $this->number)->where('point_id', 2)->with('user')->get()->map(
                         function ($val) use ($totalBet) {
                             return [
                                 'user_id' => $val->user->id,
@@ -124,7 +124,7 @@ class TwoDigitHit extends AppModel
             foreach ($this->twoDigits as $twoDigit) {
                 $twoDigit->processPrize();
             }
-            TwoDigit::processJackpot($this);
+            TwoDigit::processJackpot();
         });
     }
 }

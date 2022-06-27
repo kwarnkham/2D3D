@@ -77,6 +77,7 @@ Route::middleware(['auth:sanctum'])->controller(TwoDigitController::class)->grou
     Route::post('/two-digit', 'store')->middleware(['disallowBanned']);
     Route::get('/two-digit', 'index');
     Route::get('/two-digit/{twoDigit}', 'find')->whereNumber('twoDigit');
+    Route::get('/two-digit/closed-days', 'closedDays');
 });
 
 Route::controller(TwoDigitController::class)->group(function () {

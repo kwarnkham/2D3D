@@ -149,15 +149,23 @@ class TwoDigitTest extends TestCase
 
         $response = $this->actingAs($this->user)->postJson('api/two-digit', [
             'numbers' => [
-                ['number' => 0, 'amount' => 100],
+                ['number' => 5, 'amount' => 100],
             ],
             'point_id' => 2
         ]);
         $response->assertStatus(201);
 
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 4, 'amount' => 100],
+            ],
+            'point_id' => 1
+        ]);
+        $response->assertStatus(201);
+
         $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
             'numbers' => [
-                ['number' => 0, 'amount' => 200],
+                ['number' => 3, 'amount' => 200],
             ],
             'point_id' => 2
         ]);
@@ -185,6 +193,14 @@ class TwoDigitTest extends TestCase
         ]);
         $response->assertStatus(201);
 
+        $response = $this->actingAs($this->user)->postJson('api/two-digit', [
+            'numbers' => [
+                ['number' => 0, 'amount' => 123],
+            ],
+            'point_id' => 1
+        ]);
+        $response->assertStatus(201);
+
         $response = $this->actingAs($this->user2)->postJson('api/two-digit', [
             'numbers' => [
                 ['number' => 0, 'amount' => 456],
@@ -207,9 +223,9 @@ class TwoDigitTest extends TestCase
 
         assertNotEquals($userJackpot, floor(Jackpot::where('status', 2)->pluck('amount')->sum() / 2));
 
-        assertEquals(PointLog::where('user_id', $this->user->id)->orderBy('id', 'desc')->first()->amount, $userJackpot);
+        assertEquals(PointLog::where('user_id', $this->user->id)->where('note', 'jackpot prize')->orderBy('id', 'desc')->first()->amount, $userJackpot);
 
-        assertEquals(PointLog::where('user_id', $this->user2->id)->orderBy('id', 'desc')->first()->amount, $user2Jackpot);
+        assertEquals(PointLog::where('user_id', $this->user2->id)->where('note', 'jackpot prize')->orderBy('id', 'desc')->first()->amount, $user2Jackpot);
 
         assertGreaterThan($userJackpot, $user2Jackpot);
 
@@ -223,7 +239,7 @@ class TwoDigitTest extends TestCase
         assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->jackpot_reward_id == 1);
         assertTrue(TwoDigit::where('number', 0)->orderBy('id', 'desc')->first()->two_digit_hit_id == 2);
         assertTrue(PointLog::where('note', 'jackpot prize')->count() == 2);
-        assertTrue(PointLog::where('note', '2d prize')->count() == 2);
+        assertTrue(PointLog::where('note', '2d prize')->count() == 3);
         assertTrue(JackpotNumber::orderBy('id', 'desc')->first()->number == 11);
 
         $this->assertEquals($this->user->getBalanceByPoint(Point::find(2)), (10000 - 100 - 123 + (123 * $this->appSetting->rate) + $userJackpot));
