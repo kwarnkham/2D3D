@@ -56,21 +56,21 @@ return [
 
         'two-digit' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/two-digit.log'),
+            'path' => storage_path('logs/' . now()->toDateString() . '/two-digit.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
         ],
 
         'telegram' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/telegram.log'),
+            'path' => storage_path('logs/' . now()->toDateString() . '/telegram.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
         ],
 
         'app' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/app.log'),
+            'path' => storage_path('logs/' . now()->toDateString() . '/app.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
         ],
