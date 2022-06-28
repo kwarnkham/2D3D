@@ -74,12 +74,20 @@ class TwoDigit extends AppModel implements PointLogable
      *
      * @var array
      */
-    protected $appends = ['created_day', 'created_time', 'morning'];
+    protected $appends = ['created_day', 'created_time', 'morning', 'effective_day'];
 
     public function createdDay(): Attribute
     {
         return new Attribute(
             get: fn () => $this->created_at->format('d/m/Y'),
+        );
+    }
+
+    public function effectiveDay(): Attribute
+    {
+
+        return new Attribute(
+            get: fn () => static::isMorningCheckDiffDay((clone $this->created_at)->startOfDay()->diffInSeconds($this->created_at)) ? $this->created_at->addDay()->format('d/m/Y') : $this->created_at->format('d/m/Y'),
         );
     }
 
