@@ -18,23 +18,8 @@ class TelegramWebhookController extends Controller
     public function handle(Request $request)
     {
         Log::channel('telegram')->info(json_encode($request->all()));
-        $request->validate([
-            'my_chat_member' => ['array'],
-            'message' => ['required_if:my_chat_member,null'],
-            'message.from.id' => ['required_if:my_chat_member,null'],
-        ]);
         list($user, $password) = User::summon($request);
-        switch (strtolower($request->message['text'])) {
-            case 'english':
-                $user->setLocale('en');
-                break;
-            case 'မြန်မာ':
-                $user->setLocale('my');
-                break;
-            default:
-                if (in_array($user->preferredLocale(), ['en', 'my'])) App::setLocale($user->preferredLocale());
-                break;
-        }
+
 
 
         $username = $user->name;
@@ -43,7 +28,18 @@ class TelegramWebhookController extends Controller
         $appClient = env("APP_CLIENT_URL");
         $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
         $starterMessage = $message . __("messages.The followings are username and password.");
-        if ($request->exists('message') && $request->message['text'])
+        if ($request->exists('message') && array_key_exists('text', $request->message)) {
+            switch (strtolower($request->message['text'])) {
+                case 'english':
+                    $user->setLocale('en');
+                    break;
+                case 'မြန်မာ':
+                    $user->setLocale('my');
+                    break;
+                default:
+                    if (in_array($user->preferredLocale(), ['en', 'my'])) App::setLocale($user->preferredLocale());
+                    break;
+            }
             switch (strtolower($request->message['text'])) {
                 case 'application':
                 case 'အပလီကေးရှင်း':
@@ -84,6 +80,10 @@ class TelegramWebhookController extends Controller
                         $message = null;
                     break;
             }
+        } else {
+            $message = null;
+        }
+
         if ($message) {
             try {
                 if ($password)
