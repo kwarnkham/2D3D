@@ -22,8 +22,6 @@ class TelegramWebhookController extends Controller
             'my_chat_member' => ['array'],
             'message' => ['required_if:my_chat_member,null'],
             'message.from.id' => ['required_if:my_chat_member,null'],
-            'message.text' => ['required_if:my_chat_member,null'],
-            'message.date' => ['required_if:my_chat_member,null'],
         ]);
         list($user, $password) = User::summon($request);
         switch (strtolower($request->message['text'])) {
@@ -45,7 +43,7 @@ class TelegramWebhookController extends Controller
         $appClient = env("APP_CLIENT_URL");
         $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
         $starterMessage = $message . __("messages.The followings are username and password.");
-        if ($request->exists('message'))
+        if ($request->exists('message') && $request->message['text'])
             switch (strtolower($request->message['text'])) {
                 case 'application':
                 case 'အပလီကေးရှင်း':
