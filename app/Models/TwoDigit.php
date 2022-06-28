@@ -87,7 +87,7 @@ class TwoDigit extends AppModel implements PointLogable
     {
 
         return new Attribute(
-            get: fn () => static::isEveningCheck((clone $this->created_at)->startOfDay()->diffInSeconds($this->created_at)),
+            get: fn () => !static::isEveningCheck((clone $this->created_at)->startOfDay()->diffInSeconds($this->created_at)),
         );
     }
 

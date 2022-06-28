@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\TelegramService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -13,11 +14,18 @@ class TwoDigitHit extends AppModel
 {
     use HasFactory;
 
-    protected $appends = ['created_time'];
+    protected $appends = ['created_time', 'created_day'];
 
     public function twoDigits()
     {
         return $this->hasMany(TwoDigit::class);
+    }
+
+    public function createdDay(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->created_at->format('d/m/Y'),
+        );
     }
 
     public static function checkDay(Carbon $runTime = null)
