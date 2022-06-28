@@ -59,6 +59,7 @@ return [
             'path' => storage_path('logs/' . now()->toDateString() . '/two-digit.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
+            'permission' => 0664,
         ],
 
         'telegram' => [
@@ -66,6 +67,7 @@ return [
             'path' => storage_path('logs/' . now()->toDateString() . '/telegram.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
+            'permission' => 0664,
         ],
 
         'app' => [
@@ -73,6 +75,7 @@ return [
             'path' => storage_path('logs/' . now()->toDateString() . '/app.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 365,
+            'permission' => 0664,
         ],
 
 
