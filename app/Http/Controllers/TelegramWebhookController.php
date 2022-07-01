@@ -17,7 +17,7 @@ class TelegramWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        // Log::channel('telegram')->info(json_encode($request->all()));
+        Log::channel('telegram')->info(json_encode($request->all()));
         list($user, $password) = User::summon($request);
 
 
