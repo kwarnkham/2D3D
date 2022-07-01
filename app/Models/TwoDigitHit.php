@@ -50,7 +50,7 @@ class TwoDigitHit extends AppModel
         if (!TwoDigitHit::where('day', $data['day'])->where('morning', $data['morning'])->exists()) {
             $data['day'] = new Carbon($data['day']);
             $twoDigitHit = TwoDigitHit::create($data);
-            // Log::channel('two-digit')->info(($data['morning'] ? "Morning" : "Evening") . " result is " . $data['number']);
+            Log::channel('two-digit')->info(($data['morning'] ? "Morning" : "Evening") . " result is " . $data['number']);
             TelegramService::sendAdminMessage('Finished settled for the following.');
             TelegramService::sendAdminMessage(json_encode($twoDigitHit));
         } else {
