@@ -389,7 +389,7 @@ class User extends Authenticatable implements HasLocalePreference
                 }
             }
         });
-        Log::channel('app')->alert("Increase the point $point->name of $this->name by $amount");
+        // Log::channel('app')->alert("Increase the point $point->name of $this->name by $amount");
     }
 
     public function isAdmin()

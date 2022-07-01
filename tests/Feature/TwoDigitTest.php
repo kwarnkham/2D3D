@@ -430,7 +430,7 @@ class TwoDigitTest extends TestCase
     {
         for ($i = 0; $i < 60 * 60 * 24; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
-            Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
+            // Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
             $morningStart = (clone $time)->startOfDay()->addHours(10)->addMinutes(30);
             $morningLast = (clone $time)->startOfDay()->addHours(5)->addSeconds(59);
             $eveningStart = (clone $time)->startOfDay()->addHours(6);
@@ -506,7 +506,7 @@ class TwoDigitTest extends TestCase
         for ($i = 0; $i < 60 * 60 * 24; $i++) {
             $time = today()->startOfYear()->addSeconds($i);
             if (TwoDigit::checkTime($time)) {
-                Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
+                // Log::channel('debug')->info($time->format("Y-m-d D H:i:s A"));
                 $result = $this->user->twoDigits()->create([
                     'number' => '00',
                     'amount' => '100',
