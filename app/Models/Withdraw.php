@@ -30,7 +30,7 @@ class Withdraw extends AppModel implements PointLogable
     {
         return $this->belongsTo(Payment::class);
     }
-    protected $appends = ['created_time'];
+    protected $appends = ['created_time', 'updated_time'];
 
     public function pictures()
     {

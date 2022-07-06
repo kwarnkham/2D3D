@@ -23,4 +23,11 @@ abstract class AppModel extends Model
             get: fn () => $this->created_at->timestamp,
         );
     }
+
+    public function updatedTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->updated_at->timestamp,
+        );
+    }
 }

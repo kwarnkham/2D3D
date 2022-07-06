@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Point;
 use App\Models\Withdraw;
 use App\Services\TelegramService;
+use Illuminate\Support\Facades\Cache;
 
 class WithdrawObserver
 {
@@ -31,6 +32,7 @@ class WithdrawObserver
         if ($withdraw->status == 2) {
             $withdraw->user->decreaseReferrablePoint($withdraw->point, $withdraw->amount);
             $withdraw->user->notify(__("messages.Withdraw has been approved"));
+            Cache::forget('withdrawList');
         }
         if ($withdraw->status == 3) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw rejected', $withdraw);
         if ($withdraw->status == 5) $withdraw->user->increasePoint($withdraw->point, $withdraw->amount, 'withdraw canceled', $withdraw);

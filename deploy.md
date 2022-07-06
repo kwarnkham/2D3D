@@ -14,10 +14,12 @@ sudo mkdir -p /var/www/2D3D && cd /var/www/2D3D
 git clone https://github.com/kwarnkham/2D3D.git
 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
 apt install composer
+cp .env.example ./.env
+php artisan key:generate
 composer install --optimize-autoloader --no-dev
 
-sudo chown -R www-data:www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
-sudo chmod -R 755 /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/harrot/storage /var/www/harrot/bootstrap/cache
+sudo chmod -R 755 /var/www/harrot/storage /var/www/harrot/bootstrap/cache
 
 <!-- sudo chgrp -R www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache -->
@@ -32,8 +34,8 @@ supervisorctl start laravel-worker:\*
 supervisorctl status
 php artisan queue:restart
 
-sudo nano /etc/nginx/sites-available/2d3d.madewithheart.tech
-sudo ln -s /etc/nginx/sites-available/2d3d.madewithheart.tech /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/sites-available/harrot.madewithheart.tech
+sudo ln -s /etc/nginx/sites-available/harrot.madewithheart.tech /etc/nginx/sites-enabled/
 sudo nano /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl restart nginx
@@ -108,3 +110,4 @@ cors of spaces and cdn
 app version and payment from db
 modify crontab
 modify queue supervis conf
+facebook app
