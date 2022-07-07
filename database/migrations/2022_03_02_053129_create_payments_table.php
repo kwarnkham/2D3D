@@ -20,7 +20,7 @@ return new class extends Migration
             $table->tinyInteger('type');
             $table->string('number')->nullable();
             $table->string('account_name')->nullable();
-            $table->unique('number');
+            $table->unique(['type', 'number']);
             $table->string('qr')->nullable();
             $table->timestamps();
         });
