@@ -350,7 +350,7 @@ class User extends Authenticatable implements HasLocalePreference
             $data = [
                 'user_id' => $this->id,
                 'point_id' => $point->id,
-                'amount' => -$amount,
+                'amount' => floor($amount),
                 'type' => 1,
                 'note' => $note
             ];
@@ -374,7 +374,7 @@ class User extends Authenticatable implements HasLocalePreference
             $data = [
                 'user_id' => $this->id,
                 'point_id' => $point->id,
-                'amount' => $amount,
+                'amount' => floor($amount),
                 'type' => 2,
                 'note' => $note
             ];

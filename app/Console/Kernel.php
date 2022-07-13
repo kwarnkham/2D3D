@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
         })->cron("05 10 * * *");
 
         $schedule->call(function () {
-            foreach (User::whereIn('id', DB::table('point_user')->where('point_id', 1)->where('balance', '<', 100)->pluck('user_id')->toArray())->get() as $user) {
+            foreach (User::whereIn('id', DB::table('point_user')->where('point_id', 1)->where('balance', '<', 1000)->pluck('user_id')->toArray())->get() as $user) {
                 RenewTestPoint::dispatch($user);
             }
         })->everyMinute();
