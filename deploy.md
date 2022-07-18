@@ -61,7 +61,7 @@ mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -
 php artisan down
 git pull
 php artisan tinker
-AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.11'])
+AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.15'])
 
 
 php artisan optimize:clear
