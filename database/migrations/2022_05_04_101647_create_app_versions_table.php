@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('version')->unique();
             $table->text('note')->nullable();
             $table->boolean('optional')->default(false);
-            $table->string('url')->default(env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk');
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

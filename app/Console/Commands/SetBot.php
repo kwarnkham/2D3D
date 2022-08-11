@@ -38,8 +38,8 @@ class SetBot extends Command
      */
     public function handle()
     {
-        $token = env("TELEGRAM_BOT_TOKEN");
-        $host = env("APP_URL");
+        $token = config('app')['telegram_bot_token'];
+        $host = config('app')['url'];
         $url = "https://api.telegram.org/bot$token/setWebhook?url=$host/api/$token";
 
         echo $url . "\n";
@@ -47,7 +47,7 @@ class SetBot extends Command
         $respobnse = Http::post($url);
         echo $respobnse->body();
 
-        $token = env("TELEGRAM_ADMIN_BOT_TOKEN");
+        $token = config('app')['telegram_admin_bot_token'];
         $url = "https://api.telegram.org/bot$token/setWebhook?url=$host/api/$token";
 
         echo $url . "\n";

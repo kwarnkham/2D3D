@@ -42,8 +42,8 @@ class TopUp extends AppModel implements PointLogable
     {
         $pictures = array();
         foreach ($files as $picture) {
-            if (env("APP_ENV") == "testing") break;
-            $pictures[] = new Picture(['name' => basename(Storage::disk('s3')->putFile(env('APP_NAME') . "/topup", $picture, 'public'))]);
+            if (config('app')['env'] == "testing") break;
+            $pictures[] = new Picture(['name' => basename(Storage::disk('s3')->putFile(config('app')['name'] . "/topup", $picture, 'public'))]);
         }
         $this->pictures()->saveMany($pictures);
     }
@@ -74,6 +74,6 @@ class TopUp extends AppModel implements PointLogable
 
     public function getApproveLink()
     {
-        return env('APP_CLIENT_URL') . '/admin/approve-top-up/' . $this->id;
+        return config('app')['client_url'] . '/admin/approve-top-up/' . $this->id;
     }
 }

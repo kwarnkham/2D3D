@@ -17,7 +17,7 @@ class Picture extends AppModel
     public function name(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => env("AWS_URL") . "/" . env("APP_NAME") . "/topup/" . $value,
+            get: fn ($value) => config('filesystems')['disks']['s3']['url'] . "/" . config('app')['name'] . "/topup/" . $value,
         );
     }
 }

@@ -13,6 +13,11 @@ return [
     |
     */
 
+    'telegram_bot_token' => env("TELEGRAM_BOT_TOKEN", null),
+    'telegram_admin_bot_token' => env("TELEGRAM_ADMIN_BOT_TOKEN", null),
+    'telegram_receiver' => env("TELEGRAM_RECEIVER", null),
+    'client_url' => env("APP_CLIENT_URL", null),
+
     'name' => env('APP_NAME', 'Laravel'),
 
     /*

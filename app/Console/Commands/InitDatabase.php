@@ -47,7 +47,7 @@ class InitDatabase extends Command
             'max_bet' => '40'
         ]);
         \App\Models\Payment::create([
-            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => env('AWS_URL') . '/QR/KpayQR.PNG'
+            'name' => 'KBZPay', 'mm_name' => 'ကေပေး', 'type' => 1, 'number' => null, 'account_name' => 'SAI KWARN KHAM', 'qr' => config('filesystems')['disks']['s3']['url'] . '/QR/KpayQR.PNG'
         ]);
         \App\Models\Payment::create([
             'name' => 'WAVEPAY (Wave Money)', 'mm_name' => 'ဝေ့ပေး ဝေ့မန်းနီး', 'type' => 2, 'number' => '09792761207',
@@ -62,7 +62,7 @@ class InitDatabase extends Command
         \App\Models\JackpotNumber::create(['number' => 0]);
         Artisan::call('make:admin moon ninjamoon');
 
-        if (env("APP_ENV") == 'local')
+        if (config('app')['env'] == 'local')
             DB::transaction(function () {
                 DB::statement("INSERT INTO `account_providers` (`id`, `name`, `created_at`, `updated_at`) VALUES
         (1, 'telegram', '2022-05-12 03:51:05', '2022-05-12 03:51:05');");

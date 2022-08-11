@@ -10,16 +10,17 @@ sudo apt install php8.1-mysql
 sudo apt install nginx
 curl -4 icanhazip.com
 
-sudo mkdir -p /var/www/2D3D && cd /var/www/2D3D
+cd /var/www/
 git clone https://github.com/kwarnkham/2D3D.git
 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
+git config credential.helper store
 apt install composer
 cp .env.example ./.env
-php artisan key:generate
 composer install --optimize-autoloader --no-dev
+php artisan key:generate
 
-sudo chown -R www-data:www-data /var/www/harrot/storage /var/www/harrot/bootstrap/cache
-sudo chmod -R 755 /var/www/harrot/storage /var/www/harrot/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/lunarblessing_backend/storage /var/www/lunarblessing_backend/bootstrap/cache
+sudo chmod -R 755 /var/www/lunarblessing_backend/storage /var/www/lunarblessing_backend/bootstrap/cache
 
 <!-- sudo chgrp -R www-data /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache
 sudo chmod -R ug+rwx /var/www/2D3D/storage /var/www/2D3D/bootstrap/cache -->
@@ -34,9 +35,9 @@ supervisorctl start laravel-worker:\*
 supervisorctl status
 php artisan queue:restart
 
-sudo nano /etc/nginx/sites-available/harrot.madewithheart.tech
-sudo ln -s /etc/nginx/sites-available/harrot.madewithheart.tech /etc/nginx/sites-enabled/
-sudo nano /etc/nginx/nginx.conf
+sudo nano /etc/nginx/sites-available/lunarblessing-api.madewithheart.tech
+sudo ln -s /etc/nginx/sites-available/lunarblessing-api.madewithheart.tech /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/nginx.conf #server_names_hash_bucket_size 64;
 sudo nginx -t
 sudo systemctl restart nginx
 
@@ -61,7 +62,7 @@ mv /root/spa.zip ./spa.zip && unzip spa.zip && rm spa.zip && mv spa/* ./ && rm -
 php artisan down
 git pull
 php artisan tinker
-AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.15'])
+AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.16'])
 
 
 php artisan optimize:clear
@@ -84,8 +85,8 @@ php artisan up
 
 sudo chown -R www-data:www-data /var/www/online_T
 sudo chmod -R 755 /var/www/online_T
-nano /etc/nginx/sites-available/lucky-hi.madewithheart.tech
-sudo ln -s /etc/nginx/sites-available/lucky-hi.madewithheart.tech /etc/nginx/sites-enabled/
+nano /etc/nginx/sites-available/lunarblessing.madewithheart.tech
+sudo ln -s /etc/nginx/sites-available/lunarblessing.madewithheart.tech /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 sudo certbot --nginx
@@ -102,7 +103,6 @@ FLUSH PRIVILEGES;
 php artisan migrate --seed
 php artisan set:bot
 
-git config credential.helper store
 
 domain change notice
 laravel .env

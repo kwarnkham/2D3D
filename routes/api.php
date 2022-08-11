@@ -34,8 +34,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('/' . env('TELEGRAM_BOT_TOKEN'), [TelegramWebhookController::class, 'handle']);
-Route::post('/' . env('TELEGRAM_ADMIN_BOT_TOKEN'), [TelegramWebhookController::class, 'handleAdmin']);
+Route::post('/' . config('app')['telegram_bot_token'], [TelegramWebhookController::class, 'handle']);
+Route::post('/' . config('app')['telegram_admin_bot_token'], [TelegramWebhookController::class, 'handleAdmin']);
 
 Route::get('/app-version', [AppVersionController::class, 'index']);
 

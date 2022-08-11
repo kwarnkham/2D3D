@@ -10,7 +10,7 @@ class TelegramService
 
     public static function getUrl($admin = false)
     {
-        return 'https://api.telegram.org/bot' . ($admin ? env("TELEGRAM_ADMIN_BOT_TOKEN") : env("TELEGRAM_BOT_TOKEN"));
+        return 'https://api.telegram.org/bot' . ($admin ? config('app')['telegram_admin_bot_token'] : config('app')['telegram_bot_token']);
     }
     public static function sendMessage($message, $chatId, $parseMode = 'HTML')
     {
@@ -33,7 +33,7 @@ class TelegramService
     public static function sendAdminMessage($message)
     {
         $options = [
-            'chat_id' => env('TELEGRAM_RECEIVER'),
+            'chat_id' => config('app')['telegram_receiver'],
             'parse_mode' => 'HTML',
         ];
         if (is_array($message)) {

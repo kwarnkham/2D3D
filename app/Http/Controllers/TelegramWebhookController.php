@@ -23,9 +23,9 @@ class TelegramWebhookController extends Controller
 
 
         $username = $user->name;
-        $appName = env('APP_NAME');
+        $appName = config('app')['name'];
         $apkUrl = AppVersion::current()->apk_url;
-        $appClient = env("APP_CLIENT_URL");
+        $appClient = config('app')['client_url'];
         $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
         $starterMessage = $message . __("messages.The followings are username and password.");
         if ($request->exists('message') && array_key_exists('text', $request->message)) {
@@ -67,7 +67,7 @@ class TelegramWebhookController extends Controller
                             ['user_id' => $user->id],
                         );
                         parse_str(parse_url($url)['query'], $query);
-                        $clientUrl = env("APP_CLIENT_URL") . "/reset-password/$query[expires]/$query[user_id]/$query[signature]";
+                        $clientUrl = config('app')['client_url'] . "/reset-password/$query[expires]/$query[user_id]/$query[signature]";
                         $message = __("messages.password change warning", compact('clientUrl'));
                     }
                     break;
@@ -104,10 +104,10 @@ class TelegramWebhookController extends Controller
         Log::channel('telegram')->info(json_encode($request->all()));
         $request->validate([
             'message' => ['required'],
-            'message.from.id' => ['required', 'in:' . env('TELEGRAM_RECEIVER')],
+            'message.from.id' => ['required', 'in:' . config('app')['telegram_receiver']],
             'message.text' => ['required'],
             'message.date' => ['required'],
-            'message.reply_to_message.chat.id' => ['in:' . env('TELEGRAM_RECEIVER')]
+            'message.reply_to_message.chat.id' => ['in:' . config('app')['telegram_receiver']]
         ]);
 
         switch (strtolower($request->message['text'])) {
