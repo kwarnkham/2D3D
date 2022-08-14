@@ -26,8 +26,7 @@ class TelegramWebhookController extends Controller
         $appName = config('app')['name'];
         $apkUrl = AppVersion::current()->apk_url;
         $appClient = config('app')['client_url'];
-        $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
-        $starterMessage = $message . __("messages.The followings are username and password.");
+
         if ($request->exists('message') && array_key_exists('text', $request->message)) {
             switch (strtolower($request->message['text'])) {
                 case 'english':
@@ -40,6 +39,8 @@ class TelegramWebhookController extends Controller
                     if (in_array($user->preferredLocale(), ['en', 'my'])) App::setLocale($user->preferredLocale());
                     break;
             }
+            $message = __("messages.default message", compact('appName', 'apkUrl', 'appClient'));
+            $starterMessage = $message . __("messages.The followings are username and password.");
             switch (strtolower($request->message['text'])) {
                 case 'application':
                 case 'အပလီကေးရှင်း':

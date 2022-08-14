@@ -65,7 +65,8 @@ php artisan tinker
 AppVersion::create(['url'=>env('AWS_URL') . '/Apk/LuckyHi/LuckyHi.apk', 'version'=>'1.0.16'])
 
 
-php artisan optimize:clear
+
+php artisan optimize
 php artisan route:cache
 php artisan view:cache
 
